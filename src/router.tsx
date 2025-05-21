@@ -16,6 +16,7 @@ import SongNew from "./pages/songs/song-new";
 import SongEdit from "./pages/songs/song-edit";
 import PlaylistNew from "./pages/playlists/playlist-new";
 import PlaylistEdit from "./pages/playlists/playlist-edit";
+import Managers from "./pages/managers/managers-page"
 
 const router = createBrowserRouter([
     {
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
                 path: '/genres',
                 element: <GenreManagement />
             },
+            {
+                path: '/managers',
+                element: <Managers />
+            }
         ]
     },
 

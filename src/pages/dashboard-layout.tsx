@@ -21,6 +21,7 @@ const DashboardLayout = () => {
     { path: "/playlists", label: "Playlists", icon: <PlayIcon className="w-5 h-5" /> },
     { path: "/settings", label: "Settings", icon: <CogIcon className="w-5 h-5" /> },
     { path: "/analytics", label: "Analytics", icon: <ChartBarIcon className="w-5 h-5" /> },
+    { path: "/managers", label: "Managers", icon: <UsersIcon className="w-5 h-5" /> },
   ];
 
   return (
@@ -84,8 +85,8 @@ const DashboardLayout = () => {
                 </div>
               </div>
               <div className="ml-3">
-                <p className="text-sm font-medium text-gray-700">{user?.name || "Admin User"}</p>
-                <p className="text-xs text-gray-500">{user?.email || "admin@alimedia.com"}</p>
+                <p className="text-sm font-medium text-gray-700">{user?.name}</p>
+                <p className="text-xs text-gray-500">{user?.email}</p>
               </div>
               <button 
                 onClick={handleLogout}

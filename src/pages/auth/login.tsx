@@ -6,6 +6,7 @@ import { EyeOffIcon, EyeIcon } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -17,19 +18,19 @@ const Login = () => {
     e.preventDefault();
     setError("");
     
-    if (!email || !password) {
+    if (!username || !password) {
       setError("Please enter both email and password");
       return;
     }
     
     try {
       setLoading(true);
-      const success = await login(email, password);
+      const success = await login(username, password);
       
       if (success) {
         navigate("/");
       } else {
-        setError("Invalid email or password");
+        setError("Invalid username or password");
       }
     } catch (err) {
       setError("Failed to log in. Please try again.");
@@ -55,16 +56,16 @@ const Login = () => {
         
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-700">
-              Email
+            <label htmlFor="username" className="block mb-2 text-sm font-medium text-gray-700">
+              Username
             </label>
             <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              id="text"
+              type="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF1742] focus:border-transparent"
-              placeholder="admin@alimedia.com"
+              placeholder="admin"
             />
           </div>
           

@@ -2,18 +2,19 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetQuery, useMutationAction } from "../../hooks/queries-actions";
 import { EditIcon, SearchIcon, TrashIcon, UserPlusIcon } from "lucide-react";
-import User from "../../types/user";
+import Manager from "../../types/manager";
+import AddManagerModal from "./add-manager-modal";
 
-
-const Users = () => {
+const Managers = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
   const [sortBy, setSortBy] = useState("newest");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
-  // Fetch users data
-  const { data: users, isLoading, refetch } = useGetQuery<User[]>({
-    key: ["users"],
-    url: "users",
+  // Fetch managers data
+  const { data: managers, isLoading, refetch } = useGetQuery<Manager[]>({
+    key: ["managers"],
+    url: "managers",
     options: {
       initialData: []
     }
@@ -22,26 +23,28 @@ const Users = () => {
   // Delete user mutation
   const deleteMutation = useMutationAction({
     method: "delete",
-    url: "",
-    key: ["users"],
+    url: "", // Use a placeholder; we'll dynamically set the URL in mutate
+    key: ["managers"],
     onSuccessCallback: () => {
       refetch();
     }
   });
 
   const handleDeleteUser = (id: number) => {
-    if (window.confirm("Are you sure you want to delete this user?")) {
-      deleteMutation.mutate({ url: `/users/${id}` });
+    if (window.confirm("Are you sure you want to delete this manager?")) {
+      // Call the mutation with the specific URL for the manager
+      deleteMutation.mutate({ url: `/managers/${id}` });
     }
   };
 
-  // Filter and sort users
-  const filteredUsers = users?.filter(user => {
+  // Filter and sort managers
+  const filteredUsers = managers?.filter(manager => {
     const matchesSearch = 
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      manager.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (manager.email?.toLowerCase().includes(searchTerm.toLowerCase()) || false);
     
-    const matchesStatus = filterStatus === "all" || user.status === filterStatus;
+    // Since status isn't in the Manager type, we'll skip status filtering
+    const matchesStatus = filterStatus === "all";
     
     return matchesSearch && matchesStatus;
   });
@@ -51,55 +54,48 @@ const Users = () => {
       case "name":
         return a.name.localeCompare(b.name);
       case "email":
-        return a.email.localeCompare(b.email);
+        return (a.email || "").localeCompare(b.email || "");
       case "newest":
       default:
-        return new Date(b.joined_at).getTime() - new Date(a.joined_at).getTime();
+        return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     }
   });
 
-  // Get user status badge color
-  const getStatusBadgeClass = (status: string) => {
-    switch (status) {
-      case "active":
-        return "bg-green-100 text-green-800";
-      case "inactive":
-        return "bg-gray-100 text-gray-800";
-      case "banned":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
-
-  // Get user role badge color
+  // Get manager role badge color
   const getRoleBadgeClass = (role: string) => {
     switch (role) {
-      case "premium":
-        return "bg-purple-100 text-purple-800";
-      case "basic":
+      case "admin":
         return "bg-blue-100 text-blue-800";
+      case "super_admin":
+        return "bg-purple-100 text-purple-800";
       default:
         return "bg-gray-100 text-gray-800";
     }
   };
-
+  
   return (
     <div>
       <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">User Management</h1>
-          <p className="text-gray-600">Manage all users in the system</p>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Manager Management
+          </h1>
+          <p className="text-gray-600">Manage all managers in the system</p>
         </div>
-        <Link
-          to="/users/new"
+        <button
+          onClick={() => setIsAddModalOpen(true)}
           className="mt-4 md:mt-0 flex items-center justify-center px-4 py-2 bg-[#FF1742] text-white rounded-lg hover:bg-[#e0142d] transition-colors"
         >
           <UserPlusIcon className="w-5 h-5 mr-2" />
-          Add New User
-        </Link>
+          Add New Manager
+        </button>
       </div>
-
+      {/* Add Manager Modal */}
+      <AddManagerModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={() => refetch()}
+      />
       {/* Search and Filters */}
       <div className="bg-white p-4 rounded-lg border border-gray-200 mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -109,26 +105,13 @@ const Users = () => {
             </div>
             <input
               type="text"
-              placeholder="Search users..."
+              placeholder="Search managers..."
               className="pl-10 pr-4 py-2 w-full border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF1742] focus:border-transparent"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-          
-          <div>
-            <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#FF1742] focus:border-transparent"
-            >
-              <option value="all">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="suspended">Suspended</option>
-            </select>
-          </div>
-          
+
           <div>
             <select
               value={sortBy}
@@ -143,13 +126,15 @@ const Users = () => {
         </div>
       </div>
 
-      {/* Users Table */}
+      {/* Managers Table */}
       <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
         {isLoading ? (
-          <div className="p-6 text-center">Loading users...</div>
+          <div className="p-6 text-center">Loading managers...</div>
         ) : sortedUsers?.length === 0 ? (
           <div className="p-6 text-center">
-            {searchTerm || filterStatus !== "all" ? "No users match your search criteria." : "No users found."}
+            {searchTerm || filterStatus !== "all"
+              ? "No managers match your search criteria."
+              : "No managers found."}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -160,13 +145,19 @@ const Users = () => {
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    User
+                    Name
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
                   >
-                    Status
+                    Username
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                  >
+                    Email
                   </th>
                   <th
                     scope="col"
@@ -199,41 +190,43 @@ const Users = () => {
                   <tr key={user.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        {/* <div className="flex-shrink-0 h-10 w-10">
-                          <img
-                            className="h-10 w-10 rounded-full"
-                            src={user.avatar || "/placeholder.svg"}
-                            alt={user.name}
-                          />
-                        </div> */}
-                        <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                        <div className="text-sm font-medium text-gray-900">
+                          {user.name}
                         </div>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusBadgeClass(user.status)}`}>
-                        {user.status.charAt(0).toUpperCase() + user.status.slice(1)}
-                      </span>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="text-sm font-medium text-gray-900">
+                        {user.username}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <div className="text-sm font-medium text-gray-900">
+                        {user.email || "-"}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(user.role)}`}>
+                      <span
+                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getRoleBadgeClass(
+                          user.role
+                        )}`}
+                      >
                         {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.joined_at).toLocaleDateString()}
+                      {user.created_at
+                        ? new Date(user.created_at).toLocaleDateString()
+                        : "-"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {
-                        user.last_login_time &&
-                        new Date(user.last_login_time).toLocaleDateString()
-                      }
+                      {user.last_login
+                        ? new Date(user.last_login).toLocaleDateString()
+                        : "Never"}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <Link
-                        to={`/users/${user.id}`}
+                        to={`/managers/${user.id}`}
                         className="text-blue-600 hover:text-blue-900 mr-4"
                       >
                         <EditIcon className="w-5 h-5" />
@@ -242,10 +235,19 @@ const Users = () => {
                       <button
                         onClick={() => handleDeleteUser(user.id)}
                         className="text-red-600 hover:text-red-900"
-                        disabled={user.role === 'basic'}
-                        title={user.role === "basic" ? "Cannot delete admin users" : "Delete user"}
+                        disabled={user.role === "super_admin"}
+                        title={
+                          user.role === "super_admin"
+                            ? "Cannot delete admin users"
+                            : "Delete user"
+                        }
                       >
-                        <TrashIcon className={`w-5 h-5 ${user.role === "basic" ? "opacity-50 cursor-not-allowed" : ""}`}
+                        <TrashIcon
+                          className={`w-5 h-5 ${
+                            user.role === "super_admin"
+                              ? "opacity-50 cursor-not-allowed"
+                              : ""
+                          }`}
                         />
                         <span className="sr-only">Delete</span>
                       </button>
@@ -261,4 +263,4 @@ const Users = () => {
   );
 };
 
-export default Users;
+export default Managers;

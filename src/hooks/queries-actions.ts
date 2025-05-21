@@ -10,7 +10,6 @@ import {
 import { AxiosError } from "axios";
 import { useAxios } from "./axios";
 
-
 export type TApiError = {
   data: string;
   statusCode: number;
@@ -26,7 +25,6 @@ export type TApiError = {
   };
 };
 
-
 // Hook options types
 interface QueryProps<TData> {
   key: QueryKey;
@@ -41,12 +39,12 @@ interface QueryProps<TData> {
 // Hook options types
 interface MutationProps<TData = unknown, TVariables = void> {
   method: "post" | "put" | "delete" | "patch";
-  url: string;
+  url?: string; // Make url optional
   onSuccessMessage?: string;
   key?: QueryKey;
   options?: UseMutationOptions<TData, AxiosError, TVariables>;
   headers?: object;
-  contentType?: "aplication/json" | "multipart/form-data";
+  contentType?: "application/json" | "multipart/form-data";
   onErrorCallback?: (error: AxiosError) => void;
   onSuccessCallback?: (data: TData) => void;
 }
@@ -104,15 +102,21 @@ function useCustomMutation<TData, TVariables>(
 }
 
 // Mutation Hook
-export function useMutationAction<TData = unknown, TVariables = unknown>(
+export function useMutationAction<TData = unknown, TVariables = { url?: string }>(
   props: MutationProps<TData, TVariables>
 ) {
-  const axios = useAxios(props.contentType);
+  const axios = useAxios(props.contentType as "multipart/form-data" | "aplication/json" | undefined);
 
   return useCustomMutation<TData, TVariables>(
     async (values: TVariables): Promise<TData> => {
+      // Use the URL from values if provided, otherwise fall back to props.url
+      const url = (values as any).url || props.url;
+      if (!url) {
+        throw new Error("URL must be provided either in props or mutation variables");
+      }
+
       const response = await axios[props.method]<TData>(
-        props.url,
+        url,
         values,
         { headers: props.headers }
       );

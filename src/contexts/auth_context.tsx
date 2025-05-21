@@ -1,9 +1,12 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { useAxios } from "../hooks/axios";
+import { api_url } from "../constants/app_constants";
+import Manager from "../types/manager";
 
 interface AuthContextType {
   isAuthenticated: boolean;
-  user: any | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  user: Manager | null;
+  login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
 }
 
@@ -23,44 +26,65 @@ interface AuthProviderProps {
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-  const [user, setUser] = useState<any | null>(null);
+  const [user, setUser] = useState<Manager | null>(null);
+  const axios = useAxios();
 
   useEffect(() => {
-    // Check if user is already logged in
-    const storedUser = localStorage.getItem("user");
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
-      setIsAuthenticated(true);
-    }
-  }, []);
-
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const storedUser = localStorage.getItem("user");
+  const token = localStorage.getItem("token");
+  if (storedUser && token) {
     try {
-      // Mock login - in a real app, this would be an API call
-      if (email === "admin@alimedia.com" && password === "password") {
-        const userData = {
-          id: "1",
-          name: "Admin User",
-          email,
-          role: "admin",
-        };
-        
+      const parsedUser = JSON.parse(storedUser);
+      if (parsedUser && typeof parsedUser === "object") {
+        setUser(parsedUser);
+        setIsAuthenticated(true);
+      } else {
+        // Clear invalid data from localStorage
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }
+    } catch (error) {
+      console.error("Failed to parse stored user data:", error);
+      // Clear invalid data from localStorage
+      localStorage.removeItem("user");
+      localStorage.removeItem("token");
+    }
+  }
+}, []);
+
+ const login = async (username: string, password: string): Promise<boolean> => {
+  try {
+    const response = await axios.post(`${api_url}/managers/login/`, {
+      username,
+      password,
+    });
+
+    if (response.data && response.data.token && response.data.user) {
+      const userData = response.data.user;
+      if (userData && typeof userData === "object") {
         setUser(userData);
         setIsAuthenticated(true);
         localStorage.setItem("user", JSON.stringify(userData));
+        localStorage.setItem("token", response.data.token);
         return true;
+      } else {
+        console.error("Invalid user data received from server");
+        return false;
       }
-      return false;
-    } catch (error) {
-      console.error("Login error:", error);
-      return false;
     }
-  };
+    console.error(response.data);
+    return false;
+  } catch (error) {
+    console.error("Login error:", error);
+    return false;
+  }
+};
 
   const logout = () => {
     setUser(null);
     setIsAuthenticated(false);
     localStorage.removeItem("user");
+    localStorage.removeItem("token");
   };
 
   return (

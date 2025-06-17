@@ -1,21 +1,19 @@
 import { createBrowserRouter } from "react-router-dom";
 import DashboardLayout from "./pages/dashboard-layout";
-import DashboardHome from "./pages/home/home";
-import Login from "./pages/auth/login";
-import ArtistsManagement from "./pages/artists/artists-management";
-import Settings from "./pages/settings/settings";
-import PlaylistsManagement from "./pages/playlists/playlists-management";
-import SongsManagement from "./pages/songs/songs-management";
-import UsersManagement from "./pages/user/users-page";
-import Analytics from "./pages/analytics/analytics";
-import AlbumsManagement from "./pages/albums/albums";
-import PodcastCategories from "./pages/podcast-categories/podcast_categories_management";
-import Podcasts from "./pages/podcasts/podcasts";
-import GenreManagement from "./pages/genres/genre_management";
-import SongNew from "./pages/songs/song-new";
-import SongEdit from "./pages/songs/song-edit";
-import PlaylistNew from "./pages/playlists/playlist-new";
-import PlaylistEdit from "./pages/playlists/playlist-edit";
+import HomePage from "./pages/home/home";
+import ArtistsPage from "./pages/artists/artists-page";
+import GenresPage from './pages/genres/genres-page';
+import SongsPage from './pages/songs/songs-page';
+import UsersPage from './pages/users/users-page';
+// import SettingsPage from './pages/settings/settings-page';
+import PlaylistsPage from './pages/playlists/playlists-page';
+import AnalyticsPage from "./pages/analytics-page";
+import AlbumsPage from "./pages/albums";
+import ManagersPage from "./pages/managers";
+import EditUserPage from "./pages/users/edit-user-page";
+import PermissionsPage from "./pages/manager_permissions";
+import LoginPage from "./pages/login_page";
+import ReportsPage from "./pages/reports";
 
 const router = createBrowserRouter([
     {
@@ -24,71 +22,32 @@ const router = createBrowserRouter([
         children: [
             {
                 path: '/',
-                element: <DashboardHome />
+                element: <HomePage />
             },
             {
-                path: '/artists',
-                element: <ArtistsManagement />
+                path: '/dashboard/artists',
+                element: <ArtistsPage />
             },
             {
-                path: '/settings',
-                element: <Settings />
+                path: '/dashboard/genres',
+                element: <GenresPage />
             },
-            {
-                path: '/playlists',
-                element: <PlaylistsManagement />
-            },
-            {
-                path: '/playlists/new',
-                element: <PlaylistNew />
-            },
-            {
-                path: '/playlists/:id/edit',
-                element: <PlaylistEdit />
-            },
-            {
-                path: '/songs',
-                element: <SongsManagement />
-            },
-            {
-                path: '/songs/new',
-                element: <SongNew />
-            },
-            {
-                path: '/songs/:id/edit',
-                element: <SongEdit />
-            },
-            {
-                path: '/users',
-                element: <UsersManagement />
-            },
-            {
-                path: '/analytics',
-                element: <Analytics />
-            },
-            {
-                path: '/albums',
-                element: <AlbumsManagement />
-            },
-            {
-                path: '/podcast-categories',
-                element: <PodcastCategories />
-            },
-            {
-                path: '/podcasts',
-                element: <Podcasts />
-            },
-            {
-                path: '/genres',
-                element: <GenreManagement />
-            },
-        ]
-    },
-
-    {
-        path: '/login',
-        element: <Login />
-    }
+            { path: '/dashboard/songs', element: <SongsPage /> },
+            { path: '/dashboard/users', element: <UsersPage /> },
+            { path: '/dashboard/users/:id/edit', element: <EditUserPage /> },
+            // { path: '/dashboard/settings', element: <SettingsPage /> },
+            { path: '/dashboard/playlists', element: <PlaylistsPage /> },
+            { path: '/dashboard/analytics', element: <AnalyticsPage /> },
+            { path: '/dashboard/reports', element: <ReportsPage /> },
+            { path: '/dashboard/albums', element: <AlbumsPage /> },
+            { path: '/dashboard/managers', element: <ManagersPage /> },
+            { path: '/dashboard/managers/:id/permissions', element: <PermissionsPage /> },
+    ],
+  },
+  {
+    path: '/login',
+    element: <LoginPage />
+  }
 ])
 
 

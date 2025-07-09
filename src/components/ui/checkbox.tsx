@@ -1,62 +1,48 @@
-import React from 'react'
-import { Check } from 'lucide-react'
-import { cn } from "../../lib/utils"
+"use client"
 
-interface CheckboxProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {
+import { Check } from "lucide-react"
+import type { InputHTMLAttributes } from "react"
+
+interface CheckboxProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "type" | "size"> {
   label?: string
   description?: string
-  error?: string
+  size?: "sm" | "md" | "lg"
 }
 
-export const Checkbox = React.forwardRef<HTMLInputElement, CheckboxProps>(
-  ({ className, label, description, error, checked, ...props }, ref) => {
-    return (
-      <div className="space-y-2">
-        <div className="flex items-start space-x-3">
-          <div className="relative flex items-center">
-            <input
-              type="checkbox"
-              className="sr-only"
-              ref={ref}
-              checked={checked}
-              {...props}
+export function Checkbox({ label, description, size = "md", className = "", ...props }: CheckboxProps) {
+  const sizes = {
+    sm: "w-4 h-4",
+    md: "w-5 h-5",
+    lg: "w-6 h-6",
+  }
+
+  return (
+    <label className={`flex items-start gap-3 cursor-pointer ${className}`}>
+      <div className="relative flex-shrink-0 mt-0.5">
+        <input type="checkbox" className="sr-only" {...props} />
+        <div
+          className={`${sizes[size]} rounded transition-all duration-200 ${
+            props.checked ? "bg-primary border-primary" : "bg-white hover:border-gray-400 border-2 border-gray-300 "
+          }`}
+        >
+          {props.checked && (
+            <Check
+              className={`${sizes[size]} text-white p-0.5 transition-all duration-200`}
+              style={{
+                transform: props.checked ? "scale(1)" : "scale(0)",
+                opacity: props.checked ? 1 : 0,
+              }}
             />
-            <div className={cn(
-              'w-5 h-5 border-2 rounded flex items-center justify-center transition-all duration-200 cursor-pointer',
-              checked 
-                ? 'bg-primary border-primary' 
-                : 'border-gray-300 hover:border-gray-400',
-              error && 'border-red-500',
-              props.disabled && 'opacity-50 cursor-not-allowed',
-              className
-            )}>
-              {checked && (
-                <Check className="h-4 w-4 text-white" strokeWidth={3} />
-              )}
-            </div>
-          </div>
-          {(label || description) && (
-            <div className="flex-1">
-              {label && (
-                <label className={cn(
-                  'text-sm font-medium text-gray-900 cursor-pointer',
-                  props.disabled && 'opacity-50 cursor-not-allowed'
-                )}>
-                  {label}
-                </label>
-              )}
-              {description && (
-                <p className="text-sm text-gray-600">{description}</p>
-              )}
-            </div>
           )}
         </div>
-        {error && (
-          <p className="text-sm text-red-600">{error}</p>
-        )}
       </div>
-    )
-  }
-)
+      {(label || description) && (
+        <div className="text-right">
+          {label && <div className="font-medium text-primary">{label}</div>}
+          {description && <div className="text-sm text-gray-600">{description}</div>}
+        </div>
+      )}
+    </label>
+  )
+}
 
-Checkbox.displayName = 'Checkbox'

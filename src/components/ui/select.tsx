@@ -3,39 +3,35 @@
 import { useState, useRef, useEffect } from "react"
 import { ChevronDown, Check } from 'lucide-react'
 
-interface Option {
+interface SelectOption {
   value: string
   label: string
-  disabled?: boolean
 }
 
 interface SelectProps {
-  options: Option[]
+  options: SelectOption[]
   value?: string
+  onChange: (value: string) => void
   placeholder?: string
-  onChange?: (value: string) => void
-  disabled?: boolean
   className?: string
-  error?: boolean
+  size?: "sm" | "md" | "lg"
+  disabled?: boolean
 }
 
-export default function Select({
-  options,
-  value,
-  placeholder = "اختر خيار...",
-  onChange,
-  disabled = false,
-  className = "",
-  error = false,
-}: SelectProps) {
+export default function Select({ options, value, onChange, placeholder = "اختر...", className = "", size = "sm", disabled = false }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const [selectedOption, setSelectedOption] = useState<Option | null>(
-    options.find((opt) => opt.value === value) || null
-  )
   const selectRef = useRef<HTMLDivElement>(null)
 
+  const sizes = {
+    sm: "px-3 py-2 text-sm",
+    md: "px-4 py-3 text-base",
+    lg: "px-5 py-4 text-lg",
+  }
+
+  const selectedOption = options.find(option => option.value === value)
+
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    function handleClickOutside(event: MouseEvent) {
       if (selectRef.current && !selectRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
@@ -45,56 +41,34 @@ export default function Select({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
-  const handleSelect = (option: Option) => {
-    if (option.disabled) return
-    setSelectedOption(option)
-    onChange?.(option.value)
-    setIsOpen(false)
-  }
-
   return (
-    <div className={`relative ${className}`} ref={selectRef} dir="rtl">
+    <div className="relative" ref={selectRef}>
       <button
         type="button"
-        onClick={() => !disabled && setIsOpen(!isOpen)}
+        onClick={disabled ? undefined : () => setIsOpen(!isOpen)}
         disabled={disabled}
-        className={`
-          w-full px-2 py-2 text-right bg-white border rounded-lg gap-2 transition-colors
-          flex items-center justify-between
-          ${error ? "border-red-300" : "border-gray-200"}
-          ${disabled ? "bg-gray-50 text-gray-400 cursor-not-allowed" : "hover:border-gray-300"}
-          ${isOpen ? "border-primary" : ""}
-          focus:outline-none focus:ring-2 focus:ring-primary/20
-        `}
+        className={`w-full border border-gray-200 bg-white rounded focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 flex items-center justify-between text-right ${sizes[size]} ${className} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
       >
-        <span className={selectedOption ? "text-gray-900" : "text-gray-400"}>
+        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
+        <span className={selectedOption ? "text-gray-900" : "text-gray-500"}>
           {selectedOption ? selectedOption.label : placeholder}
         </span>
-        <ChevronDown
-          size={16}
-          className={`text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`}
-        />
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-lg z-50 max-h-60 overflow-y-auto">
+        <div className="absolute border border-gray-300 top-full mt-2 w-full bg-white rounded-lg z-50 max-h-60 overflow-y-auto custom-scroll">
           {options.map((option) => (
             <button
               key={option.value}
-              type="button"
-              onClick={() => handleSelect(option)}
-              disabled={option.disabled}
-              className={`
-                w-full px-4 py-2 text-right transition-colors
-                flex items-center justify-between
-                ${option.disabled ? "text-gray-400 cursor-not-allowed" : "text-gray-900 hover:bg-gray-50"}
-                ${selectedOption?.value === option.value ? "bg-primary/10 text-primary" : ""}
-              `}
+              onClick={() => {
+                onChange(option.value)
+                setIsOpen(false)
+              }}
+              disabled={disabled}
+              className="w-full px-4 py-2 text-right hover:bg-gray-50 transition-colors flex items-center gap-2"
             >
+              {option.value === value && <Check className="w-4 h-4 text-accent" />}
               <span>{option.label}</span>
-              {selectedOption?.value === option.value && (
-                <Check size={16} className="text-primary" />
-              )}
             </button>
           ))}
         </div>
@@ -102,3 +76,4 @@ export default function Select({
     </div>
   )
 }
+

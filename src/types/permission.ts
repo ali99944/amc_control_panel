@@ -1,7 +1,8 @@
 interface Permission {
-    id: number
+    id: string
     name: string
-    value: string
-}
+    category: string
+    is_granted: boolean
+  }
 
 export default Permission

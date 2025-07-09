@@ -1,12 +1,133 @@
 @import "tailwindcss";
 
-
-:root {
-  --primary: #1DB954;
-  --secondary: #191414;
+@font-face {
+  font-family: 'din';
+  src: url('/fonts/din.ttf') format('truetype');
+  /* Path to the font file */
+  font-weight: normal;
+  font-style: normal;
 }
 
-@theme {
+body {
+  direction: rtl;
+  text-align: right;
+  font-family: 'din', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #2d6a4f;
+  /* --primary: #386641; */
+  --secondary: #6b7280;
+  --accent: #10b981;
+  --background: #ededed;
+  --container: #0f172b;
+  --destructive: #cd4227;
+  --destructive-foreground: #fff;
+}
+
+@theme inline {
   --color-primary: var(--primary);
   --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-background: var(--background);
+  --color-container: var(--container);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+
+  --radius-primary: 12px
+}
+
+.custom-scroll {
+  scrollbar-width: 4px !important;
+  scroll-behavior: smooth !important;
+  scroll-snap-type: mandatory !important;
+  scrollbar-color: var(--primary) !important;
+  scrollbar-track-color: #004d5c !important;
+
+  --webkit-scrollbar-width: 5px !important;
+  --webkit-scroll-behavior: smooth !important;
+  --webkit-scroll-snap-type: mandatory !important;
+  --webkit-scrollbar-color: var(--primary) !important;
+  --webkit-scrollbar-track-color: #004d5c !important;
+
+  appearance: none;
+}
+
+
+/* Custom Swiper styles */
+.swiper {
+  overflow: hidden !important;
+}
+
+.swiper-wrapper {
+  display: flex;
+}
+
+.swiper-slide {
+  flex-shrink: 0;
+  width: auto;
+  height: auto;
+  position: relative;
+  transition-property: transform;
+}
+
+/* Custom pagination styles */
+.swiper-pagination {
+  position: relative !important;
+  margin-top: 1rem;
+}
+
+.swiper-pagination-bullet {
+  width: 8px !important;
+  height: 8px !important;
+  margin: 0 4px !important;
+  border-radius: 50% !important;
+  opacity: 1 !important;
+  transition: all 0.3s ease !important;
+}
+
+.swiper-pagination-bullet-active {
+  transform: scale(1.2) !important;
+}
+
+/* RTL support */
+.swiper[dir="rtl"] .swiper-slide {
+  text-align: right;
+}
+
+/* Ensure proper spacing */
+.swiper-slide>* {
+  height: 100%;
+}
+
+/* styles/scrollbar.css */
+.custom-scroll {
+  scrollbar-width: thin;
+  /* Firefox */
+  scrollbar-color: #003c47 #e0e0e0;
+  /* Firefox */
+}
+
+.custom-scroll::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #e0e0e0;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #003c47;
+  border-radius: 10px;
+  width: 0 !important;
+  display: none !important;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #005d6b;
 }

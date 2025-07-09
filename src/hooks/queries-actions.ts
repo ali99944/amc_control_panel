@@ -46,7 +46,7 @@ interface MutationProps<TData = unknown, TVariables = void> {
   key?: QueryKey;
   options?: UseMutationOptions<TData, AxiosError, TVariables>;
   headers?: object;
-  contentType?: "aplication/json" | "multipart/form-data";
+  contentType?: "application/json" | "multipart/form-data";
   onErrorCallback?: (error: AxiosError) => void;
   onSuccessCallback?: (data: TData) => void;
 }

@@ -1,53 +1,89 @@
 import { createBrowserRouter } from "react-router-dom";
-import DashboardLayout from "./pages/dashboard-layout";
-import HomePage from "./pages/home/home";
-import ArtistsPage from "./pages/artists/artists-page";
-import GenresPage from './pages/genres/genres-page';
-import SongsPage from './pages/songs/songs-page';
-import UsersPage from './pages/users/users-page';
-// import SettingsPage from './pages/settings/settings-page';
-import PlaylistsPage from './pages/playlists/playlists-page';
+import DashboardLayout from "./components/layout/dashboard-layout";
 import AnalyticsPage from "./pages/analytics-page";
-import AlbumsPage from "./pages/albums";
-import ManagersPage from "./pages/managers";
-import EditUserPage from "./pages/users/edit-user-page";
-import PermissionsPage from "./pages/manager_permissions";
-import LoginPage from "./pages/login_page";
-import ReportsPage from "./pages/reports";
+import ReportsPage from "./pages/reports/reports";
+import SettingsPage from "./pages/settings/settings-page";
+import UsersPage from "./pages/users/users-page";
+import PlaylistsPage from "./pages/playlists/playlists-page";
+import ArtistsPage from "./pages/artists/artists-page";
+import SongsPage from "./pages/songs/songs-page";
+import SongDetailsPage from "./pages/songs/song-details.tsx/song-details";
+import ManagersPage from "./pages/managers/managers";
+import ManagerPermissionsPage from "./pages/managers/manager-permissions";
+import NotificationsPage from "./pages/notifications/notifications-page";
+import Dashboard from "./pages/dashboard/dashboard";
+import GenresPage from "./pages/genres/genres-page";
+import SpotifyLoginPage from "./pages/auth/login_page";
 
 const router = createBrowserRouter([
     {
         path: '/',
-        element: <DashboardLayout />,
+        element: 
+            <DashboardLayout />
+        ,
         children: [
             {
-                path: '/',
-                element: <HomePage />
+                index: true,    
+                element: <Dashboard />
             },
             {
-                path: '/dashboard/artists',
+                path: '/genres',
+                element: <GenresPage />
+            },
+            {
+                path: '/users',
+                element: <UsersPage />
+            },
+            {
+                path: '/playlists',
+                element: <PlaylistsPage />
+            },
+            {
+                path: '/songs',
+                element: <SongsPage />
+            },
+            {
+                path: '/songs/:id',
+                element: <SongDetailsPage />
+            },
+            {
+                path: '/songs',
+                element: <SongsPage />
+            },
+            {
+                path: '/artists',
                 element: <ArtistsPage />
             },
             {
-                path: '/dashboard/genres',
-                element: <GenresPage />
+                path: '/analytics',
+                element: <AnalyticsPage />
             },
-            { path: '/dashboard/songs', element: <SongsPage /> },
-            { path: '/dashboard/users', element: <UsersPage /> },
-            { path: '/dashboard/users/:id/edit', element: <EditUserPage /> },
-            // { path: '/dashboard/settings', element: <SettingsPage /> },
-            { path: '/dashboard/playlists', element: <PlaylistsPage /> },
-            { path: '/dashboard/analytics', element: <AnalyticsPage /> },
-            { path: '/dashboard/reports', element: <ReportsPage /> },
-            { path: '/dashboard/albums', element: <AlbumsPage /> },
-            { path: '/dashboard/managers', element: <ManagersPage /> },
-            { path: '/dashboard/managers/:id/permissions', element: <PermissionsPage /> },
-    ],
-  },
-  {
-    path: '/login',
-    element: <LoginPage />
-  }
+            {
+                path: '/reports',
+                element: <ReportsPage />
+            },
+            {
+                path: '/settings',
+                element: <SettingsPage />
+            },
+            {
+                path: '/managers',
+                element: <ManagersPage />
+            },
+            {
+                path: '/managers/:id/permissions',
+                element: <ManagerPermissionsPage />
+            },
+            {
+                path: '/notifications',
+                element: <NotificationsPage />
+            },
+        ],
+    },
+    {
+        path: '/login',
+        element: <SpotifyLoginPage />
+    }
 ])
 
 

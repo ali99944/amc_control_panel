@@ -1,45 +1,55 @@
-import type React from "react"
-import { ChevronRight } from "lucide-react"
-import { cn } from "../../lib/utils"
+import { ChevronLeft } from "lucide-react"
+import type { LucideIcon } from "lucide-react"
+import Card from "./card"
 
 interface BreadcrumbItem {
   label: string
   href?: string
-  icon?: React.ReactNode
+  icon?: LucideIcon
 }
 
 interface BreadcrumbProps {
   items: BreadcrumbItem[]
-  separator?: React.ReactNode
   className?: string
+  variant?: "light" | "dark"
 }
 
-export function Breadcrumb({ items, separator, className }: BreadcrumbProps) {
-  const defaultSeparator = <ChevronRight className="h-4 w-4 text-gray-400" />
+export default function Breadcrumb({ items, className = "", variant = "light" }: BreadcrumbProps) {
+  const variants = {
+    light: {
+      link: "text-gray-600 hover:text-primary",
+      current: "text-primary font-medium",
+      separator: "text-gray-400",
+    },
+    dark: {
+      link: "text-white/80 hover:text-white",
+      current: "text-white font-medium",
+      separator: "text-white/60",
+    },
+  }
+
+  const variantStyles = variants[variant]
 
   return (
-    <nav className={cn("flex items-center space-x-2 text-sm", className)}>
+    <Card className="!p-2">
+      <nav className={`flex items-center gap-2 text-sm ${className}`} aria-label="Breadcrumb">
       {items.map((item, index) => (
-        <div key={index} className="flex items-center space-x-2">
-          {index > 0 && (separator || defaultSeparator)}
-
-          <div className="flex items-center space-x-1 group">
-            {item.icon && (
-              <span className={cn("text-gray-500 group-hover:text-primary", index === items.length - 1 && "text-gray-900 group-hover:text-gray-900")}>{item.icon}</span>
-            )}
-
-            {item.href ? (
-              <a href={item.href} className="text-gray-600 group-hover:text-primary transition-colors">
-                {item.label}
-              </a>
-            ) : (
-              <span className={cn(index === items.length - 1 ? "text-gray-900 font-medium" : "text-gray-600")}>
-                {item.label}
-              </span>
-            )}
-          </div>
+        <div key={index} className="flex items-center gap-2">
+          {item.href ? (
+            <a href={item.href} className={`${variantStyles.link} transition-colors flex items-center gap-1`}>
+              {item.icon && <item.icon className="w-4 h-4" />}
+              {item.label}
+            </a>
+          ) : (
+            <span className={`${variantStyles.current} flex items-center gap-1`}>
+              {item.icon && <item.icon className="w-4 h-4" />}
+              {item.label}
+            </span>
+          )}
+          {index < items.length - 1 && <ChevronLeft className={`w-4 h-4 ${variantStyles.separator}`} />}
         </div>
       ))}
     </nav>
+    </Card>
   )
 }

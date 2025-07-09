@@ -3,7 +3,7 @@ import { cn } from "../../lib/utils"
 
 interface BadgeProps {
   children: React.ReactNode
-  variant?: "default" | "secondary" | "outline" | "destructive"
+  variant?: "default" | "secondary" | "destructive"
   className?: string
 }
 
@@ -14,8 +14,7 @@ export function Badge({ children, variant = "default", className }: BadgeProps) 
         "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
         {
           "bg-primary text-white": variant === "default",
-          "bg-secondary text-secondary-foreground": variant === "secondary",
-          "border border-input bg-background text-foreground": variant === "outline",
+          "bg-secondary text-white": variant === "secondary",
           "bg-destructive text-destructive-foreground": variant === "destructive",
         },
         className,

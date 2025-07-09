@@ -2,11 +2,9 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Search, Plus, X, Music, Play, Grip } from 'lucide-react'
+import { Search, Plus, X, Music, Play, Grip } from "lucide-react"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
-import Song from "../../types/song"
-
-
+import type { Song } from "../../types/song"
 
 interface PlaylistBuilderProps {
   availableSongs?: Song[]
@@ -15,45 +13,8 @@ interface PlaylistBuilderProps {
   className?: string
 }
 
-const mockAvailableSongs: Song[] = [
-  {
-    id: 1,
-    title: "أغنية رائعة",
-    artist: null,
-    album: "ألبوم الذكريات",
-    duration: "4:32",
-  },
-  {
-    id: 2,
-    title: "لحن الحياة",
-    artist: null,
-    album: "الأصالة",
-    duration: "6:15",
-  },
-  {
-    id: 3,
-    title: "موسيقى هادئة",
-    artist: null,
-    duration: "3:28",
-  },
-  {
-    id: 4,
-    title: "أغنية حديثة",
-    artist: null,
-    album: "العصر الجديد",
-    duration: "3:45",
-  },
-  {
-    id: 5,
-    title: "لحن قديم",
-    artist: null,
-    album: "التراث",
-    duration: "5:20",
-  },
-]
-
 export default function PlaylistBuilder({
-  availableSongs = mockAvailableSongs,
+  availableSongs = [],
   initialSongs = [],
   onPlaylistChange,
   className = "",
@@ -66,8 +27,7 @@ export default function PlaylistBuilder({
     const filtered = availableSongs.filter(
       (song) =>
         (song.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        //   song.artist.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          song.album?.toLowerCase().includes(searchTerm.toLowerCase())) &&
+          song.artist?.name.toLowerCase().includes(searchTerm.toLowerCase())) &&
         !playlistSongs.some((ps) => ps.id === song.id),
     )
     setFilteredSongs(filtered)
@@ -103,8 +63,7 @@ export default function PlaylistBuilder({
 
   const getTotalDuration = () => {
     const totalSeconds = playlistSongs.reduce((acc, song) => {
-      const [minutes, seconds] = song.duration.split(":").map(Number)
-      return acc + minutes * 60 + seconds
+      return acc + (song.audio?.duration || 0)
     }, 0)
 
     const hours = Math.floor(totalSeconds / 3600)
@@ -117,11 +76,18 @@ export default function PlaylistBuilder({
     return `${minutes}:${seconds.toString().padStart(2, "0")}`
   }
 
+  const formatDuration = (seconds?: number) => {
+    if (!seconds) return "0:00"
+    const minutes = Math.floor(seconds / 60)
+    const secs = seconds % 60
+    return `${minutes}:${secs.toString().padStart(2, "0")}`
+  }
+
   return (
     <div className={`grid grid-cols-1 lg:grid-cols-2 gap-4 ${className}`}>
       <DragDropContext onDragEnd={handleDragEnd}>
         {/* Available Songs */}
-        <div className="bg-white rounded-lg p-4">
+        <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">الأغاني المتاحة</h3>
             <span className="text-sm text-gray-500">{filteredSongs.length} أغنية</span>
@@ -154,22 +120,32 @@ export default function PlaylistBuilder({
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`flex items-center gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
-                          snapshot.isDragging ? "rotate-2 scale-105" : ""
+                        className={`flex items-center gap-3 p-3 bg-white rounded-lg cursor-pointer hover:bg-gray-100 transition-colors ${
+                          snapshot.isDragging ? "rotate-2 scale-105 shadow-lg" : ""
                         }`}
                       >
                         <Grip size={16} className="text-gray-400" />
-                        <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                          <Music size={16} className="text-white" />
+                        <div className="w-10 h-10 rounded-lg overflow-hidden">
+                          {song.cover_image ? (
+                            <img
+                              src={song.cover_image || "/placeholder.svg"}
+                              alt={song.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-primary rounded-lg flex items-center justify-center">
+                              <Music size={16} className="text-white" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 truncate">{song.title}</p>
                           <p className="text-xs text-gray-500 truncate">
-                            {song.artist?.name} {song.album && `• ${song.album}`}
+                            {song.artist?.name}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">{song.duration}</span>
+                          <span className="text-xs text-gray-500">{formatDuration(song.audio?.duration)}</span>
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -197,7 +173,7 @@ export default function PlaylistBuilder({
         </div>
 
         {/* Playlist */}
-        <div className="bg-white rounded-lg p-4">
+        <div className="bg-gray-50 rounded-lg p-4">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-lg font-semibold text-gray-900">قائمة التشغيل</h3>
             <div className="text-sm text-gray-500">
@@ -221,23 +197,33 @@ export default function PlaylistBuilder({
                         ref={provided.innerRef}
                         {...provided.draggableProps}
                         {...provided.dragHandleProps}
-                        className={`flex items-center gap-3 p-3 bg-gray-50 rounded-lg ${
-                          snapshot.isDragging ? "rotate-2 scale-105" : ""
+                        className={`flex items-center gap-3 p-3 bg-white rounded-lg ${
+                          snapshot.isDragging ? "rotate-2 scale-105 shadow-lg" : ""
                         }`}
                       >
                         <Grip size={16} className="text-gray-400" />
                         <span className="text-xs text-gray-500 w-6">{index + 1}</span>
-                        <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                          <Music size={16} className="text-white" />
+                        <div className="w-10 h-10 rounded-lg overflow-hidden">
+                          {song.cover_image ? (
+                            <img
+                              src={song.cover_image || "/placeholder.svg"}
+                              alt={song.title}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-full h-full bg-primary rounded-lg flex items-center justify-center">
+                              <Music size={16} className="text-white" />
+                            </div>
+                          )}
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 truncate">{song.title}</p>
                           <p className="text-xs text-gray-500 truncate">
-                            {song.artist?.name} {song.album && `• ${song.album}`}
+                            {song.artist?.name}
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">{song.duration}</span>
+                          <span className="text-xs text-gray-500">{formatDuration(song.audio?.duration)}</span>
                           <button
                             onClick={() => console.log("Play", song.id)}
                             className="p-1 text-gray-400 hover:text-primary transition-colors"

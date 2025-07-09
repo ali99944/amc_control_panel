@@ -2,13 +2,14 @@
 "use client"
 
 import type { ReactNode } from "react"
+import { useState, useMemo } from "react"
+import { ChevronUp, ChevronDown, Download, Search } from "lucide-react"
+import { Input } from "./ui/input"
+import Button from "./ui/button"
 
-import { useState } from "react"
-import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react'
-import React from "react"
 
 export interface Column<T> {
-  key: keyof T | string
+  key: keyof T | string | string[]
   title: string
   sortable?: boolean
   width?: string
@@ -23,6 +24,15 @@ interface DataTableProps<T> {
   onRowClick?: (row: T, index: number) => void
   loading?: boolean
   emptyState?: ReactNode
+  searchable?: boolean
+  exportable?: boolean
+  selectable?: boolean
+  onSelectionChange?: (selectedRows: T[]) => void
+}
+
+interface SortConfig {
+  key: string
+  direction: "asc" | "desc"
 }
 
 export default function DataTable<T extends Record<string, any>>({
@@ -33,180 +43,334 @@ export default function DataTable<T extends Record<string, any>>({
   onRowClick,
   loading = false,
   emptyState,
+  searchable = true,
+  exportable = true,
+  selectable = false,
 }: DataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(1)
-  const [sortConfig, setSortConfig] = useState<{
-    key: string
-    direction: "asc" | "desc"
-  } | null>(null)
+  const [sortConfig, setSortConfig] = useState<SortConfig | null>(null)
+  const [searchTerm, setSearchTerm] = useState("")
+  const [selectedRows, setSelectedRows] = useState<Set<number>>(new Set())
 
-  // Sorting logic
-  const sortedData = React.useMemo(() => {
-    if (!sortConfig) return data
+  // Helper function to get nested value
+  const getNestedValue = (obj: any, path: string | string[]): any => {
+    if (typeof path === "string") {
+      return obj[path]
+    }
+    return path.reduce((current, key) => current?.[key], obj)
+  }
 
-    return [...data].sort((a, b) => {
-      const aValue = a[sortConfig.key]
-      const bValue = b[sortConfig.key]
+  // Helper function to get sort key
+  const getSortKey = (column: Column<T>): string => {
+    if (Array.isArray(column.key)) {
+      return column.key.join(".")
+    }
+    return column.key as string
+  }
 
-      if (aValue < bValue) {
-        return sortConfig.direction === "asc" ? -1 : 1
-      }
-      if (aValue > bValue) {
-        return sortConfig.direction === "asc" ? 1 : -1
-      }
-      return 0
-    })
-  }, [data, sortConfig])
+  // Filter and sort data
+  const processedData = useMemo(() => {
+    let filtered = [...data]
 
-  // Pagination logic
-  const totalPages = Math.ceil(sortedData.length / pageSize)
+    // Search filter
+    if (searchTerm) {
+      filtered = filtered.filter((row) =>
+        columns.some((column) => {
+          const value = getNestedValue(row, column.key as string | string[])
+          return String(value).toLowerCase().includes(searchTerm.toLowerCase())
+        }),
+      )
+    }
+
+    // Sort
+    if (sortConfig) {
+      filtered.sort((a, b) => {
+        const aValue = getNestedValue(a, sortConfig.key.split("."))
+        const bValue = getNestedValue(b, sortConfig.key.split("."))
+
+        if (aValue < bValue) {
+          return sortConfig.direction === "asc" ? -1 : 1
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === "asc" ? 1 : -1
+        }
+        return 0
+      })
+    }
+
+    return filtered
+  }, [data, searchTerm, sortConfig, columns])
+
+  // Pagination
+  const totalPages = Math.ceil(processedData.length / pageSize)
   const startIndex = (currentPage - 1) * pageSize
-  const endIndex = startIndex + pageSize
-  const currentData = sortedData.slice(startIndex, endIndex)
+  const paginatedData = processedData.slice(startIndex, startIndex + pageSize)
 
-  const handleSort = (key: string) => {
+  // Handle sort
+  const handleSort = (column: Column<T>) => {
+    if (!column.sortable) return
+
+    const key = getSortKey(column)
     setSortConfig((current) => {
       if (current?.key === key) {
-        if (current.direction === "asc") {
-          return { key, direction: "desc" }
-        } else {
-          return null // Remove sorting
+        return {
+          key,
+          direction: current.direction === "asc" ? "desc" : "asc",
         }
       }
       return { key, direction: "asc" }
     })
   }
 
-  const getSortIcon = (key: string) => {
-    if (sortConfig?.key !== key) {
-      return <div className="w-4 h-4" />
+  // Handle selection
+  const handleSelectAll = () => {
+    if (selectedRows.size === paginatedData.length) {
+      setSelectedRows(new Set())
+    } else {
+      setSelectedRows(new Set(paginatedData.map((_, index) => startIndex + index)))
     }
-    return sortConfig.direction === "asc" ? (
-      <ChevronUp size={16} className="text-[#003a78]" />
-    ) : (
-      <ChevronDown size={16} className="text-[#003a78]" />
-    )
   }
 
-  const goToPage = (page: number) => {
-    setCurrentPage(Math.max(1, Math.min(page, totalPages)))
+  const handleSelectRow = (index: number) => {
+    const newSelected = new Set(selectedRows)
+    if (newSelected.has(index)) {
+      newSelected.delete(index)
+    } else {
+      newSelected.add(index)
+    }
+    setSelectedRows(newSelected)
   }
 
-  const getPageNumbers = () => {
-    const pages = []
-    const maxVisiblePages = 5
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2))
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1)
+  // Handle export
+  const handleExport = () => {
+    const csvContent = [
+      columns.map((col) => col.title).join(","),
+      ...processedData.map((row) =>
+        columns
+          .map((col) => {
+            const value = getNestedValue(row, col.key as string | string[])
+            return `"${String(value).replace(/"/g, '""')}"`
+          })
+          .join(","),
+      ),
+    ].join("\n")
 
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1)
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i)
-    }
-
-    return pages
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+    const link = document.createElement("a")
+    link.href = URL.createObjectURL(blob)
+    link.download = "data-export.csv"
+    link.click()
   }
 
-  if (loading) {
-    return (
-      <div className={`bg-white rounded-xl border border-gray-200 ${className}`}>
-        <div className="p-8 text-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#003a78] mx-auto"></div>
-          <p className="text-gray-500 mt-4">Loading...</p>
+  // Update selection callback
+  // React.useEffect(() => {
+  //   if (onSelectionChange) {
+  //     const selectedData = Array.from(selectedRows).map((index) => data[index])
+  //     onSelectionChange(selectedData)
+  //   }
+  // }, [selectedRows, data, onSelectionChange])
+
+  // Loading skeleton
+  const LoadingSkeleton = () => (
+    <div className="space-y-3">
+      {Array.from({ length: pageSize }).map((_, index) => (
+        <div key={index} className="flex items-center space-x-4 p-4">
+          {columns.map((_, colIndex) => (
+            <div
+              key={colIndex}
+              className="h-4 bg-gray-200 rounded animate-pulse"
+              style={{ width: `${Math.random() * 100 + 50}px` }}
+            />
+          ))}
         </div>
-      </div>
-    )
-  }
-
-  if (data.length === 0 && emptyState) {
-    return <div className={`bg-white rounded-xl border border-gray-200 ${className}`}>{emptyState}</div>
-  }
+      ))}
+    </div>
+  )
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 overflow-hidden ${className}`}>
+    <div className={`bg-white rounded-xl border border-gray-200 ${className}`}>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-4 flex-1">
+            {searchable && (
+              <div className="relative max-w-sm">
+                <Input
+                  placeholder="البحث..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  icon={Search}
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="flex items-center gap-2">
+            {exportable && (
+              <Button variant="secondary" size="sm" onClick={handleExport} icon={Download}>
+                تصدير
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Table */}
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-white border-b border-gray-200">
+          <thead className="bg-gray-50">
             <tr>
+              {selectable && (
+                <th className="w-12 p-4">
+                  <input
+                    type="checkbox"
+                    checked={selectedRows.size === paginatedData.length && paginatedData.length > 0}
+                    onChange={handleSelectAll}
+                    className="rounded border-gray-300 text-primary focus:ring-primary"
+                  />
+                </th>
+              )}
               {columns.map((column, index) => (
                 <th
                   key={index}
-                  className={`px-6 py-4 text-left text-sm font-semibold text-gray-900 ${
-                    column.sortable ? "cursor-pointer hover:bg-gray-100 transition-colors" : ""
+                  className={`p-4 text-right text-sm font-medium text-gray-700 ${
+                    column.sortable ? "cursor-pointer hover:bg-gray-100" : ""
                   }`}
                   style={{ width: column.width }}
-                  onClick={() => column.sortable && handleSort(column.key as string)}
+                  onClick={() => handleSort(column)}
                 >
                   <div className="flex items-center justify-between">
                     <span>{column.title}</span>
-                    {column.sortable && getSortIcon(column.key as string)}
+                    {column.sortable && (
+                      <div className="flex flex-col">
+                        <ChevronUp
+                          className={`w-3 h-3 ${
+                            sortConfig?.key === getSortKey(column) && sortConfig.direction === "asc"
+                              ? "text-primary"
+                              : "text-gray-400"
+                          }`}
+                        />
+                        <ChevronDown
+                          className={`w-3 h-3 -mt-1 ${
+                            sortConfig?.key === getSortKey(column) && sortConfig.direction === "desc"
+                              ? "text-primary"
+                              : "text-gray-400"
+                          }`}
+                        />
+                      </div>
+                    )}
                   </div>
                 </th>
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {currentData.map((row, rowIndex) => (
-              <tr
-                key={rowIndex}
-                className={`transition-colors ${
-                  onRowClick ? "cursor-pointer" : ""
-                }`}
-                onClick={() => onRowClick?.(row, startIndex + rowIndex)}
-              >
-                {columns.map((column, colIndex) => (
-                  <td key={colIndex} className="px-6 py-4 text-sm text-gray-900">
-                    {column.render
-                      ? column.render(row[column.key as keyof T], row, startIndex + rowIndex)
-                      : (row[column.key as keyof T] as ReactNode)}
-                  </td>
-                ))}
+          <tbody>
+            {loading ? (
+              <tr>
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="p-4">
+                  <LoadingSkeleton />
+                </td>
               </tr>
-            ))}
+            ) : paginatedData.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="p-8 text-center">
+                  {emptyState || (
+                    <div className="text-gray-500">
+                      <div className="text-4xl mb-2">📭</div>
+                      <p>لا توجد بيانات للعرض</p>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            ) : (
+              paginatedData.map((row, index) => {
+                const actualIndex = startIndex + index
+                return (
+                  <tr
+                    key={actualIndex}
+                    className={`border-b border-gray-100 hover:bg-gray-50 transition-colors ${
+                      onRowClick ? "cursor-pointer" : ""
+                    } ${selectedRows.has(actualIndex) ? "bg-blue-50" : ""}`}
+                    onClick={() => onRowClick?.(row, actualIndex)}
+                  >
+                    {selectable && (
+                      <td className="p-4">
+                        <input
+                          type="checkbox"
+                          checked={selectedRows.has(actualIndex)}
+                          onChange={() => handleSelectRow(actualIndex)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="rounded border-gray-300 text-primary focus:ring-primary"
+                        />
+                      </td>
+                    )}
+                    {columns.map((column, colIndex) => {
+                      const value = getNestedValue(row, column.key as string | string[])
+                      return (
+                        <td key={colIndex} className="p-4 text-sm text-gray-900">
+                          {column.render ? column.render(value, row, actualIndex) : String(value || "")}
+                        </td>
+                      )
+                    })}
+                  </tr>
+                )
+              })
+            )}
           </tbody>
         </table>
       </div>
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-200 bg-[#f1f0ec]">
+        <div className="p-4 border-t border-gray-200">
           <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {startIndex + 1} to {Math.min(endIndex, sortedData.length)} of {sortedData.length} results
+            <div className="text-sm text-gray-600">
+              عرض {startIndex + 1} إلى {Math.min(startIndex + pageSize, processedData.length)} من {processedData.length}{" "}
+              نتيجة
             </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => goToPage(currentPage - 1)}
+            <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
-                className="p-2 rounded-lg border bg-white border-gray-300 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronLeft size={16} />
-              </button>
+                السابق
+              </Button>
+              <div className="flex items-center gap-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum: number
+                  if (totalPages <= 5) {
+                    pageNum = i + 1
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i
+                  } else {
+                    pageNum = currentPage - 2 + i
+                  }
 
-              {getPageNumbers().map((page) => (
-                <button
-                  key={page}
-                  onClick={() => goToPage(page)}
-                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                    currentPage === page
-                      ? "bg-[#003a78] text-white"
-                      : "border border-gray-300 bg-white hover:bg-white/60 cursor-pointer text-gray-700"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
-
-              <button
-                onClick={() => goToPage(currentPage + 1)}
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-3 py-1 text-sm rounded ${
+                        currentPage === pageNum ? "bg-primary text-white" : "text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  )
+                })}
+              </div>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
-                className="p-2 rounded-lg bg-white border border-gray-300 hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <ChevronRight size={16} />
-              </button>
+                التالي
+              </Button>
             </div>
           </div>
         </div>

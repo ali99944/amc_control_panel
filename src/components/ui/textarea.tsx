@@ -1,54 +1,36 @@
-import React from "react"
-import { cn } from "../../lib/utils"
+"use client"
 
-interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
-  label?: string
-  error?: string
-  icon?: React.ReactNode
+import type { TextareaHTMLAttributes, ReactNode } from "react"
+
+interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   size?: "sm" | "md" | "lg"
+  error?: string
+  label?: ReactNode
 }
 
-export const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, label, error, icon, size = "md", ...props }, ref) => {
-    const sizeClasses = {
-      sm: "p-2 text-sm min-h-[80px]",
-      md: "p-3 min-h-[100px]",
-      lg: "p-4 text-lg min-h-[120px]",
-    }
+export default function Textarea({ size = "md", error, label, className = "", ...props }: TextareaProps) {
+  const baseClasses =
+    "border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 resize-none"
 
-    const iconSizeClasses = {
-      sm: "pt-8",
-      md: "pt-10",
-      lg: "pt-12",
-    }
+  const sizes = {
+    sm: "px-3 py-2 text-sm",
+    md: "px-4 py-3 text-base",
+    lg: "px-5 py-4 text-lg",
+  }
 
-    const iconPositionClasses = {
-      sm: "top-2 left-2",
-      md: "top-3 left-3",
-      lg: "top-4 left-4",
-    }
+  const errorClasses = error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""
 
-    return (
-      <div className="space-y-2">
-        {label && <label className="block text-sm font-medium text-gray-700">{label}</label>}
-        <div className="relative">
-          {icon && <div className={cn("absolute text-gray-400 z-10", iconPositionClasses[size])}>{icon}</div>}
-          <textarea
-            className={cn(
-              "w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-colors resize-vertical",
-              sizeClasses[size],
-              icon && iconSizeClasses[size],
-              error && "border-red-500 focus:ring-red-500",
-              className,
-            )}
-            ref={ref}
-            {...props}
-          />
-        </div>
-        {error && <p className="text-sm text-red-600">{error}</p>}
-      </div>
-    )
-  },
-)
+  return (
+    <div className="w-full">
+      {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
+      <textarea
+        className={`${baseClasses} ${sizes[size]} ${errorClasses} ${className} w-full text-right`}
+        {...props}
+      />
+      {error && (
+        <p className="mt-1 text-sm text-red-600 text-right">{error}</p>
+      )}
+    </div>
+  )
+}
 
-Textarea.displayName = "Textarea"

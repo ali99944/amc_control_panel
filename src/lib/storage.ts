@@ -1,6 +1,6 @@
 import { storage_url } from "../constants/app_constants"
 
-export const getImageLink = (endpoint: string | null | undefined) => {
+export const getStorageFile = (endpoint: string | null | undefined) => {
     if (endpoint) {
         return `${storage_url}/${endpoint}`
     }

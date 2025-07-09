@@ -1,7 +1,7 @@
 "use client"
 import { ChevronLeft, ChevronRight, MoreHorizontal } from "lucide-react"
 import { cn } from "../../lib/utils"
-import { Button } from "./button"
+import Button from "./button"
 
 interface PaginationProps {
   currentPage: number
@@ -68,7 +68,7 @@ export function Pagination({
           size="sm"
           onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
-          className="hidden sm:flex"
+          className="h-8 p-0"
         >
           First
         </Button>
@@ -114,6 +114,7 @@ export function Pagination({
           size="sm"
           onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
           disabled={currentPage === totalPages}
+          className="h-8 p-0"
         >
           <ChevronRight className="h-4 w-4" />
           <span className="sr-only">Next</span>
@@ -126,7 +127,7 @@ export function Pagination({
           size="sm"
           onClick={() => onPageChange(totalPages)}
           disabled={currentPage === totalPages}
-          className="hidden sm:flex"
+          className="h-8 p-0"
         >
           Last
         </Button>

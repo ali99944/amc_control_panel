@@ -1,188 +1,130 @@
 "use client"
 
-import type React from "react"
-import { useState, createContext, useContext } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import { X, CheckCircle, AlertTriangle, Info, AlertCircle } from "lucide-react"
-import { cn } from "../../lib/utils"
+import { useContext, useEffect } from "react"
+import { motion } from "framer-motion"
+import { X, CheckCircle, AlertCircle, AlertTriangle, Info } from 'lucide-react'
+import { NotificationContext } from "../../providers/notification-provider"
 
-interface NotificationItem {
+export type NotificationType = "success" | "error" | "warning" | "info"
+
+interface NotificationProps {
   id: string
-  title: string
-  message?: string
-  type: "success" | "error" | "warning" | "info"
-  duration?: number
-  action?: {
-    label: string
-    onClick: () => void
-  }
+  message: string
+  type: NotificationType
 }
 
-interface NotificationContextType {
-  notifications: NotificationItem[]
-  addNotification: (notification: Omit<NotificationItem, "id">) => void
-  removeNotification: (id: string) => void
-  clearAll: () => void
-}
+export default function Notification({ id, message, type }: NotificationProps) {
+  const { removeNotification } = useContext(NotificationContext)
 
-const NotificationContext = createContext<NotificationContextType | undefined>(undefined)
+  // Auto-dismiss after 5 seconds
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      removeNotification(id)
+    }, 5000)
+    return () => clearTimeout(timer)
+  }, [id, removeNotification])
 
-export function useNotifications() {
-  const context = useContext(NotificationContext)
-  if (!context) {
-    throw new Error("useNotifications must be used within a NotificationProvider")
-  }
-  return context
-}
-
-export function NotificationProvider({ children }: { children: React.ReactNode }) {
-  const [notifications, setNotifications] = useState<NotificationItem[]>([])
-
-  const addNotification = (notification: Omit<NotificationItem, "id">) => {
-    const id = Math.random().toString(36).substr(2, 9)
-    const newNotification: NotificationItem = { ...notification, id }
-
-    setNotifications((prev) => [...prev, newNotification])
-
-    if (notification.duration !== 0) {
-      setTimeout(() => {
-        removeNotification(id)
-      }, notification.duration || 5000)
-    }
-  }
-
-  const removeNotification = (id: string) => {
-    setNotifications((prev) => prev.filter((notification) => notification.id !== id))
-  }
-
-  const clearAll = () => {
-    setNotifications([])
-  }
-
-  const icons = {
-    success: <CheckCircle className="h-5 w-5" />,
-    error: <AlertCircle className="h-5 w-5" />,
-    warning: <AlertTriangle className="h-5 w-5" />,
-    info: <Info className="h-5 w-5" />,
-  }
-
-  const styles = {
-    success: {
-      container: "bg-green-50 border-green-200",
-      icon: "text-green-600",
-      title: "text-green-900",
-      message: "text-green-700",
+  const typeConfig = {
+    info: {
+      bg: "bg-[#003049]",
+      border: "border-white/0",
+      icon: <CheckCircle className="w-5 h-5 text-white" />,
+      text: "text-white",
+      accent: "bg-white/60",
+      shadow: "shadow-[#003049]/20",
     },
     error: {
-      container: "bg-red-50 border-red-200",
-      icon: "text-red-600",
-      title: "text-red-900",
-      message: "text-red-700",
+      bg: "bg-destructive",
+      border: "border-white/0",
+      icon: <AlertCircle className="w-5 h-5 text-white" />,
+      text: "text-white",
+      accent: "bg-white/60",
+      shadow: "shadow-red-100",
     },
     warning: {
-      container: "bg-yellow-50 border-yellow-200",
-      icon: "text-yellow-600",
-      title: "text-yellow-900",
-      message: "text-yellow-700",
+      bg: "bg-[#f77f00]",
+      border: "border-[#f77f00]",
+      icon: <AlertTriangle className="w-5 h-5 text-white" />,
+      text: "text-white",
+      accent: "bg-white/60", 
+      shadow: "shadow-[#f77f00]/20",
     },
-    info: {
-      container: "bg-blue-50 border-blue-200",
-      icon: "text-blue-600",
-      title: "text-blue-900",
-      message: "text-blue-700",
+    success: {
+      bg: "bg-primary",
+      border: "border-primary/60",
+      icon: <Info className="w-5 h-5 !text-white" />,
+      text: "text-white",
+      accent: "bg-white/60",
+      shadow: "shadow-primary/20",
     },
   }
 
-  return (
-    <NotificationContext.Provider value={{ notifications, addNotification, removeNotification, clearAll }}>
-      {children}
+  const config = typeConfig[type]
 
-      <div className="fixed top-4 right-4 z-[100] space-y-2 max-w-sm w-full">
-        <AnimatePresence>
-          {notifications.map((notification) => (
-            <motion.div
-              key={notification.id}
-              initial={{ opacity: 0, x: 300, scale: 0.8 }}
-              animate={{ opacity: 1, x: 0, scale: 1 }}
-              exit={{ opacity: 0, x: 300, scale: 0.8 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
-              className={cn("border rounded-lg p-4 shadow-sm backdrop-blur-sm", styles[notification.type].container)}
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: 300, scale: 0.8 }}
+      animate={{ opacity: 1, x: 0, scale: 1 }}
+      exit={{ opacity: 0, x: 300, scale: 0.8, transition: { duration: 0.2 } }}
+      transition={{
+        type: "spring",
+        stiffness: 300,
+        damping: 30,
+      }}
+      className={`
+        relative overflow-hidden rounded border backdrop-blur-sm
+        ${config.bg} ${config.border} ${config.shadow}
+        shadow  transition-shadow duration-300
+      `}
+      dir="rtl"
+    >
+      {/* Accent bar */}
+      <div className={`absolute top-0 right-0 w-1 h-full ${config.accent}`} />
+      
+      {/* Progress bar for auto-dismiss */}
+      <motion.div
+        initial={{ width: "100%" }}
+        animate={{ width: "0%" }}
+        transition={{ duration: 5, ease: "linear" }}
+        className={`absolute bottom-0 right-0 h-0.5 ${config.accent} opacity-30`}
+      />
+
+      <div className="p-3 pr-5">
+        <div className="flex items-start gap-3">
+          {/* Icon with subtle animation */}
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ delay: 0.1, type: "spring", stiffness: 200 }}
+            className="flex-shrink-0 mt-0.5"
+          >
+            {config.icon}
+          </motion.div>
+
+          {/* Message */}
+          <div className="flex-1 min-w-0">
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className={`text-sm font-medium leading-relaxed ${config.text}`}
             >
-              <div className="flex items-start space-x-3">
-                <div className={cn("flex-shrink-0 mt-0.5", styles[notification.type].icon)}>
-                  {icons[notification.type]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h4 className={cn("text-sm font-medium", styles[notification.type].title)}>{notification.title}</h4>
-                  {notification.message && (
-                    <p className={cn("text-sm mt-1", styles[notification.type].message)}>{notification.message}</p>
-                  )}
-                  {notification.action && (
-                    <button
-                      onClick={notification.action.onClick}
-                      className={cn("text-sm font-medium mt-2 hover:underline", styles[notification.type].title)}
-                    >
-                      {notification.action.label}
-                    </button>
-                  )}
-                </div>
-                <button onClick={() => removeNotification(notification.id)} className="flex-shrink-0 ml-auto pl-3">
-                  <X className="h-4 w-4 opacity-60 hover:opacity-100 transition-opacity" />
-                </button>
-              </div>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-    </NotificationContext.Provider>
-  )
-}
+              {message}
+            </motion.p>
+          </div>
 
-// Simple notification component for inline use
-interface NotificationProps {
-  type: "success" | "error" | "warning" | "info"
-  title: string
-  message?: string
-  onClose?: () => void
-  className?: string
-}
-
-export function Notification({ type, title, message, onClose, className }: NotificationProps) {
-  const icons = {
-    success: <CheckCircle className="h-5 w-5 text-green-600" />,
-    error: <AlertCircle className="h-5 w-5 text-red-600" />,
-    warning: <AlertTriangle className="h-5 w-5 text-yellow-600" />,
-    info: <Info className="h-5 w-5 text-blue-600" />,
-  }
-
-  const styles = {
-    success: "bg-green-50 border-green-200",
-    error: "bg-red-50 border-red-200",
-    warning: "bg-yellow-50 border-yellow-200",
-    info: "bg-blue-50 border-blue-200",
-  }
-
-  const textStyles = {
-    success: { title: "text-green-900", message: "text-green-700" },
-    error: { title: "text-red-900", message: "text-red-700" },
-    warning: { title: "text-yellow-900", message: "text-yellow-700" },
-    info: { title: "text-blue-900", message: "text-blue-700" },
-  }
-
-  return (
-    <div className={cn("border rounded-lg p-4", styles[type], className)}>
-      <div className="flex items-start space-x-3">
-        <div className="flex-shrink-0 mt-0.5">{icons[type]}</div>
-        <div className="flex-1 min-w-0">
-          <h4 className={cn("text-sm font-medium", textStyles[type].title)}>{title}</h4>
-          {message && <p className={cn("text-sm mt-1", textStyles[type].message)}>{message}</p>}
+          {/* Close button */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2 }}
+            onClick={() => removeNotification(id)}
+            className="flex-shrink-0 p-1 rounded-full hover:bg-white/50 transition-colors duration-200 group cursor-pointer"
+          >
+            <X className="w-4 h-4 text-white group-hover:text-gray-700" />
+          </motion.button>
         </div>
-        {onClose && (
-          <button onClick={onClose} className="flex-shrink-0 ml-auto pl-3">
-            <X className="h-4 w-4 opacity-60 hover:opacity-100 transition-opacity" />
-          </button>
-        )}
       </div>
-    </div>
+    </motion.div>
   )
 }

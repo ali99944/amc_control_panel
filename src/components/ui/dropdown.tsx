@@ -1,32 +1,33 @@
 "use client"
 
+import type React from "react"
 import { useState, useRef, useEffect } from "react"
-import { MoreHorizontal } from 'lucide-react'
-
-interface DropdownItem {
-  label: string
-  icon?: React.ReactNode
-  onClick: () => void
-  disabled?: boolean
-  destructive?: boolean
-}
+import Card from "./card"
 
 interface DropdownProps {
-  items: DropdownItem[]
-  trigger?: React.ReactNode
+  trigger: React.ReactNode
+  content: React.ReactNode
+  position?: "bottom-left" | "bottom-right" | "top-left" | "top-right"
+  disabled?: boolean
   className?: string
-  align?: "left" | "right"
+  contentClassName?: string
+  closeOnClick?: boolean
+  offset?: number
 }
 
 export default function Dropdown({
-  items,
   trigger,
+  content,
+  position = "bottom-left",
+  disabled = false,
   className = "",
-  align = "right",
+  contentClassName = "",
+  offset = 8,
 }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
 
+  // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -34,54 +35,86 @@ export default function Dropdown({
       }
     }
 
-    document.addEventListener("mousedown", handleClickOutside)
-    return () => document.removeEventListener("mousedown", handleClickOutside)
-  }, [])
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside)
+    }
 
-  const handleItemClick = (item: DropdownItem) => {
-    if (item.disabled) return
-    item.onClick()
-    setIsOpen(false)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [isOpen])
+
+  // Close dropdown on Escape key
+  useEffect(() => {
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setIsOpen(false)
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("keydown", handleEscape)
+    }
+
+    return () => {
+      document.removeEventListener("keydown", handleEscape)
+    }
+  }, [isOpen])
+
+  const handleTriggerClick = () => {
+    if (!disabled) {
+      setIsOpen(!isOpen)
+    }
+  }
+
+  const getPositionClasses = () => {
+    const positions = {
+      "bottom-left": `top-full left-0 mt-${offset === 8 ? "2" : "1"}`,
+      "bottom-right": `top-full right-0 mt-${offset === 8 ? "2" : "1"}`,
+      "top-left": `bottom-full left-0 mb-${offset === 8 ? "2" : "1"}`,
+      "top-right": `bottom-full right-0 mb-${offset === 8 ? "2" : "1"}`,
+    }
+    return positions[position]
   }
 
   return (
-    <div className={`relative ${className}`} ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+    <div className={`relative inline-block ${className}`} ref={dropdownRef}>
+      {/* Trigger */}
+      <div
+        onClick={handleTriggerClick}
+        className={`${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
       >
-        {trigger || <MoreHorizontal size={16} />}
-      </button>
+        {trigger}
+      </div>
 
+      {/* Dropdown Content */}
       {isOpen && (
         <div
-          className={`
-            absolute top-full mt-1 bg-white border border-gray-200 rounded-lg z-50 min-w-48
-            ${align === "right" ? "right-0" : "left-0"}
-          `}
+          className={`absolute z-50 ${getPositionClasses()}`}
+          style={{
+            animation: "dropdownSlideIn 0.15s ease-out",
+          }}
         >
-          {items.map((item, index) => (
-            <button
-              key={index}
-              type="button"
-              onClick={() => handleItemClick(item)}
-              disabled={item.disabled}
-              className={`
-                w-full px-4 py-2 text-right transition-colors
-                flex items-center gap-3
-                ${item.disabled ? "text-gray-400 cursor-not-allowed" : ""}
-                ${item.destructive ? "text-red-600 hover:bg-red-50" : "text-gray-900 hover:bg-gray-50"}
-                ${index === 0 ? "rounded-t-lg" : ""}
-                ${index === items.length - 1 ? "rounded-b-lg" : ""}
-              `}
-            >
-              {item.icon}
-              <span>{item.label}</span>
-            </button>
-          ))}
+          <Card
+            className={` border border-gray-200 ${contentClassName}`}
+          >
+            {content}
+          </Card>
         </div>
       )}
+
+      <style>{`
+        @keyframes dropdownSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `}</style>
     </div>
   )
 }

@@ -8,6 +8,7 @@ import Button from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import Textarea from "../../components/ui/textarea"
 import { Checkbox } from "../../components/ui/checkbox"
+import DatePicker from "../../components/ui/date-picker"
 
 interface ReportFormProps {
   onSubmit: (data: ReportFormData) => void
@@ -182,9 +183,8 @@ export default function ReportForm({
             name="date_range.start_date"
             control={control}
             render={({ field }) => (
-              <Input
+              <DatePicker
                 {...field}
-                type="date"
                 label="تاريخ البداية"
                 error={errors.date_range?.start_date?.message}
                 required
@@ -195,9 +195,8 @@ export default function ReportForm({
             name="date_range.end_date"
             control={control}
             render={({ field }) => (
-              <Input
+              <DatePicker
                 {...field}
-                type="date"
                 label="تاريخ النهاية"
                 error={errors.date_range?.end_date?.message}
                 required

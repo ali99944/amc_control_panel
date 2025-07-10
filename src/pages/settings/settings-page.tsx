@@ -12,6 +12,7 @@ import Switch from "../../components/ui/switch"
 import { AppSettings } from "../../types"
 import Toolbar from "../../components/ui/toolbar"
 import { getApiError } from "../../lib/error_handler"
+import Select from "../../components/ui/select"
 
 
 
@@ -124,7 +125,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Header */}
       <Toolbar title="اعدادات النظام">
         <Button
@@ -175,14 +176,7 @@ export default function SettingsPage() {
                     onChange={(e) => handleInputChange("app", "name", e.target.value)}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">رابط التطبيق</label>
-                  <Input
-                    type="url"
-                    value={formData.app.url}
-                    onChange={(e) => handleInputChange("app", "url", e.target.value)}
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">بريد الدعم</label>
                   <Input
@@ -191,24 +185,24 @@ export default function SettingsPage() {
                     onChange={(e) => handleInputChange("app", "support_email", e.target.value)}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الحد الأقصى للمستخدمين</label>
-                  <Input
-                    type="number"
-                    value={formData.app.max_users}
-                    onChange={(e) => handleInputChange("app", "max_users", Number(e.target.value))}
-                  />
-                </div>
+
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">اللغة الافتراضية</label>
-                  <select
+                  <Select
                     value={formData.app.default_language}
-                    onChange={(e) => handleInputChange("app", "default_language", e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="ar">العربية</option>
-                    <option value="en">English</option>
-                  </select>
+                    onChange={(e) => handleInputChange("app", "default_language", e)}
+                    options={[
+                      {
+                        label: "العربية",
+                        value: "ar"
+                      },
+                      
+                      {
+                        label: "English",
+                        value: "en"
+                      }
+                    ]}
+                  />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">شعار التطبيق</label>
@@ -226,7 +220,7 @@ export default function SettingsPage() {
                 <textarea
                   value={formData.app.description}
                   onChange={(e) => handleInputChange("app", "description", e.target.value)}
-                  rows={4}
+                  rows={6}
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
@@ -258,96 +252,43 @@ export default function SettingsPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">جودة التشغيل الافتراضية</label>
-                  <select
+                  <Select
                     value={formData?.audio?.default_quality}
-                    onChange={(e) => handleInputChange("audio", "default_quality", e.target.value)}
-                    className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"
-                  >
-                    <option value="128kbps">128 kbps</option>
-                    <option value="320kbps">320 kbps</option>
-                    <option value="lossless">Lossless</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الحد الأقصى لحجم الرفع (MB)</label>
-                  <Input
-                    type="number"
-                    value={formData?.audio?.max_upload_size_mb}
-                    onChange={(e) => handleInputChange("audio", "max_upload_size_mb", Number(e.target.value))}
+                    onChange={(e) => handleInputChange("audio", "default_quality", e)}
+                    options={[
+                      {
+                        value: "128kbps",
+                        label: "128 kbps"
+                      },
+                      {
+                        value: "320kbps",
+                        label: "320 kbps"
+                      },
+                      {
+                        value: "lossless",
+                        label: "Lossless"
+                      }
+                    ]}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">مدة الانتقال التدريجي (ثانية)</label>
-                  <Input
-                    type="number"
-                    value={formData?.audio?.crossfade_duration}
-                    onChange={(e) => handleInputChange("audio", "crossfade_duration", Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">حجم المخزن المؤقت (MB)</label>
-                  <Input
-                    type="number"
-                    value={formData?.audio?.buffer_size_mb}
-                    onChange={(e) => handleInputChange("audio", "buffer_size_mb", Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الحد الأقصى للتدفقات المتزامنة</label>
-                  <Input
-                    type="number"
-                    value={formData?.audio?.max_concurrent_streams}
-                    onChange={(e) => handleInputChange("audio", "max_concurrent_streams", Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الصيغ المسموحة</label>
-                  <Input
-                    type="text"
-                    value={formData?.audio?.allowed_formats.join(", ")}
-                    onChange={(e) =>
-                      handleInputChange(
-                        "audio",
-                        "allowed_formats",
-                        e.target.value.split(", ").map((s) => s.trim()),
-                      )
-                    }
-                    placeholder="mp3, flac, wav, m4a"
-                  />
-                </div>
+
+
+
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">تفعيل الانتقال التدريجي</h3>
-                    <p className="text-sm text-gray-600">انتقال سلس بين الأغاني</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
-                      checked={formData?.audio?.enable_crossfade}
-                      onChange={(e) => handleInputChange("audio", "enable_crossfade", e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
-                </div>
+
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
                     <h3 className="font-medium text-gray-900">السماح بالتحميل للاستماع بدون إنترنت</h3>
                     <p className="text-sm text-gray-600">تمكين المستخدمين من تحميل الأغاني</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData?.audio?.enable_offline_downloads}
-                      onChange={(e) => handleInputChange("audio", "enable_offline_downloads", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("audio", "enable_offline_downloads", e)}
+                      // className="sr-only peer"
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
               </div>
             </div>
@@ -380,36 +321,17 @@ export default function SettingsPage() {
               </div>
 
               <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">تفعيل الملفات الشخصية</h3>
-                    <p className="text-sm text-gray-600">السماح للمستخدمين بإنشاء ملفات شخصية</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
-                      checked={formData.social.enable_user_profiles}
-                      onChange={(e) => handleInputChange("social", "enable_user_profiles", e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
-                </div>
+
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
                     <h3 className="font-medium text-gray-900">مشاركة قوائم التشغيل</h3>
                     <p className="text-sm text-gray-600">السماح بمشاركة قوائم التشغيل مع المستخدمين الآخرين</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.social.enable_playlists_sharing}
-                      onChange={(e) => handleInputChange("social", "enable_playlists_sharing", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("social", "enable_playlists_sharing", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -417,15 +339,10 @@ export default function SettingsPage() {
                     <h3 className="font-medium text-gray-900">الميزات الاجتماعية</h3>
                     <p className="text-sm text-gray-600">تفعيل الإعجابات والمشاركة والتفاعل</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.social.enable_social_features}
-                      onChange={(e) => handleInputChange("social", "enable_social_features", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("social", "enable_social_features", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -433,15 +350,10 @@ export default function SettingsPage() {
                     <h3 className="font-medium text-gray-900">التعليقات</h3>
                     <p className="text-sm text-gray-600">السماح بالتعليق على الأغاني وقوائم التشغيل</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.social.enable_comments}
-                      onChange={(e) => handleInputChange("social", "enable_comments", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("social", "enable_comments", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -449,15 +361,10 @@ export default function SettingsPage() {
                     <h3 className="font-medium text-gray-900">متابعة المستخدمين</h3>
                     <p className="text-sm text-gray-600">السماح بمتابعة المستخدمين والفنانين</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.social.enable_following}
-                      onChange={(e) => handleInputChange("social", "enable_following", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("social", "enable_following", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
               </div>
             </div>
@@ -501,47 +408,22 @@ export default function SettingsPage() {
                     <h3 className="font-medium text-gray-900">تأكيد البريد الإلكتروني مطلوب</h3>
                     <p className="text-sm text-gray-600">يجب على المستخدمين تأكيد بريدهم الإلكتروني</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.security.require_email_verification}
-                      onChange={(e) => handleInputChange("security", "require_email_verification", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("security", "require_email_verification", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">تفعيل المصادقة الثنائية</h3>
-                    <p className="text-sm text-gray-600">تمكين المصادقة الثنائية للمستخدمين</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
-                      checked={formData.security.enable_two_factor}
-                      onChange={(e) => handleInputChange("security", "enable_two_factor", e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
-                </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
                     <h3 className="font-medium text-gray-900">تفعيل فلترة المحتوى</h3>
                     <p className="text-sm text-gray-600">فلترة المحتوى غير المناسب تلقائياً</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.security.enable_content_filtering}
-                      onChange={(e) => handleInputChange("security", "enable_content_filtering", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("security", "enable_content_filtering", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
@@ -549,15 +431,10 @@ export default function SettingsPage() {
                     <h3 className="font-medium text-gray-900">السماح بالمحتوى الصريح</h3>
                     <p className="text-sm text-gray-600">السماح بعرض المحتوى المصنف للبالغين</p>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Input
-                      type="checkbox"
+                  <Switch
                       checked={formData.security.enable_explicit_content}
-                      onChange={(e) => handleInputChange("security", "enable_explicit_content", e.target.checked)}
-                      className="sr-only peer"
+                      onChange={(e) => handleInputChange("security", "enable_explicit_content", e)}
                     />
-                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
                 </div>
               </div>
             </div>

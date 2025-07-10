@@ -96,7 +96,7 @@ export default function Dropdown({
           }}
         >
           <Card
-            className={` border border-gray-200 ${contentClassName}`}
+            className={`border border-gray-200 shadow ${contentClassName}`}
           >
             {content}
           </Card>

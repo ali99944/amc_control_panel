@@ -196,7 +196,7 @@ export default function ReportsPage() {
   ]
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Page Header */}
       <Toolbar title="إدارة التقارير">
         <Button variant="primary-inverted" icon={Plus} onClick={() => setIsCreateDialogOpen(true)}>

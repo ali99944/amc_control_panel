@@ -43,6 +43,7 @@ export function ScrollArea({ children, className, height, maxHeight, orientation
       className={cn(
         "relative",
         scrollbarClasses[orientation],
+        "custom-scroll",
         "scrollbar-thin scrollbar-track-gray-100 scrollbar-thumb-gray-300 hover:scrollbar-thumb-gray-400",
         className,
       )}

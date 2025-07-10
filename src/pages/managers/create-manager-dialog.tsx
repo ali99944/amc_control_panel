@@ -26,7 +26,7 @@ export function CreateManagerDialog() {
 
   return (
     <>
-      <Button onClick={() => setIsOpen(true)}>
+      <Button onClick={() => setIsOpen(true)} variant="primary-inverted">
         <Plus className="w-4 h-4 ml-2" />
         إضافة مدير جديد
       </Button>

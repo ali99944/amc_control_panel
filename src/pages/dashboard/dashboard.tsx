@@ -3,7 +3,8 @@
 import { 
   Music, Users, PlayCircle, Home, 
   Disc,
-  Headphones, BarChart2, 
+  Headphones, BarChart2,
+  User, 
 } from "lucide-react"
 import Card from "../../components/ui/card"
 import Toolbar from "../../components/ui/toolbar"
@@ -12,11 +13,14 @@ import { useSongs } from "../../hooks/use-songs"
 import { useArtists } from "../../hooks/use-artists"
 import { usePlaylists } from "../../hooks/use-playlists"
 import { usePlatformStats, useChartData } from "../../hooks/use-statistics"
+import { ScrollArea } from "../../components/ui/scroll-area"
+import EmptyState from "../../components/empty_state"
 
 export default function Dashboard() {
   // Fetch data
   const { data: songs } = useSongs()
   const { data: artists } = useArtists()
+  
   const { data: playlists } = usePlaylists()
   const { data: platformStats } = usePlatformStats()
   const { data: engagementChart } = useChartData('engagement', '7d')
@@ -35,7 +39,7 @@ export default function Dashboard() {
 
 
   return (
-      <div className="space-y-6">
+      <div className="space-y-4">
         {/* Page Header */}
         <Toolbar title="لوحة التحكم الرئيسية">
           <Home />
@@ -116,7 +120,8 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <Card>
             <h3 className="text-lg font-bold text-primary mb-4">الأغاني الأكثر تشغيلاً</h3>
-            <div className="space-y-3">
+            <ScrollArea maxHeight={320}>
+            <div className="space-y-3 ">
               {(songs?.slice(0, 5) || Array(5).fill(null)).map((song, index) => (
                 <div key={song?.id || index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
                   <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
@@ -139,10 +144,12 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
+            </ScrollArea>
           </Card>
 
           <Card>
             <h3 className="text-lg font-bold text-primary mb-4">النشاط الأخير</h3>
+            <ScrollArea height={320}>
             <div className="space-y-3">
               {[
                 "تم إضافة أغنية جديدة",
@@ -160,6 +167,7 @@ export default function Dashboard() {
                 </div>
               ))}
             </div>
+            </ScrollArea>
           </Card>
         </div>
 
@@ -182,7 +190,17 @@ export default function Dashboard() {
                 <p className="text-xs text-gray-600">{formatNumber(artist?.total_followers || 1000 * (index + 1))} متابع</p>
               </div>
             ))}
+
           </div>
+
+          {
+              artists?.filter(artist => artist.is_featured).length == 0 && (
+                <EmptyState
+                  message="لا يوجد فنانين مميزين"
+                  icon={User}
+                />
+              )
+            }
         </Card>
 
         {/* Additional Stats */}

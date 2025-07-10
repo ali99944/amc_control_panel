@@ -20,7 +20,7 @@ export function Input({
   className = "", 
   ...props 
 }: InputProps) {
-  const baseClasses = "border bg-white border-gray-200 rounded focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 w-full"
+  const baseClasses = "border bg-white border-gray-300 rounded focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 w-full"
   
   const sizes = {
     sm: "px-3 py-2 text-sm",

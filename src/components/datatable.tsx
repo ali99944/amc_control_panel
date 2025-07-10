@@ -188,7 +188,8 @@ export default function DataTable<T extends Record<string, any>>({
   )
 
   return (
-    <div className={`bg-white rounded-xl border border-gray-200 ${className}`}>
+    <div className="space-y-4">
+      <div className={`bg-white rounded-xl border border-gray-200 ${className}`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between gap-4">
@@ -320,9 +321,12 @@ export default function DataTable<T extends Record<string, any>>({
         </table>
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="p-4 border-t border-gray-200">
+      
+    </div>
+
+    {/* Pagination */}
+    {totalPages > 1 && (
+        <div className="p-4 border-t border-gray-200 bg-white rounded-xl">
           <div className="flex items-center justify-between">
             <div className="text-sm text-gray-600">
               عرض {startIndex + 1} إلى {Math.min(startIndex + pageSize, processedData.length)} من {processedData.length}{" "}
@@ -332,6 +336,7 @@ export default function DataTable<T extends Record<string, any>>({
               <Button
                 variant="secondary"
                 size="sm"
+                className="!px-3 !py-1"
                 onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
@@ -354,8 +359,8 @@ export default function DataTable<T extends Record<string, any>>({
                     <button
                       key={pageNum}
                       onClick={() => setCurrentPage(pageNum)}
-                      className={`px-3 py-1 text-sm rounded ${
-                        currentPage === pageNum ? "bg-primary text-white" : "text-gray-600 hover:bg-gray-100"
+                      className={`px-3 py-1 text-sm rounded cursor-pointer transition-all duration-300 ${
+                        currentPage === pageNum ? "bg-primary text-white" : "text-gray-600 bg-gray-100 hover:bg-gray-200"
                       }`}
                     >
                       {pageNum}
@@ -366,6 +371,7 @@ export default function DataTable<T extends Record<string, any>>({
               <Button
                 variant="secondary"
                 size="sm"
+                className="!px-3 !py-1"
                 onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
                 disabled={currentPage === totalPages}
               >

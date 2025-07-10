@@ -14,6 +14,11 @@ import NotificationsPage from "./pages/notifications/notifications-page";
 import Dashboard from "./pages/dashboard/dashboard";
 import GenresPage from "./pages/genres/genres-page";
 import SpotifyLoginPage from "./pages/auth/login_page";
+import PrivacyPolicyPage from "./pages/privacy-policy/privacy-policy";
+import TermsConditionsPage from "./pages/terms-conditions/terms-conditions-page";
+import TagsPage from "./pages/tags/tags-page";
+import ContactMessagesPage from "./pages/contact-messages/contact-messages-page";
+import { ContentReportExample, EngagementReportExample, UsersReportExample } from "./components/reports/report-usage-examples";
 
 const router = createBrowserRouter([
     {
@@ -78,7 +83,31 @@ const router = createBrowserRouter([
                 path: '/notifications',
                 element: <NotificationsPage />
             },
+            {
+                path: '/privacy-policy',
+                element: <PrivacyPolicyPage />
+            },
+            {
+                path: '/terms-conditions',
+                element: <TermsConditionsPage />
+            },
+            {
+                path: '/tags',
+                element: <TagsPage />
+            },
+            {
+                path: '/contact-messages',
+                element: <ContactMessagesPage />
+            },
         ],
+    },
+    {
+        path: '/dev',
+        element: <>
+            <EngagementReportExample />
+            <ContentReportExample />
+            <UsersReportExample />
+        </>
     },
     {
         path: '/login',

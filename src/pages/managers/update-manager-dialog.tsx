@@ -18,7 +18,7 @@ export function UpdateManagerDialog({ manager }: UpdateManagerDialogProps) {
   const { updateManager, isUpdating } = useManagers()
 
   const handleSubmit = (data: ManagerFormData) => {
-    updateManager(manager.id, {
+    updateManager(manager?.id, {
       name: data.name,
       username: data.username,
       role: data.role,

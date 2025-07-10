@@ -13,6 +13,7 @@ import { formatDate } from "../../lib/date"
 import { useNavigate } from "react-router-dom"
 import Permission from "../../types/permission"
 import { Manager } from "../../types/manager"
+import Toolbar from "../../components/ui/toolbar"
 
 
 export default function ManagersPage() {
@@ -58,7 +59,7 @@ export default function ManagersPage() {
     {
       key: "role",
       title: "الدور",
-      render: (manager: Manager) => (
+      render: (_: null, manager: Manager) => (
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             manager.role === "super_admin" ? "bg-secondary/10 text-secondary" : "bg-primary/10 text-primary"
@@ -78,7 +79,7 @@ export default function ManagersPage() {
     {
       key: "status",
       title: "الحالة",
-      render: (manager: Manager) => (
+      render: (_: null, manager: Manager) => (
         <span
           className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
             manager?.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
@@ -129,14 +130,10 @@ export default function ManagersPage() {
 
   return (
     <div className="space-y-4">
-      {/* Header */}
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">إدارة المديرين</h1>
-          <p className="text-gray-600">إدارة حسابات المديرين وصلاحياتهم</p>
-        </div>
+
+      <Toolbar title="إدارة المديرين">
         <CreateManagerDialog />
-      </div>
+      </Toolbar>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Users, Music, ListMusic, Settings, BarChart3, Menu, X, Bell, User, LogOut, Palette, Mic, Shield, BellRing } from 'lucide-react'
+import { LayoutDashboard, Users, Music, ListMusic, Settings, BarChart3, Menu, X, Bell, User, LogOut, Palette, Mic, Shield, BellRing, TagsIcon, ShieldAlertIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import Dropdown from "../ui/dropdown"
 import Avatar from "../ui/avatar"
@@ -16,11 +16,14 @@ const navigation = [
   { name: "إدارة الأغاني", href: "/songs", icon: Music },
   { name: "إدارة الفنانين", href: "/artists", icon: Mic },
   { name: "إدارة الأنواع", href: "/genres", icon: Palette },
+  { name: "ادارة الكلمات المفتاحية", href: "tags", icon: TagsIcon },
   { name: "قوائم التشغيل", href: "/playlists", icon: ListMusic },
   { name: "الإشعارات", href: "/notifications", icon: BellRing },
   { name: "الإحصائيات", href: "/analytics", icon: BarChart3 },
   { name: "التقارير", href: "/reports", icon: BarChart3 },
   { name: "الإعدادات", href: "/settings", icon: Settings },
+  { name: "سياسة الخصوصية", href: "/privacy-policy", icon: ShieldAlertIcon },
+  { name: "الشروط و الحقوق", href: "/terms-conditions", icon: ShieldAlertIcon },
 ]
 
 export default function ControlPanelLayout() {
@@ -56,7 +59,7 @@ export default function ControlPanelLayout() {
             sidebarOpen ? "translate-x-0" : "translate-x-full"
           } lg:static lg:inset-0`}
         >
-          <div className="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200">
+          <div className="flex items-center justify-between h-16 px-6 bg-white border-b border-gray-200 sticky top-0">
             <div className="flex items-center gap-2">
               <Avatar alt="amc" size="sm" onClick={handleDashboardHomeNavigation} />
               <span className="text-gray-900 font-bold text-lg">AMC PROJECT</span>
@@ -119,7 +122,7 @@ export default function ControlPanelLayout() {
                     </button>
                   }
                   content={
-                    <div className="w-72 max-h-80 overflow-y-auto py-2">
+                    <div className="w-72 max-h-80 overflow-y-auto custom-scroll py-2">
                       <div className="px-4 py-2 border-b border-gray-100">
                         <h3 className="font-bold text-gray-900">الإشعارات</h3>
                       </div>

@@ -246,14 +246,14 @@ export default function DatePicker({
               <button
                 type="button"
                 onClick={() => navigateYear("prev")}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => navigateMonth("prev")}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
                 <ChevronRight className="w-4 h-4" />
               </button>
@@ -269,14 +269,14 @@ export default function DatePicker({
               <button
                 type="button"
                 onClick={() => navigateMonth("next")}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
               <button
                 type="button"
                 onClick={() => navigateYear("next")}
-                className="p-1 hover:bg-gray-100 rounded transition-colors"
+                className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
                 <ChevronLeft className="w-4 h-4" />
               </button>
@@ -330,7 +330,7 @@ export default function DatePicker({
           )}
 
           {/* Quick Actions */}
-          <div className="flex justify-between pt-4 border-t border-gray-200">
+          <div className="flex justify-between pt-2 border-t border-gray-300">
             <button
                 type="button"
               onClick={() => {
@@ -342,7 +342,7 @@ export default function DatePicker({
                   setIsOpen(false)
                 }
               }}
-              className="text-sm text-primary hover:text-primary/80 transition-colors"
+              className="text-sm cursor-pointer text-primary hover:text-primary/80 transition-colors"
             >
               اليوم
             </button>
@@ -353,7 +353,7 @@ export default function DatePicker({
                 onChange?.(null)
                 setIsOpen(false)
               }}
-              className="text-sm text-gray-500 hover:text-gray-700 transition-colors"
+              className="text-sm cursor-pointer text-gray-500 hover:text-gray-700 transition-colors"
             >
               مسح
             </button>

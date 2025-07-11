@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { useFieldArray, type Control } from "react-hook-form"
+import { useFieldArray } from "react-hook-form"
 import { Plus, Trash2, GripVertical } from "lucide-react"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
 import { Input } from "../../components/ui/input"
 import Textarea from "../../components/ui/textarea"
-import { PrivacyPolicyFormData } from "./privacy-policy-schema"
+// import { PrivacyPolicyFormData } from "./privacy-policy-schema"
 
 
 interface SectionFormProps {
-  control: Control<PrivacyPolicyFormData>
+//   control: Control<PrivacyPolicyFormData>
+  control: any
   sectionIndex: number
   onRemove: () => void
   errors?: any
@@ -24,8 +25,8 @@ export default function SectionForm({ control, sectionIndex, onRemove, errors, c
     remove: removePoint,
   } = useFieldArray({
     control,
-    // name: `sections.${sectionIndex}.points`,
-    name: `sections`,
+    name: `sections.${sectionIndex}.points`,
+    // name: `sections`,
   })
 
   const addPoint = () => {

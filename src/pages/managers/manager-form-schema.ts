@@ -11,17 +11,14 @@ export const managerFormSchema = z.object({
     .max(50, "يجب أن يكون اسم المستخدم أقل من 50 حرف")
     .regex(/^[a-zA-Z0-9_]+$/, "يجب أن يحتوي اسم المستخدم على أحرف وأرقام وشرطة سفلية فقط"),
 
-  role: z
-    .enum(["admin", "super_admin"], {
-      required_error: "يرجى اختيار دور المدير",
-    }),
+
   password: z
     .string()
     .min(8, "يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل")
     .optional(),
   permissions: z
     .array(z.string())
-    .min(1, "يجب اختيار صلاحية واحدة على الأقل"),
+    .min(1, "يجب اختيار صلاحية واحدة على الأقل").optional(),
 })
 
 export const managerPermissionsSchema = z.object({

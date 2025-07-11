@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Music, Globe, Lock, Edit, Trash2, Clock, Users } from "lucide-react"
+import { Plus, Music, Globe, Lock, Edit, Trash2, Clock } from "lucide-react"
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
@@ -12,6 +12,7 @@ import CreatePlaylistDialog from "./create-playlist-dialog"
 import DeletePlaylistDialog from "./delete-playlist-dialog"
 import UpdatePlaylistDialog from "./update-playlist-dialog"
 import Tooltip from "../../components/ui/tooltip"
+import { formatDate } from "../../lib/date"
 
 
 export default function PlaylistsPage() {
@@ -142,41 +143,31 @@ export default function PlaylistsPage() {
         </div>
       ),
     },
-    {
-      key: "created_by",
-      title: "المنشئ",
-      render: (value: string) => (
-        <div className="flex items-center gap-2">
-          <Users className="w-4 h-4 text-gray-400" />
-          <span className="text-sm text-gray-600">{value}</span>
-        </div>
-      ),
-    },
-    {
-      key: "is_public",
-      title: "النوع",
-      width: "100px",
-      render: (value: boolean) => (
-        <div className="flex items-center gap-2">
-          {value ? (
-            <>
-              <Globe className="w-4 h-4 text-green-600" />
-              <span className="text-green-600 text-sm">عامة</span>
-            </>
-          ) : (
-            <>
-              <Lock className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-400 text-sm">خاصة</span>
-            </>
-          )}
-        </div>
-      ),
-    },
+    // {
+    //   key: "is_public",
+    //   title: "النوع",
+    //   width: "100px",
+    //   render: (value: boolean) => (
+    //     <div className="flex items-center gap-2">
+    //       {value ? (
+    //         <>
+    //           <Globe className="w-4 h-4 text-green-600" />
+    //           <span className="text-green-600 text-sm">عامة</span>
+    //         </>
+    //       ) : (
+    //         <>
+    //           <Lock className="w-4 h-4 text-gray-400" />
+    //           <span className="text-gray-400 text-sm">خاصة</span>
+    //         </>
+    //       )}
+    //     </div>
+    //   ),
+    // },
     {
       key: "created_at",
       title: "تاريخ الإنشاء",
       sortable: true,
-      render: (value: string) => new Date(value).toLocaleDateString("ar-SA"),
+      render: (value: string) => formatDate(value),
     },
     {
       key: "actions",
@@ -245,7 +236,9 @@ export default function PlaylistsPage() {
 
         <Card>
           <div className="flex items-center gap-3">
-
+          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+              <Music className="w-5 h-5 text-white" />
+            </div>
             <div>
               <p className="text-xs text-gray-600">إجمالي الأغاني</p>
               <p className="text-lg font-bold text-primary">{stats.totalSongs}</p>

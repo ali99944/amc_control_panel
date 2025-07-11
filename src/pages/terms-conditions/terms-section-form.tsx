@@ -1,16 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
-import { useFieldArray, type Control } from "react-hook-form"
+import { useFieldArray } from "react-hook-form"
 import { Plus, Trash2, GripVertical } from "lucide-react"
 
-import type { TermsConditionsFormData } from "./terms-conditions-form-schema"
+// import type { TermsConditionsFormData } from "./terms-conditions-form-schema"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
 import { Input } from "../../components/ui/input"
 import Textarea from "../../components/ui/textarea"
 
 interface TermsSectionFormProps {
-  control: Control<TermsConditionsFormData>
+//   control: Control<TermsConditionsFormData>
+  control: any
   sectionIndex: number
   onRemove: () => void
   errors?: any
@@ -30,8 +31,7 @@ export default function TermsSectionForm({
     remove: removePoint,
   } = useFieldArray({
     control,
-    // name: `sections.${sectionIndex}.points`,
-    name: `sections`,
+    name: `sections.${sectionIndex}.points` as const,
   })
 
   const addPoint = () => {

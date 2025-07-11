@@ -2,28 +2,31 @@
 
 import { 
   Music, Users, PlayCircle, Home, 
-  Disc,
+  // Disc,
   Headphones, BarChart2,
   User, 
 } from "lucide-react"
 import Card from "../../components/ui/card"
 import Toolbar from "../../components/ui/toolbar"
-import Chart from "../../components/ui/chart"
+// import Chart from "../../components/ui/chart"
 import { useSongs } from "../../hooks/use-songs"
 import { useArtists } from "../../hooks/use-artists"
 import { usePlaylists } from "../../hooks/use-playlists"
-import { usePlatformStats, useChartData } from "../../hooks/use-statistics"
+import { usePlatformStats } from "../../hooks/use-statistics"
 import { ScrollArea } from "../../components/ui/scroll-area"
 import EmptyState from "../../components/empty_state"
+import { useGenres } from "../../hooks/use-genres"
+import { getStorageFile } from "../../lib/storage"
 
 export default function Dashboard() {
   // Fetch data
   const { data: songs } = useSongs()
   const { data: artists } = useArtists()
+  const { data: genres } = useGenres()
   
   const { data: playlists } = usePlaylists()
   const { data: platformStats } = usePlatformStats()
-  const { data: engagementChart } = useChartData('engagement', '7d')
+  // const { data: engagementChart } = useChartData('engagement', '7d')
   
   // Format numbers
   const formatNumber = (num: number) => {
@@ -84,7 +87,7 @@ export default function Dashboard() {
               <div>
                 <p className="text-sm text-gray-600">قوائم التشغيل</p>
                 <p className="text-2xl font-bold text-primary">
-                  {formatNumber(playlists?.length || 890)}
+                  {playlists?.length}
                 </p>
               </div>
             </div>
@@ -96,9 +99,9 @@ export default function Dashboard() {
                 <Headphones className="w-6 h-6 text-white" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">مرات التشغيل</p>
+                <p className="text-sm text-gray-600">الانواع</p>
                 <p className="text-2xl font-bold text-primary">
-                  {formatNumber(platformStats?.engagement?.total_plays || 12345)}
+                  {genres?.length}
                 </p>
               </div>
             </div>
@@ -106,7 +109,7 @@ export default function Dashboard() {
         </div>
 
         {/* Engagement Chart */}
-        {engagementChart && (
+        {/* {engagementChart && (
           <Card>
             <div className="mb-4">
               <h3 className="text-lg font-bold text-primary">نشاط الاستماع (آخر 7 أيام)</h3>
@@ -114,10 +117,10 @@ export default function Dashboard() {
             </div>
             <Chart data={engagementChart} type="area" height={250} />
           </Card>
-        )}
+        )} */}
 
         {/* Content Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <Card>
             <h3 className="text-lg font-bold text-primary mb-4">الأغاني الأكثر تشغيلاً</h3>
             <ScrollArea maxHeight={320}>
@@ -129,7 +132,7 @@ export default function Dashboard() {
                   </div>
                   <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
                     {song?.cover_image ? (
-                      <img src={song.cover_image} alt={song.title} className="w-full h-full object-cover" />
+                      <img src={getStorageFile(song.cover_image)!} alt={song.title} className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center">
                         <Music className="w-5 h-5 text-gray-400" />
@@ -143,36 +146,20 @@ export default function Dashboard() {
                   <div className="text-sm text-gray-500">{formatNumber(song?.plays_count || 1234)} تشغيل</div>
                 </div>
               ))}
+
+              {
+                songs?.length == 0 && (
+                  <EmptyState
+                    message="لا توجد اغاني"
+                    icon={Music}
+                  />
+                )
+              }
             </div>
             </ScrollArea>
           </Card>
 
           <Card>
-            <h3 className="text-lg font-bold text-primary mb-4">النشاط الأخير</h3>
-            <ScrollArea height={320}>
-            <div className="space-y-3">
-              {[
-                "تم إضافة أغنية جديدة",
-                "انضم مستخدم جديد",
-                "تم إنشاء قائمة تشغيل",
-                "تم تحديث معلومات فنان",
-                "تم حذف أغنية",
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 border-b border-gray-100 last:border-0">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-sm">{activity}</p>
-                    <p className="text-xs text-gray-500">منذ {index + 1} دقائق</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-            </ScrollArea>
-          </Card>
-        </div>
-
-        {/* Featured Artists */}
-        <Card>
           <h3 className="text-lg font-bold text-primary mb-4">الفنانين المميزين</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {(artists?.filter(a => a.is_featured)?.slice(0, 5) || Array(5).fill(null)).map((artist, index) => (
@@ -203,8 +190,34 @@ export default function Dashboard() {
             }
         </Card>
 
+          {/* <Card>
+            <h3 className="text-lg font-bold text-primary mb-4">النشاط الأخير</h3>
+            <ScrollArea height={320}>
+            <div className="space-y-3">
+              {[
+                "تم إضافة أغنية جديدة",
+                "انضم مستخدم جديد",
+                "تم إنشاء قائمة تشغيل",
+                "تم تحديث معلومات فنان",
+                "تم حذف أغنية",
+              ].map((activity, index) => (
+                <div key={index} className="flex items-center gap-3 p-3 border-b border-gray-100 last:border-0">
+                  <div className="w-2 h-2 bg-primary rounded-full"></div>
+                  <div className="flex-1">
+                    <p className="text-sm">{activity}</p>
+                    <p className="text-xs text-gray-500">منذ {index + 1} دقائق</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            </ScrollArea>
+          </Card> */}
+        </div>
+
+        
+
         {/* Additional Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 
 
           {/* Engagement Stats */}
@@ -216,21 +229,21 @@ export default function Dashboard() {
             <div className="space-y-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">ساعات الاستماع</span>
-                <span className="font-bold">{formatNumber(platformStats?.engagement?.total_listening_hours || 45000)} ساعة</span>
+                <span className="font-bold">{formatNumber(platformStats?.engagement?.total_listening_hours || 0)} ساعة</span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">متوسط مدة الجلسة</span>
-                <span className="font-bold">{platformStats?.engagement?.average_session_duration || 24} دقيقة</span>
+                <span className="font-bold">{platformStats?.engagement?.average_session_duration || 0} دقيقة</span>
               </div>
-              <div className="flex justify-between items-center">
+              {/* <div className="flex justify-between items-center">
                 <span className="text-sm text-gray-600">المستخدمين النشطين يومياً</span>
                 <span className="font-bold">{formatNumber(platformStats?.engagement?.daily_active_users || 2300)}</span>
-              </div>
+              </div> */}
             </div>
           </Card>
 
           {/* Content Stats */}
-          <Card>
+          {/* <Card>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-bold text-primary">المحتوى</h3>
               <Disc className="w-5 h-5 text-primary" />
@@ -249,7 +262,7 @@ export default function Dashboard() {
                 <span className="font-bold">{formatNumber(platformStats?.content?.total_genres || 24)}</span>
               </div>
             </div>
-          </Card>
+          </Card> */}
         </div>
       </div>
   )

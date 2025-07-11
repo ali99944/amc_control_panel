@@ -112,7 +112,7 @@ export default function TermsConditionsPage() {
       </div>
 
       {/* Terms and Conditions Form */}
-      <div className="bg-gray-50 p-6 rounded-lg">
+      <div className="p-4 rounded-lg">
         <TermsConditionsForm initialData={termsConditions} onSubmit={handleSubmit} isLoading={isPending} />
       </div>
     </div>

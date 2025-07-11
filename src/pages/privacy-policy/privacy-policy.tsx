@@ -113,7 +113,7 @@ export default function PrivacyPolicyPage() {
       </div>
 
       {/* Privacy Policy Form */}
-      <div className="bg-gray-50 p-6 rounded-lg">
+      <div className=" p-4 rounded-lg">
         <PrivacyPolicyForm initialData={privacyPolicy} onSubmit={handleSubmit} isLoading={isPending} />
       </div>
     </div>

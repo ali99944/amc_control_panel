@@ -7,7 +7,7 @@ export const reportFormSchema = z.object({
     .min(3, "عنوان التقرير يجب أن يكون أكثر من 3 أحرف")
     .max(100, "عنوان التقرير يجب أن يكون أقل من 100 حرف"),
   description: z.string().max(500, "الوصف يجب أن يكون أقل من 500 حرف").optional().or(z.literal("")),
-  type: z.enum(["users", "content", "engagement", "revenue", "custom"], {
+  type: z.enum(["user_report", "content_report", "engagement_report"], {
     required_error: "نوع التقرير مطلوب",
   }),
   date_range: z.object({
@@ -20,11 +20,6 @@ export const reportFormSchema = z.object({
     genres: z.array(z.string()).optional(),
     artists: z.array(z.string()).optional(),
   }),
-  metrics: z.array(z.string()).min(1, "يجب اختيار مؤشر واحد على الأقل"),
-  format: z.enum(["pdf", "excel", "csv"], {
-    required_error: "صيغة التقرير مطلوبة",
-  }),
-  include_charts: z.boolean(),
 })
 
 export type ReportFormData = z.infer<typeof reportFormSchema>

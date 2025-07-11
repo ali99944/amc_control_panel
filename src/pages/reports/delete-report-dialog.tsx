@@ -11,14 +11,14 @@ interface DeleteReportDialogProps {
 }
 
 export default function DeleteReportDialog({ isOpen, onClose, report, onSuccess }: DeleteReportDialogProps) {
-  const { mutate: deleteReport, isPending } = useDeleteReport(() => {
+  const { mutate: deleteReport, isPending } = useDeleteReport(report?.id, () => {
     onClose()
     onSuccess?.()
   })
 
   const handleConfirm = () => {
     if (!report) return
-    deleteReport({ id: report.id })
+    deleteReport({})
   }
 
   if (!report) return null
@@ -29,7 +29,7 @@ export default function DeleteReportDialog({ isOpen, onClose, report, onSuccess 
       onClose={onClose}
       onConfirm={handleConfirm}
       title="حذف التقرير"
-      message={`هل أنت متأكد من حذف التقرير "${report.title}"؟ هذا الإجراء لا يمكن التراجع عنه.`}
+      message={`هل أنت متأكد من حذف التقرير "${report.report_name}"؟ هذا الإجراء لا يمكن التراجع عنه.`}
       confirmText="حذف التقرير"
       loading={isPending}
     />

@@ -1,11 +1,11 @@
-import Permission from "./permission"
+import { ManagerPermission } from "./permission"
 
 export interface Manager {
   id: number
   name: string
   username: string
   role: 'admin' | 'super_admin'
-  permissions: Array<Permission>
+  manager_permissions: ManagerPermission[]
   is_active: boolean
   created_at: string
   updated_at: string | null
@@ -16,7 +16,7 @@ export interface Manager {
 export interface CreateManagerData {
   name: string
   username: string
-  role: 'admin' | 'super_admin'
+  // role: 'admin' | 'super_admin'
   password: string
   permissions: string[]
 }
@@ -24,7 +24,7 @@ export interface CreateManagerData {
 export interface UpdateManagerData {
   name: string
   username: string
-  role: 'admin' | 'super_admin'
+  // role: 'admin' | 'super_admin'
   permissions: string[]
 }
 

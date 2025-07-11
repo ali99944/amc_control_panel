@@ -23,18 +23,25 @@ export default function CreateSongDialog({ isOpen, onClose, onSuccess }: CreateS
   })
 
   const handleSubmit = (data: SongFormData & { cover_image?: File; audio_file?: File }) => {
-    const formData = new FormData()
+    try {
+      console.log('creating song');
+      
+      const formData = new FormData()
     formData.append("title", data.title)
     if(data.artist_id) formData.append("artist_id", data.artist_id.toString())
       if (data.genre_id) formData.append("genre_id", data.genre_id.toString())
     formData.append("release_date", data.release_date)
-    formData.append("explicit", data.explicit.toString())
+    // formData.append("explicit", data.explicit.toString())
     if (data.lyrics) formData.append("lyrics", data.lyrics)
     if (data.description) formData.append("description", data.description)
-    if (data.cover_image) formData.append("cover_image", data.cover_image)
-    if (data.audio_file) formData.append("audio_file", data.audio_file)
+    if (data.cover_image) formData.append("image", data.cover_image)
+    if (data.audio_file) formData.append("audio", data.audio_file)
 
     createSong(formData)
+    } catch (error) {
+      console.log(error);
+      
+    }
   }
 
   return (

@@ -9,6 +9,7 @@ interface SelectOption {
 }
 
 interface SelectProps {
+  id?: string
   options: SelectOption[]
   value?: string
   onChange: (value: string) => void
@@ -18,7 +19,7 @@ interface SelectProps {
   disabled?: boolean
 }
 
-export default function Select({ options, value, onChange, placeholder = "اختر...", className = "", size = "sm", disabled = false }: SelectProps) {
+export default function Select({ id, options, value, onChange, placeholder = "اختر...", className = "", size = "sm", disabled = false }: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const selectRef = useRef<HTMLDivElement>(null)
 
@@ -44,6 +45,7 @@ export default function Select({ options, value, onChange, placeholder = "اخت
   return (
     <div className="relative" ref={selectRef}>
       <button
+        id={id}
         type="button"
         onClick={disabled ? undefined : () => setIsOpen(!isOpen)}
         disabled={disabled}
@@ -56,7 +58,7 @@ export default function Select({ options, value, onChange, placeholder = "اخت
       </button>
 
       {isOpen && (
-        <div className="absolute border border-gray-300 top-full mt-2 w-full bg-white rounded-lg z-50 max-h-60 overflow-y-auto custom-scroll">
+        <div className="absolute border shadow border-gray-300 top-full mt-2 w-full bg-white rounded-lg z-50 max-h-60 overflow-y-auto custom-scroll">
           {options.map((option) => (
             <button
               key={option.value}
@@ -76,4 +78,3 @@ export default function Select({ options, value, onChange, placeholder = "اخت
     </div>
   )
 }
-

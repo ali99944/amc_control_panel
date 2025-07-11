@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Users, Music, ListMusic, Settings, BarChart3, Menu, X, Bell, User, LogOut, Palette, Mic, Shield, BellRing, TagsIcon, ShieldAlertIcon } from 'lucide-react'
+import { LayoutDashboard, Users, Music, ListMusic, Settings, BarChart3, Menu, X, User, LogOut, Palette, Mic, Shield, TagsIcon, ShieldAlertIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import Dropdown from "../ui/dropdown"
 import Avatar from "../ui/avatar"
@@ -18,7 +18,7 @@ const navigation = [
   { name: "إدارة الأنواع", href: "/genres", icon: Palette },
   { name: "ادارة الكلمات المفتاحية", href: "tags", icon: TagsIcon },
   { name: "قوائم التشغيل", href: "/playlists", icon: ListMusic },
-  { name: "الإشعارات", href: "/notifications", icon: BellRing },
+  // { name: "الإشعارات", href: "/notifications", icon: BellRing },
   { name: "الإحصائيات", href: "/analytics", icon: BarChart3 },
   { name: "التقارير", href: "/reports", icon: BarChart3 },
   { name: "الإعدادات", href: "/settings", icon: Settings },
@@ -114,7 +114,7 @@ export default function ControlPanelLayout() {
               </div>
 
               <div className="flex items-center gap-x-4 ">
-                <Dropdown
+                {/* <Dropdown
                   trigger={
                     <button className="relative p-2 text-gray-600 hover:text-primary hover:bg-gray-100 rounded-lg">
                       <Bell size={20} />
@@ -128,10 +128,9 @@ export default function ControlPanelLayout() {
                       </div>
                       
                       <div className="divide-y divide-gray-100">
-                        {/* Notification Item */}
                         <div className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
                           <div className="flex items-start">
-                            <div className="flex-shrink-0 mr-3 mt-1">
+                            <div className="flex-shrink-0 ml-3 mt-1">
                               <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                 <Music size={14} className="text-primary" />
                               </div>
@@ -144,10 +143,9 @@ export default function ControlPanelLayout() {
                           </div>
                         </div>
                         
-                        {/* Notification Item */}
                         <div className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
                           <div className="flex items-start">
-                            <div className="flex-shrink-0 mr-3 mt-1">
+                            <div className="flex-shrink-0 ml-3 mt-1">
                               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                 <Users size={14} className="text-green-600" />
                               </div>
@@ -160,10 +158,9 @@ export default function ControlPanelLayout() {
                           </div>
                         </div>
                         
-                        {/* Notification Item */}
                         <div className="px-4 py-3 hover:bg-gray-50 transition-colors cursor-pointer">
                           <div className="flex items-start">
-                            <div className="flex-shrink-0 mr-3 mt-1">
+                            <div className="flex-shrink-0 ml-3 mt-1">
                               <div className="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                                 <BarChart3 size={14} className="text-yellow-600" />
                               </div>
@@ -187,7 +184,7 @@ export default function ControlPanelLayout() {
                   position='bottom-left'
                   closeOnClick={false}
                   contentClassName="p-0"
-                />
+                /> */}
                 
                 <Dropdown
                   trigger={
@@ -205,7 +202,7 @@ export default function ControlPanelLayout() {
                         <p className="text-xs text-gray-500">admin@example.com</p>
                       </div>
                       
-                      <div className="py-2">
+                      {/* <div className="py-2">
                         <button className="flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                           <User size={16} className="ml-2 text-gray-500" />
                           الملف الشخصي
@@ -214,12 +211,12 @@ export default function ControlPanelLayout() {
                           <Settings size={16} className="ml-2 text-gray-500" />
                           الإعدادات
                         </button>
-                      </div>
+                      </div> */}
                       
                       <div className="py-2 border-t border-gray-100">
                         <button 
                           onClick={handleLogout}
-                          className="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                          className="flex w-full items-center px-4 py-2 text-sm text-red-600 cursor-pointer hover:text-red-800 transition-colors duration-300">
                           <LogOut size={16} className="ml-2" />
                           تسجيل الخروج
                         </button>

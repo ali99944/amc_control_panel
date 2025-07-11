@@ -3,6 +3,7 @@
 import { useGetQuery, useMutationAction } from "./queries-actions"
 import { useNotifications } from "./use-notification"
 import type { Report, CreateReportData } from "../types/reports"
+import { getStorageFile } from "../lib/storage"
 
 // Hook for fetching all reports
 export function useReports() {
@@ -30,12 +31,12 @@ export function useCreateReport(onSuccess?: () => void) {
 }
 
 // Hook for deleting a report
-export function useDeleteReport(onSuccess?: () => void) {
+export function useDeleteReport(report_id: number | undefined, onSuccess?: () => void) {
   const { notify } = useNotifications()
 
   return useMutationAction({
     method: "delete",
-    url: "reports",
+    url: `reports/${report_id}`,
     onSuccessCallback: () => {
       notify.success("تم حذف التقرير بنجاح")
       onSuccess?.()
@@ -56,8 +57,8 @@ export function useDownloadReport() {
     onSuccessCallback: (data: Report) => {
       // Create download link
       const link = document.createElement('a')
-      link.href = data.download_url
-      link.download = data.filename
+      link.href = getStorageFile(data.generated_report_url) ?? ''
+      link.download = data.report_name
       link.click()
       notify.success("تم تحميل التقرير بنجاح")
     },

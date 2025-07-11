@@ -19,16 +19,11 @@ export default function CreateReportDialog({ isOpen, onClose, onSuccess }: Creat
 
   const handleSubmit = (data: ReportFormData) => {
     createReport({
-      title: data.title,
+      report_name: data.title,
       description: data.description,
-      type: data.type,
-      parameters: {
-        date_range: data.date_range,
-        filters: data.filters,
-        metrics: data.metrics,
-        format: data.format,
-        include_charts: data.include_charts,
-      },
+      report_type: data.type,
+      start_date: data.date_range.start_date,
+      end_date: data.date_range.end_date,
     })
   }
 

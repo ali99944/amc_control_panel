@@ -4,7 +4,7 @@ import { useGetQuery, useMutationAction } from "./queries-actions"
 import type { Manager, CreateManagerData, UpdateManagerData, ManagerPermissionsData } from "../types/manager"
 import { useNotifications } from "./use-notification"
 import { getApiError } from "../lib/error_handler"
-import Permission from "../types/permission"
+import { Permission } from "../types/permission"
 
 export function useManagers() {
     const { notify } = useNotifications()
@@ -64,7 +64,7 @@ export function useManagers() {
     })
 
     const updateManagerPermissionsMutation = useMutationAction({
-        method: "put",
+        method: "post",
         url: "managers/permissions",
         onSuccessCallback: () => {
             notify.success("تم تحديث الصلاحيات بنجاح")
@@ -91,7 +91,9 @@ export function useManagers() {
 
     const updateManagerPermissions = (id: number, data: ManagerPermissionsData) => {
         updateManagerPermissionsMutation.mutate({ id, ...data })
-    }
+      }
+
+    
 
     return {
         managers: managers || [],

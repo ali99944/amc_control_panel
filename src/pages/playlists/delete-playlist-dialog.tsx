@@ -11,7 +11,7 @@ interface DeletePlaylistDialogProps {
 }
 
 export default function DeletePlaylistDialog({ isOpen, onClose, playlist, onSuccess }: DeletePlaylistDialogProps) {
-  const { mutate: deletePlaylist, isPending } = useDeletePlaylist(() => {
+  const { mutate: deletePlaylist, isPending } = useDeletePlaylist(playlist?.id, () => {
     onClose()
     onSuccess?.()
   })

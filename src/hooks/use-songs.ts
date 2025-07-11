@@ -55,12 +55,12 @@ export function useUpdateSong(song_id: number | undefined, onSuccess?: () => voi
 }
 
 // Hook for deleting a song
-export function useDeleteSong(onSuccess?: () => void) {
+export function useDeleteSong(song_id: number | undefined, onSuccess?: () => void) {
   const { notify } = useNotifications()
 
   return useMutationAction({
     method: "delete",
-    url: "songs",
+    url: `songs/${song_id}`,
     onSuccessCallback: () => {
       notify.success("تم حذف الأغنية بنجاح")
       onSuccess?.()

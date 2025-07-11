@@ -21,8 +21,7 @@ export function UpdateManagerDialog({ manager }: UpdateManagerDialogProps) {
     updateManager(manager?.id, {
       name: data.name,
       username: data.username,
-      role: data.role,
-      permissions: data.permissions,
+      permissions: data.permissions ?? [],
     })
     setIsOpen(false)
   }

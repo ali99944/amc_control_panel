@@ -12,7 +12,7 @@ interface DeleteSongDialogProps {
 }
 
 export default function DeleteSongDialog({ isOpen, onClose, song, onSuccess }: DeleteSongDialogProps) {
-  const { mutate: deleteSong, isPending } = useDeleteSong(() => {
+  const { mutate: deleteSong, isPending } = useDeleteSong(song?.id, () => {
     onClose()
     onSuccess?.()
   })

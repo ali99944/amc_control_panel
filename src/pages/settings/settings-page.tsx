@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useContext, useEffect } from "react"
-import { Save, Settings, Music, Users, Shield } from 'lucide-react'
+import { Save, Settings, Users, Shield } from 'lucide-react'
 import { useGetQuery, useMutationAction } from "../../hooks/queries-actions"
 import SkeletonLoader from "../../components/skeleton_page_loader"
 import { NotificationContext } from "../../providers/notification-provider"
@@ -12,7 +12,7 @@ import Switch from "../../components/ui/switch"
 import { AppSettings } from "../../types"
 import Toolbar from "../../components/ui/toolbar"
 import { getApiError } from "../../lib/error_handler"
-import Select from "../../components/ui/select"
+import Textarea from "../../components/ui/textarea"
 
 
 
@@ -34,40 +34,21 @@ export default function SettingsPage() {
         app: {
           name: "مركز علي الإعلامي",
           description: "منصة الموسيقى العربية الرائدة",
-          url: "https://amc.alitarek.com",
           logo: "/logo.png",
           maintenance_mode: false,
-          max_users: 10000,
           support_email: "support@amc.alitarek.com",
-          default_language: "ar",
+          copyright: '',
+          version: ''
         },
-        audio: {
-          default_quality: "320kbps" as const,
-          max_upload_size_mb: 50,
-          allowed_formats: ["mp3", "flac", "wav", "m4a"],
-          enable_crossfade: true,
-          crossfade_duration: 3,
-          buffer_size_mb: 5,
-          max_concurrent_streams: 3,
-          enable_offline_downloads: true,
-        },
-        social: {
-          enable_user_profiles: true,
-          enable_playlists_sharing: true,
-          enable_social_features: true,
-          enable_comments: true,
-          enable_following: true,
+        users: {
           max_playlist_size: 1000,
           max_playlists_per_user: 100,
         },
         security: {
           require_email_verification: true,
-          enable_two_factor: false,
           session_timeout_hours: 24,
           max_login_attempts: 5,
-          enable_content_filtering: true,
           enable_explicit_content: false,
-          data_retention_days: 365,
         },
       },
     },
@@ -115,7 +96,6 @@ export default function SettingsPage() {
 
   const tabs = [
     { id: "app", name: "التطبيق", icon: Settings },
-    { id: "audio", name: "الصوت والبث", icon: Music },
     { id: "social", name: "المستخدمين", icon: Users },
     { id: "security", name: "الأمان", icon: Shield },
   ]
@@ -187,24 +167,6 @@ export default function SettingsPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">اللغة الافتراضية</label>
-                  <Select
-                    value={formData.app.default_language}
-                    onChange={(e) => handleInputChange("app", "default_language", e)}
-                    options={[
-                      {
-                        label: "العربية",
-                        value: "ar"
-                      },
-                      
-                      {
-                        label: "English",
-                        value: "en"
-                      }
-                    ]}
-                  />
-                </div>
-                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">شعار التطبيق</label>
                   <Input
                     type="text"
@@ -216,12 +178,19 @@ export default function SettingsPage() {
               </div>
 
               <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">حقوق الملكية</label>
+                <Input
+                  value={formData.app.copyright}
+                  onChange={(e) => handleInputChange("app", "copyrights", e.target.value)}
+                />
+              </div>
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">وصف التطبيق</label>
-                <textarea
+                <Textarea
                   value={formData.app.description}
                   onChange={(e) => handleInputChange("app", "description", e.target.value)}
                   rows={6}
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                 />
               </div>
 
@@ -244,56 +213,6 @@ export default function SettingsPage() {
             </div>
           )}
 
-          {/* Audio & Streaming Settings */}
-          {activeTab === "audio" && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">إعدادات الصوت والبث</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">جودة التشغيل الافتراضية</label>
-                  <Select
-                    value={formData?.audio?.default_quality}
-                    onChange={(e) => handleInputChange("audio", "default_quality", e)}
-                    options={[
-                      {
-                        value: "128kbps",
-                        label: "128 kbps"
-                      },
-                      {
-                        value: "320kbps",
-                        label: "320 kbps"
-                      },
-                      {
-                        value: "lossless",
-                        label: "Lossless"
-                      }
-                    ]}
-                  />
-                </div>
-
-
-
-              </div>
-
-              <div className="space-y-4">
-
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">السماح بالتحميل للاستماع بدون إنترنت</h3>
-                    <p className="text-sm text-gray-600">تمكين المستخدمين من تحميل الأغاني</p>
-                  </div>
-                  <Switch
-                      checked={formData?.audio?.enable_offline_downloads}
-                      onChange={(e) => handleInputChange("audio", "enable_offline_downloads", e)}
-                      // className="sr-only peer"
-                    />
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Social Settings */}
           {activeTab === "social" && (
             <div className="space-y-6">
@@ -304,8 +223,8 @@ export default function SettingsPage() {
                   <label className="block text-sm font-medium text-gray-700 mb-2">الحد الأقصى لحجم قائمة التشغيل</label>
                   <Input
                     type="number"
-                    value={formData.social.max_playlist_size}
-                    onChange={(e) => handleInputChange("social", "max_playlist_size", Number(e.target.value))}
+                    value={formData.users.max_playlist_size}
+                    onChange={(e) => handleInputChange("users", "max_playlist_size", Number(e.target.value))}
                   />
                 </div>
                 <div>
@@ -314,8 +233,8 @@ export default function SettingsPage() {
                   </label>
                   <Input
                     type="number"
-                    value={formData.social.max_playlists_per_user}
-                    onChange={(e) => handleInputChange("social", "max_playlists_per_user", Number(e.target.value))}
+                    value={formData.users.max_playlists_per_user}
+                    onChange={(e) => handleInputChange("users", "max_playlists_per_user", Number(e.target.value))}
                   />
                 </div>
               </div>
@@ -323,49 +242,8 @@ export default function SettingsPage() {
               <div className="space-y-4">
 
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">مشاركة قوائم التشغيل</h3>
-                    <p className="text-sm text-gray-600">السماح بمشاركة قوائم التشغيل مع المستخدمين الآخرين</p>
-                  </div>
-                  <Switch
-                      checked={formData.social.enable_playlists_sharing}
-                      onChange={(e) => handleInputChange("social", "enable_playlists_sharing", e)}
-                    />
-                </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">الميزات الاجتماعية</h3>
-                    <p className="text-sm text-gray-600">تفعيل الإعجابات والمشاركة والتفاعل</p>
-                  </div>
-                  <Switch
-                      checked={formData.social.enable_social_features}
-                      onChange={(e) => handleInputChange("social", "enable_social_features", e)}
-                    />
-                </div>
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">التعليقات</h3>
-                    <p className="text-sm text-gray-600">السماح بالتعليق على الأغاني وقوائم التشغيل</p>
-                  </div>
-                  <Switch
-                      checked={formData.social.enable_comments}
-                      onChange={(e) => handleInputChange("social", "enable_comments", e)}
-                    />
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">متابعة المستخدمين</h3>
-                    <p className="text-sm text-gray-600">السماح بمتابعة المستخدمين والفنانين</p>
-                  </div>
-                  <Switch
-                      checked={formData.social.enable_following}
-                      onChange={(e) => handleInputChange("social", "enable_following", e)}
-                    />
-                </div>
               </div>
             </div>
           )}
@@ -392,14 +270,6 @@ export default function SettingsPage() {
                     onChange={(e) => handleInputChange("security", "max_login_attempts", Number(e.target.value))}
                   />
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">مدة الاحتفاظ بالبيانات (أيام)</label>
-                  <Input
-                    type="number"
-                    value={formData.security.data_retention_days}
-                    onChange={(e) => handleInputChange("security", "data_retention_days", Number(e.target.value))}
-                  />
-                </div>
               </div>
 
               <div className="space-y-4">
@@ -415,16 +285,7 @@ export default function SettingsPage() {
                 </div>
 
 
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">تفعيل فلترة المحتوى</h3>
-                    <p className="text-sm text-gray-600">فلترة المحتوى غير المناسب تلقائياً</p>
-                  </div>
-                  <Switch
-                      checked={formData.security.enable_content_filtering}
-                      onChange={(e) => handleInputChange("security", "enable_content_filtering", e)}
-                    />
-                </div>
+
 
                 <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>

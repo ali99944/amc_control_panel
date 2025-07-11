@@ -7,7 +7,7 @@ export interface Song {
   artist: Artist
   genre: Genre | null
   cover_image?: string
-  audio: {
+  original_audio: {
     file_url: string
     duration: number
     filesize: number

@@ -36,7 +36,7 @@ export default function Button({
   const variants = {
     primary: "bg-primary hover:bg-primary/90 text-white",
     "primary-inverted": "bg-white hover:bg-white/90 text-primary",
-    secondary: "bg-black hover:bg-black/80 text-white",
+    secondary: "bg-secondary hover:bg-secondary/80 text-white",
     accent: "bg-accent hover:bg-accent/90 text-white",
     outline: "border-2 border-primary text-primary hover:bg-primary hover:text-white",
     ghost: "text-primary hover:bg-primary/10",

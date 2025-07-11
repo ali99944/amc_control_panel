@@ -185,9 +185,11 @@ export default function TagsPage() {
           <div className="text-center py-8">
             <TagIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
             <p className="text-gray-500">لا توجد تاغات</p>
+            <div className="flex justify-center items-center">
             <Button variant="primary" size="sm" className="mt-4" onClick={() => setIsCreateDialogOpen(true)}>
               إنشاء تاغ جديد
             </Button>
+            </div>
           </div>
         }
       />

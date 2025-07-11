@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { TrendingUp, TrendingDown, Users, Music, PlayCircle, DollarSign} from 'lucide-react'
+import { TrendingUp, TrendingDown, Users, Music, PlayCircle} from 'lucide-react'
 import Card from "../components/ui/card"
 import Toolbar from "../components/ui/toolbar"
 import Button from "../components/ui/button"
@@ -12,6 +12,7 @@ import {
   useTopItems,
 } from "../hooks/use-statistics"
 import DatePicker from "../components/ui/date-picker"
+import EmptyState from "../components/empty_state"
 
 export default function StatisticsPage() {
   const [dateRange, setDateRange] = useState({
@@ -25,7 +26,7 @@ export default function StatisticsPage() {
   console.log(platformStats);
   
   const { data: userGrowthChart } = useChartData('user-growth', selectedPeriod)
-  const { data: revenueChart } = useChartData('revenue', selectedPeriod)
+  // const { data: revenueChart } = useChartData('revenue', selectedPeriod)
   const { data: engagementChart } = useChartData('engagement', selectedPeriod)
   const { data: topSongs } = useTopItems('songs', 5)
   const { data: topArtists } = useTopItems('artists', 5)
@@ -43,12 +44,12 @@ export default function StatisticsPage() {
   }
 
   // Format currency
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('ar-SA', {
-      style: 'currency',
-      currency: 'SAR'
-    }).format(amount)
-  }
+  // const formatCurrency = (amount: number) => {
+  //   return new Intl.NumberFormat('ar-SA', {
+  //     style: 'currency',
+  //     currency: 'SAR'
+  //   }).format(amount)
+  // }
 
   // Format percentage
   const formatPercentage = (value: number) => {
@@ -99,87 +100,7 @@ export default function StatisticsPage() {
       </div>
 
       {/* Main Stats Cards */}
-      {platformStats && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Users Stats */}
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">إجمالي المستخدمين</p>
-                <p className="text-2xl font-bold text-primary">{formatNumber(platformStats.users.total)}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  {platformStats.users.growth_rate >= 0 ? (
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className={`text-sm ${platformStats.users.growth_rate >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {formatPercentage(platformStats.users.growth_rate)}
-                  </span>
-                </div>
-              </div>
-              <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-blue-600" />
-              </div>
-            </div>
-          </Card>
-
-          {/* Content Stats */}
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">إجمالي الأغاني</p>
-                <p className="text-2xl font-bold text-primary">{formatNumber(platformStats?.content?.total_songs ?? 0)}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatNumber(platformStats?.content?.total_artists ?? 0)} فنان • {formatNumber(platformStats?.content?.total_playlists ?? 0)} قائمة
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Music className="w-6 h-6 text-purple-600" />
-              </div>
-            </div>
-          </Card>
-
-          {/* Engagement Stats */}
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">إجمالي التشغيلات</p>
-                <p className="text-2xl font-bold text-primary">{formatNumber(platformStats?.engagement?.total_plays ?? 0 )}</p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {formatNumber(platformStats?.engagement?.total_listening_hours ?? 0)} ساعة استماع
-                </p>
-              </div>
-              <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-                <PlayCircle className="w-6 h-6 text-green-600" />
-              </div>
-            </div>
-          </Card>
-
-          {/* Revenue Stats */}
-          <Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">الإيرادات الشهرية</p>
-                <p className="text-2xl font-bold text-primary">{formatCurrency(platformStats?.revenue?.monthly_revenue)}</p>
-                <div className="flex items-center gap-1 mt-1">
-                  {platformStats?.revenue?.revenue_growth >= 0 ? (
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className={`text-sm ${platformStats?.revenue?.revenue_growth >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                    {formatPercentage(platformStats?.revenue?.revenue_growth)}
-                  </span>
-                </div>
-              </div>
-              <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-                <DollarSign className="w-6 h-6 text-yellow-600" />
-              </div>
-            </div>
-          </Card>
-        </div>
-      )}
+      
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -195,7 +116,7 @@ export default function StatisticsPage() {
         )}
 
         {/* Revenue Chart */}
-        {revenueChart && (
+        {/* {revenueChart && (
           <Card>
             <div className="mb-4">
               <h3 className="text-lg font-bold text-primary">الإيرادات</h3>
@@ -203,11 +124,11 @@ export default function StatisticsPage() {
             </div>
             <Chart data={revenueChart} type="bar" height={250} />
           </Card>
-        )}
+        )} */}
 
         {/* Engagement Chart */}
         {engagementChart && (
-          <Card className="lg:col-span-2">
+          <Card className="">
             <div className="mb-4">
               <h3 className="text-lg font-bold text-primary">مؤشرات التفاعل</h3>
               <p className="text-sm text-gray-600">التشغيلات وساعات الاستماع اليومية</p>
@@ -259,6 +180,15 @@ export default function StatisticsPage() {
                 </div>
               ))}
             </div>
+
+            {
+              topSongs.length == 0 && (
+                <EmptyState 
+                  message="لا توجد بيانات"
+                  icon={Music}
+                />
+              )
+            }
           </Card>
         )}
 
@@ -302,6 +232,15 @@ export default function StatisticsPage() {
                 </div>
               ))}
             </div>
+
+            {
+              topArtists.length == 0 && (
+                <EmptyState 
+                  message="لا توجد بيانات"
+                  icon={Music}
+                />
+              )
+            }
           </Card>
         )}
 
@@ -345,6 +284,15 @@ export default function StatisticsPage() {
                 </div>
               ))}
             </div>
+
+            {
+              topPlaylists.length == 0 && (
+                <EmptyState 
+                  message="لا توجد بيانات"
+                  icon={Music}
+                />
+              )
+            }
           </Card>
         )}
       </div>

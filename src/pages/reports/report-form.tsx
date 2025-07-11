@@ -7,7 +7,6 @@ import { reportFormSchema, type ReportFormData } from "./report-form-schema"
 import Button from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
 import Textarea from "../../components/ui/textarea"
-import { Checkbox } from "../../components/ui/checkbox"
 import DatePicker from "../../components/ui/date-picker"
 
 interface ReportFormProps {
@@ -29,13 +28,12 @@ export default function ReportForm({
     control,
     handleSubmit,
     formState: { errors },
-    watch,
   } = useForm<ReportFormData>({
     resolver: zodResolver(reportFormSchema),
     defaultValues: {
       title: "",
       description: "",
-      type: "users",
+      type: "user_report",
       date_range: {
         start_date: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         end_date: new Date().toISOString().split('T')[0],
@@ -46,57 +44,16 @@ export default function ReportForm({
         genres: [],
         artists: [],
       },
-      metrics: [],
-      format: "pdf",
-      include_charts: true,
     },
   })
 
-  const selectedType = watch("type")
 
   const reportTypes = [
-    { value: "users", label: "تقرير المستخدمين", description: "إحصائيات وبيانات المستخدمين" },
-    { value: "content", label: "تقرير المحتوى", description: "إحصائيات الأغاني والفنانين والألبومات" },
-    { value: "engagement", label: "تقرير التفاعل", description: "مؤشرات التشغيل والاستماع" },
+    { value: "user_report", label: "تقرير المستخدمين", description: "إحصائيات وبيانات المستخدمين" },
+    { value: "content_report", label: "تقرير المحتوى", description: "إحصائيات الأغاني والفنانين والألبومات" },
+    { value: "engagement_report", label: "تقرير التفاعل", description: "مؤشرات التشغيل والاستماع" },
   ]
 
-  const getMetricsByType = (type: string) => {
-    switch (type) {
-      case "users":
-        return [
-          { value: "total_users", label: "إجمالي المستخدمين" },
-          { value: "active_users", label: "المستخدمين النشطين" },
-          { value: "new_users", label: "المستخدمين الجدد" },
-          { value: "user_retention", label: "معدل الاحتفاظ بالمستخدمين" },
-          { value: "user_demographics", label: "التركيبة السكانية" },
-        ]
-      case "content":
-        return [
-          { value: "total_songs", label: "إجمالي الأغاني" },
-          { value: "total_artists", label: "إجمالي الفنانين" },
-          { value: "total_playlists", label: "إجمالي قوائم التشغيل" },
-          { value: "content_growth", label: "نمو المحتوى" },
-          { value: "popular_content", label: "المحتوى الأكثر شعبية" },
-        ]
-      case "engagement":
-        return [
-          { value: "total_plays", label: "إجمالي التشغيلات" },
-          { value: "listening_hours", label: "ساعات الاستماع" },
-          { value: "session_duration", label: "مدة الجلسات" },
-          { value: "user_engagement", label: "تفاعل المستخدمين" },
-          { value: "popular_times", label: "أوقات الذروة" },
-        ]
-
-      default:
-        return []
-    }
-  }
-
-  const formatOptions = [
-    { value: "pdf", label: "PDF", description: "ملف PDF قابل للطباعة" },
-    { value: "excel", label: "Excel", description: "جدول بيانات Excel" },
-    { value: "csv", label: "CSV", description: "ملف CSV للبيانات الخام" },
-  ]
 
   const handleFormSubmit = (data: ReportFormData) => {
     onSubmit(data)
@@ -206,75 +163,7 @@ export default function ReportForm({
         </div>
       </div>
 
-      {/* Metrics */}
-      <div className="space-y-4">
-        <h4 className="text-md font-medium text-gray-900">المؤشرات المطلوبة</h4>
-        <Controller
-          name="metrics"
-          control={control}
-          render={({ field }) => (
-            <div className="space-y-2">
-              {getMetricsByType(selectedType).map((metric) => (
-                <label key={metric.value} className="flex items-center gap-x-2">
-                  <Checkbox
-                    value={metric.value}
-                    checked={field.value.includes(metric.value)}
-                    onChange={(e) => {
-                      if (e.target.checked) {
-                        field.onChange([...field.value, metric.value])
-                      } else {
-                        field.onChange(field.value.filter((v) => v !== metric.value))
-                      }
-                    }}
-                  />
-                  <span className="text-sm text-gray-700">{metric.label}</span>
-                </label>
-              ))}
-            </div>
-          )}
-        />
-        {errors.metrics && <p className="text-sm text-red-600">{errors.metrics.message}</p>}
-      </div>
 
-      {/* Format and Options */}
-      <div className="space-y-4">
-        <h4 className="text-md font-medium text-gray-900">صيغة التقرير والخيارات</h4>
-        
-        <Controller
-          name="format"
-          control={control}
-          render={({ field }) => (
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">صيغة الملف</label>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                {formatOptions.map((format) => (
-                  <label
-                    key={format.value}
-                    className={`relative flex cursor-pointer rounded-lg border p-3 focus:outline-none ${
-                      field.value === format.value
-                        ? "border-primary bg-primary/5"
-                        : "border-gray-300 bg-white hover:bg-gray-50"
-                    }`}
-                  >
-                    <input
-                      type="radio"
-                      value={format.value}
-                      checked={field.value === format.value}
-                      onChange={field.onChange}
-                      className="sr-only"
-                    />
-                    <div className="flex flex-1 flex-col">
-                      <span className="block text-sm font-medium text-gray-900">{format.label}</span>
-                      <span className="block text-xs text-gray-500">{format.description}</span>
-                    </div>
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-        />
-
-      </div>
 
       {/* Form Actions */}
       <div className="flex gap-4">

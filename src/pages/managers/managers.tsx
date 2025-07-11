@@ -11,9 +11,9 @@ import { UpdateManagerDialog } from "./update-manager-dialog"
 import Avatar from "../../components/ui/avatar"
 import { formatDate } from "../../lib/date"
 import { useNavigate } from "react-router-dom"
-import Permission from "../../types/permission"
 import { Manager } from "../../types/manager"
 import Toolbar from "../../components/ui/toolbar"
+import { Badge } from "../../components/ui/badge"
 
 
 export default function ManagersPage() {
@@ -72,8 +72,16 @@ export default function ManagersPage() {
     {
       key: "permissions",
       title: "الصلاحيات",
-      render: (manager: Manager) => (
-        <div className="text-sm text-gray-900">{(manager?.permissions ?? []).filter((p: Permission) => p.is_granted).length} صلاحية</div>
+      render: (_: null ,manager: Manager) => (
+        <div className="text-sm text-gray-900">
+          {
+            manager.role == 'super_admin' ? (
+              <Badge>جميع الصلاحيات</Badge>
+            ): (
+              `${(manager?.manager_permissions ?? []).length} صلاحية`
+            )
+          }
+        </div>
       ),
     },
     {
@@ -102,7 +110,7 @@ export default function ManagersPage() {
     {
       key: "last_login",
       title: "آخر تسجيل دخول",
-      render: (manager: Manager) => (
+      render: (_: null, manager: Manager) => (
         <div className="text-sm text-gray-500">
           {manager?.last_login ? new Date(manager?.last_login).toLocaleDateString("ar-SA") : "لم يسجل دخول بعد"}
         </div>
@@ -127,6 +135,7 @@ export default function ManagersPage() {
       ),
     },
   ]
+  
 
   return (
     <div className="space-y-4">

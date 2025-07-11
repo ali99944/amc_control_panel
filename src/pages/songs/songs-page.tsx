@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Music, Play, Heart, Eye, EyeOff, Edit, Trash2, Clock, Calendar } from 'lucide-react'
+import { Plus, Music, Eye, EyeOff, Edit, Trash2, Clock, Calendar } from 'lucide-react'
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
@@ -13,6 +13,7 @@ import UpdateSongDialog from "./update-song-dialog"
 import { useNavigate } from "react-router-dom"
 import { Song } from "../../types/song"
 import { formatDate } from "../../lib/date"
+import { getStorageFile } from "../../lib/storage"
 
 
 export default function SongsPage() {
@@ -31,8 +32,8 @@ export default function SongsPage() {
     total: songs.length,
     active: songs.filter((s) => s.is_active).length,
     explicit: songs.filter((s) => s.explicit).length,
-    totalPlays: songs.reduce((acc, song) => acc + song.plays_count, 0),
-    totalLikes: songs.reduce((acc, song) => acc + song.likes_count, 0),
+    // totalPlays: songs.reduce((acc, song) => acc + song.plays_count, 0),
+    // totalLikes: songs.reduce((acc, song) => acc + song.likes_count, 0),
     withLyrics: songs.filter((s) => s.lyrics && s.lyrics.length > 0).length,
   }
 
@@ -61,22 +62,12 @@ export default function SongsPage() {
   }
 
   // Format duration helper
-  const formatDuration = (seconds: number): string => {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
-  }
+const formatDuration = (seconds: number): string => {
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = (seconds % 60).toFixed(2)
+  return `${minutes}:${remainingSeconds.toString().padStart(2, "0")}`
+}
 
-  // Format number helper
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`
-    }
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`
-    }
-    return num
-  }
 
   // DataTable columns
   const columns: Column<Song>[] = [
@@ -87,7 +78,7 @@ export default function SongsPage() {
       render: (value: string, row: Song) => (
         <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden cursor-pointer" onClick={() => handleViewSong(row)}>
           {value ? (
-            <img src={value || "/placeholder.svg"} alt={row.title} className="w-full h-full object-cover" />
+            <img src={getStorageFile(value) || "/placeholder.svg"} alt={row.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Music className="w-5 h-5 text-gray-400" />
@@ -141,8 +132,8 @@ export default function SongsPage() {
             {/* Duration section */}
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {row.audio?.duration ? (
-                formatDuration(row.audio.duration)
+              {row.original_audio?.duration ? (
+                formatDuration(row.original_audio.duration)
               ) : (
                 <span className="text-gray-400 italic">غير متوفر</span>
               )}
@@ -256,7 +247,7 @@ export default function SongsPage() {
           </div>
         </Card>
 
-        <Card>
+        {/* <Card>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
               <Play className="w-5 h-5 text-white" />
@@ -278,7 +269,7 @@ export default function SongsPage() {
               <p className="text-lg font-bold text-primary">{formatNumber(stats.totalLikes)}</p>
             </div>
           </div>
-        </Card>
+        </Card> */}
 
         <Card>
           <div className="flex items-center gap-3">

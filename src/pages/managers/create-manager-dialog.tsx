@@ -13,13 +13,12 @@ export function CreateManagerDialog() {
   const [isOpen, setIsOpen] = useState(false)
   const { createManager, isCreating } = useManagers()
 
-  const handleSubmit = (data: ManagerFormData) => {
+  const handleSubmit = (data: ManagerFormData) => {    
     createManager({
       name: data.name,
       username: data.username,
-      role: data.role,
       password: data.password!,
-      permissions: data.permissions,
+      permissions: [],
     })
     setIsOpen(false)
   }

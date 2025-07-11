@@ -195,7 +195,7 @@ export default function DatePicker({
           className={`
             w-8 h-8 text-sm rounded-lg transition-colors
             ${isSelected ? "bg-primary text-white" : ""}
-            ${isToday && !isSelected ? "bg-blue-100 text-blue-600" : ""}
+            ${isToday && !isSelected ? "bg-primary/10 text-primary" : "hover:bg-primary/20 hover:text-primary"}
             ${isDisabled ? "text-gray-300 cursor-not-allowed" : "hover:bg-gray-100"}
             ${!isSelected && !isToday && !isDisabled ? "text-gray-700" : ""}
           `}

@@ -19,6 +19,8 @@ import {
   Legend,
 } from "recharts"
 import type { ChartData } from "../../types/statistics"
+import EmptyState from "../empty_state"
+import { ChartLineIcon } from "lucide-react"
 
 interface ChartProps {
   data: ChartData
@@ -76,20 +78,6 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
-// Empty state component
-const EmptyState = ({ height }: { height: number }) => (
-  <div 
-    className="flex flex-col items-center justify-center text-gray-400 bg-gray-50 rounded-lg" 
-    style={{ height }}
-  >
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-      <line x1="3" y1="9" x2="21" y2="9"></line>
-      <line x1="9" y1="21" x2="9" y2="9"></line>
-    </svg>
-    <p className="mt-2">لا توجد بيانات متاحة</p>
-  </div>
-);
 
 export default function Chart({
   data,
@@ -107,7 +95,10 @@ export default function Chart({
   
   // If no data, show empty state
   if (!hasData) {
-    return <EmptyState height={height} />;
+    return <EmptyState
+      message="لا توجد بيانات"
+      icon={ChartLineIcon}
+    />;
   }
 
   // Get colors from datasets or use defaults

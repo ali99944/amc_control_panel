@@ -59,12 +59,12 @@ export function useUpdatePlaylist(onSuccess?: () => void) {
 }
 
 // Hook for deleting a playlist
-export function useDeletePlaylist(onSuccess?: () => void) {
+export function useDeletePlaylist(playlist_id: number | undefined, onSuccess?: () => void) {
   const { notify } = useNotifications()
 
   return useMutationAction({
     method: "delete",
-    url: "playlists",
+    url: `playlists/${playlist_id}`,
     onSuccessCallback: () => {
       notify.success("تم حذف قائمة التشغيل بنجاح")
       onSuccess?.()

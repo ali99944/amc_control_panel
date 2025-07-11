@@ -1,18 +1,15 @@
 export interface Report {
   id: number
-  title: string
+  report_name: string
   description: string | null
-  type: 'users' | 'content' | 'engagement' | 'revenue' | 'custom'
-  status: 'pending' | 'processing' | 'completed' | 'failed'
+  report_type: 'user_report' | 'content_report' | 'engagement_report'
   created_at: string
-  completed_at: string | null
-  created_by: string
-  file_url: string | null
-  file_size: number | null
-  parameters: ReportParameters
+  
+  start_date: string
+  end_date: string
 
-  download_url: string
-  filename: string
+  generated_report_url: string
+  generated_report_size: number
 }
 
 export interface ReportParameters {
@@ -32,8 +29,7 @@ export interface ReportParameters {
 }
 
 export interface CreateReportData {
-  title: string
+  report_name: string
   description?: string
-  type: Report['type']
-  parameters: ReportParameters
+  report_type: Report['report_type']
 }

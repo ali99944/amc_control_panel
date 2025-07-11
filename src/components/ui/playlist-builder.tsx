@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 import { Search, Plus, X, Music, Play, Grip } from "lucide-react"
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd"
 import type { Song } from "../../types/song"
+import { getStorageFile } from "../../lib/storage"
 
 interface PlaylistBuilderProps {
   availableSongs?: Song[]
@@ -63,7 +64,7 @@ export default function PlaylistBuilder({
 
   const getTotalDuration = () => {
     const totalSeconds = playlistSongs.reduce((acc, song) => {
-      return acc + (song.audio?.duration || 0)
+      return acc + (song.original_audio?.duration || 0)
     }, 0)
 
     const hours = Math.floor(totalSeconds / 3600)
@@ -128,7 +129,7 @@ export default function PlaylistBuilder({
                         <div className="w-10 h-10 rounded-lg overflow-hidden">
                           {song.cover_image ? (
                             <img
-                              src={song.cover_image || "/placeholder.svg"}
+                              src={getStorageFile(song.cover_image) || "/placeholder.svg"}
                               alt={song.title}
                               className="w-full h-full object-cover"
                             />
@@ -145,7 +146,7 @@ export default function PlaylistBuilder({
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">{formatDuration(song.audio?.duration)}</span>
+                          <span className="text-xs text-gray-500">{formatDuration(song.original_audio?.duration)}</span>
                           <button
                             onClick={(e) => {
                               e.stopPropagation()
@@ -206,7 +207,7 @@ export default function PlaylistBuilder({
                         <div className="w-10 h-10 rounded-lg overflow-hidden">
                           {song.cover_image ? (
                             <img
-                              src={song.cover_image || "/placeholder.svg"}
+                              src={getStorageFile(song.cover_image) || "/placeholder.svg"}
                               alt={song.title}
                               className="w-full h-full object-cover"
                             />
@@ -223,7 +224,7 @@ export default function PlaylistBuilder({
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <span className="text-xs text-gray-500">{formatDuration(song.audio?.duration)}</span>
+                          <span className="text-xs text-gray-500">{formatDuration(song.original_audio?.duration)}</span>
                           <button
                             onClick={() => console.log("Play", song.id)}
                             className="p-1 text-gray-400 hover:text-primary transition-colors"

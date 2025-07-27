@@ -46,14 +46,14 @@ export default function ReportsPage() {
   }
 
   // Format file size
-  const formatFileSize = (bytes: number | null): string => {
-    if (!bytes) return "غير محدد"
-    if (bytes == 0) return "0 Bytes"
-    const k = 1024
-    const sizes = ["Bytes", "KB", "MB", "GB"]
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
-  }
+  // const formatFileSize = (bytes: number | null): string => {
+  //   if (!bytes) return "غير محدد"
+  //   if (bytes == 0) return "0 Bytes"
+  //   const k = 1024
+  //   const sizes = ["Bytes", "KB", "MB", "GB"]
+  //   const i = Math.floor(Math.log(bytes) / Math.log(k))
+  //   return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
+  // }
 
   // Get report type label
   const getReportTypeLabel = (type: Report["report_type"]) => {
@@ -94,11 +94,11 @@ export default function ReportsPage() {
         </div>
       ),
     },
-    {
-      key: "generated_report_size",
-      title: "حجم الملف",
-      render: (value: number | null) => <div className="text-sm text-gray-600">{formatFileSize(value)}</div>,
-    },
+    // {
+    //   key: "generated_report_size",
+    //   title: "حجم الملف",
+    //   render: (value: number | null) => <div className="text-sm text-gray-600">{formatFileSize(value)}</div>,
+    // },
     {
       key: "created_at",
       title: "تاريخ الإنشاء",

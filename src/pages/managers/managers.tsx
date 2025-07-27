@@ -195,6 +195,12 @@ export default function ManagersPage() {
         </Card>
       </div>
 
+      {/* <ManagerFiltersComponent 
+        filters={{}}
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
+
       {/* Filters and Search */}
       <DataTable
           data={managers}

@@ -63,6 +63,7 @@ export default function TermsConditionsPage() {
       </div>
     )
   }
+  
 
   return (
     <div className="space-y-6">

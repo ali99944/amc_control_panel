@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Plus, Music, Eye, EyeOff, Edit, Trash2, Clock, Calendar } from 'lucide-react'
+import { Plus, Music, Eye, Edit, Trash2, Clock, Calendar } from 'lucide-react'
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
@@ -13,7 +13,8 @@ import UpdateSongDialog from "./update-song-dialog"
 import { useNavigate } from "react-router-dom"
 import { Song } from "../../types/song"
 import { formatDate } from "../../lib/date"
-import { getStorageFile } from "../../lib/storage"
+// import { getStorageFile } from "../../lib/storage"
+// import SongFiltersComponent from "./songs-filter"
 
 
 export default function SongsPage() {
@@ -72,13 +73,13 @@ const formatDuration = (seconds: number): string => {
   // DataTable columns
   const columns: Column<Song>[] = [
     {
-      key: "cover_image",
+      key: "image",
       title: "الغلاف",
       width: "80px",
       render: (value: string, row: Song) => (
         <div className="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden cursor-pointer" onClick={() => handleViewSong(row)}>
           {value ? (
-            <img src={getStorageFile(value) || "/placeholder.svg"} alt={row.title} className="w-full h-full object-cover" />
+            <img src={value || "/placeholder.svg"} alt={row.title} className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Music className="w-5 h-5 text-gray-400" />
@@ -163,26 +164,26 @@ const formatDuration = (seconds: number): string => {
         </div>
       ),
     },
-    {
-      key: "is_active",
-      title: "الحالة",
-      width: "100px",
-      render: (value: boolean) => (
-        <div className="flex items-center gap-2">
-          {value ? (
-            <>
-              <Eye className="w-4 h-4 text-green-600" />
-              <span className="text-green-600 text-sm">نشط</span>
-            </>
-          ) : (
-            <>
-              <EyeOff className="w-4 h-4 text-gray-400" />
-              <span className="text-gray-400 text-sm">غير نشط</span>
-            </>
-          )}
-        </div>
-      ),
-    },
+    // {
+    //   key: "is_active",
+    //   title: "الحالة",
+    //   width: "100px",
+    //   render: (value: boolean) => (
+    //     <div className="flex items-center gap-2">
+    //       {value ? (
+    //         <>
+    //           <Eye className="w-4 h-4 text-green-600" />
+    //           <span className="text-green-600 text-sm">نشط</span>
+    //         </>
+    //       ) : (
+    //         <>
+    //           <EyeOff className="w-4 h-4 text-gray-400" />
+    //           <span className="text-gray-400 text-sm">غير نشط</span>
+    //         </>
+    //       )}
+    //     </div>
+    //   ),
+    // },
     {
       key: "actions",
       title: "الإجراءات",
@@ -283,6 +284,15 @@ const formatDuration = (seconds: number): string => {
           </div>
         </Card>
       </div>
+
+      {/* <SongFiltersComponent
+        filters={{
+
+        }}
+
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
 
       {/* Songs Table */}
       <DataTable

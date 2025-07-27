@@ -11,6 +11,7 @@ import Toolbar from "../../components/ui/toolbar"
 import { useTags } from "../../hooks/use-tags"
 import { formatDate } from "../../lib/date"
 import { Tag } from "../../types/tag"
+// import TagFiltersComponent from "./tags-filter"
 
 export default function TagsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
@@ -172,6 +173,13 @@ export default function TagsPage() {
           </div>
         </Card>
       </div>
+
+      {/* <TagFiltersComponent 
+        filters={{}}
+
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
 
       {/* Tags Table */}
       <DataTable

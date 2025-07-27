@@ -21,7 +21,7 @@ export function useCreateReport(onSuccess?: () => void) {
     method: "post",
     url: "reports",
     onSuccessCallback: () => {
-      notify.success("تم إنشاء التقرير بنجاح وسيتم معالجته قريباً")
+      notify.success("تم إنشاء التقرير بنجاح")
       onSuccess?.()
     },
     onErrorCallback: (error) => {

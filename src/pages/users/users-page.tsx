@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Users, UserCheck, UserX, Shield, ShieldOff, Trash2, Calendar, Phone } from "lucide-react"
+import { Users, UserCheck, UserX, ShieldOff, Trash2, Calendar, Phone } from "lucide-react"
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
@@ -11,6 +11,7 @@ import User from "../../types/user"
 import BanUserDialog from "./ban-user-dialog"
 import DeleteUserDialog from "./delete-user-dialog"
 import { formatDate } from "../../lib/date"
+// import UserFiltersComponent from "./users-filter"
 
 
 export default function UsersPage() {
@@ -43,10 +44,10 @@ export default function UsersPage() {
   }
 
   // Handle ban/unban user
-  const handleBanUser = (user: User) => {
-    setSelectedUser(user)
-    setIsBanDialogOpen(true)
-  }
+  // const handleBanUser = (user: User) => {
+  //   setSelectedUser(user)
+  //   setIsBanDialogOpen(true)
+  // }
 
   // Handle dialog success
   const handleDialogSuccess = () => {
@@ -183,14 +184,14 @@ export default function UsersPage() {
       width: "140px",
       render: (_, row: User) => (
         <div className="flex items-center gap-2">
-          <Button
+          {/* <Button
             size="sm"
             variant={row.is_banned ? "primary" : "secondary"}
             onClick={() => handleBanUser(row)}
             title={row.is_banned ? "إلغاء الحظر" : "حظر المستخدم"}
           >
             {row.is_banned ? <Shield className="w-4 h-4" /> : <ShieldOff className="w-4 h-4" />}
-          </Button>
+          </Button> */}
           <Button size="sm" variant="danger" onClick={() => handleDeleteUser(row)} title="حذف المستخدم">
             <Trash2 className="w-4 h-4" />
           </Button>
@@ -272,6 +273,12 @@ export default function UsersPage() {
           </div>
         </Card>
       </div>
+
+      {/* <UserFiltersComponent 
+        filters={{}}
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
 
       {/* Users Table */}
       <DataTable

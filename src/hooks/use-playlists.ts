@@ -19,8 +19,8 @@ export interface UpdatePlaylistData extends CreatePlaylistData {
 // Hook for fetching all playlists
 export function usePlaylists() {
   return useGetQuery<Playlist[]>({
-    url: "playlists",
-    key: ["playlists"],
+    url: "playlists/system",
+    key: ["playlists", "system"],
   })
 }
 
@@ -30,24 +30,29 @@ export function useCreatePlaylist(onSuccess?: () => void) {
 
   return useMutationAction({
     method: "post",
-    url: "playlists",
+    url: "system/playlists",
     onSuccessCallback: () => {
       notify.success("تم إنشاء قائمة التشغيل بنجاح")
       onSuccess?.()
+
+      console.log('success');
+      
     },
     onErrorCallback: (error) => {
+      console.log(error);
+      
       notify.error(error.message || "حدث خطأ أثناء إنشاء قائمة التشغيل")
     },
   })
 }
 
 // Hook for updating a playlist
-export function useUpdatePlaylist(onSuccess?: () => void) {
+export function useUpdatePlaylist(playlist_id: number | undefined, onSuccess?: () => void) {
   const { notify } = useNotifications()
 
   return useMutationAction({
     method: "put",
-    url: "playlists",
+    url: `playlists/${playlist_id}`,
     onSuccessCallback: () => {
       notify.success("تم تحديث قائمة التشغيل بنجاح")
       onSuccess?.()

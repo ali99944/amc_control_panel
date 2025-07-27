@@ -11,8 +11,9 @@ import CreateArtistDialog from "./create-artist-dialog"
 import DeleteArtistDialog from "./delete-artist-dialog"
 import UpdateArtistDialog from "./update-artist-dialog"
 import { formatDate } from "../../lib/date"
-import { getStorageFile } from "../../lib/storage"
 import { Artist } from "../../types/artist"
+import Tooltip from "../../components/ui/tooltip"
+// import ArtistFiltersComponent from "./artists-filter"
 
 
 export default function ArtistsPage() {
@@ -30,7 +31,7 @@ export default function ArtistsPage() {
     featured: artists.filter((a) => a.is_featured).length,
     active: artists.filter((a) => a.is_active).length,
     inactive: artists.filter((a) => !a.is_active).length,
-    totalFollowers: artists.reduce((acc, artist) => acc + artist.total_followers, 0),
+    followers_count: artists.reduce((acc, artist) => acc + artist.followers_count, 0),
     withSongs: artists.filter((a) => (a.songs_count || 0) > 0).length,
     withAlbums: artists.filter((a) => (a.albums_count || 0) > 0).length,
   }
@@ -60,7 +61,7 @@ export default function ArtistsPage() {
     if (num >= 1000) {
       return `${(num / 1000).toFixed(1)}K`
     }
-    return num.toString()
+    return num?.toString()
   }
 
   // DataTable columns
@@ -72,7 +73,7 @@ export default function ArtistsPage() {
       render: (value: string) => (
         <div className="w-12 h-12 bg-gray-100 rounded-full overflow-hidden">
           {value ? (
-            <img src={getStorageFile(value) || "/placeholder.svg"} alt="Artist" className="w-full h-full object-cover" />
+            <img src={value || "/placeholder.svg"} alt="Artist" className="w-full h-full object-cover" />
           ) : (
             <div className="w-full h-full flex items-center justify-center">
               <Mic className="w-5 h-5 text-gray-400" />
@@ -90,12 +91,14 @@ export default function ArtistsPage() {
           <div>
             <div className="font-medium text-gray-900 flex items-center gap-2">
               {value}
-              {row.is_featured && <Star className="w-4 h-4 text-yellow-500 fill-current" />}
+              {row.is_featured && <Tooltip content="فنان مميز">
+                <Star className="w-4 h-4 text-yellow-500 fill-current" />
+                </Tooltip>}
             </div>
             <div className="text-sm text-gray-500 flex items-center gap-3">
               <span className="flex items-center gap-1">
                 <Heart className="w-3 h-3" />
-                {formatNumber(row.total_followers)} متابع
+                {formatNumber(row.followers_count)} متابع
               </span>
               {(row.songs_count || 0) > 0 && (
                 <span className="flex items-center gap-1">
@@ -235,7 +238,7 @@ export default function ArtistsPage() {
             </div>
             <div>
               <p className="text-xs text-gray-600">إجمالي المتابعين</p>
-              <p className="text-lg font-bold text-primary">{formatNumber(stats.totalFollowers)}</p>
+              <p className="text-lg font-bold text-primary">{formatNumber(stats.followers_count)}</p>
             </div>
           </div>
         </Card>
@@ -264,6 +267,12 @@ export default function ArtistsPage() {
           </div>
         </Card>
       </div>
+
+      {/* <ArtistFiltersComponent 
+        filters={{}}
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
 
       {/* Artists Table */}
       <DataTable

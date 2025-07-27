@@ -29,14 +29,22 @@ export default function CreatePlaylistDialog({ isOpen, onClose, onSuccess }: Cre
   })
 
   const handleSubmit = (data: PlaylistFormData & { cover_image?: File }) => {
+    console.log(data);
+    
     const formData = new FormData()
     formData.append("name", data.name)
+    formData.append("source", data.source)
     if (data.description) formData.append("description", data.description)
     if (data.cover_image) formData.append("cover_image", data.cover_image)
     formData.append("is_public", data.is_public.toString())
     formData.append("song_ids", JSON.stringify(data.song_ids))
 
+    console.log('before creating');
+    
     createPlaylist(formData)
+
+    console.log('after');
+    
   }
 
   return (

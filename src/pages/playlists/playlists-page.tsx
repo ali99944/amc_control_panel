@@ -13,6 +13,7 @@ import DeletePlaylistDialog from "./delete-playlist-dialog"
 import UpdatePlaylistDialog from "./update-playlist-dialog"
 import Tooltip from "../../components/ui/tooltip"
 import { formatDate } from "../../lib/date"
+// import PlaylistFiltersComponent from "./playlists_filter"
 
 
 export default function PlaylistsPage() {
@@ -270,6 +271,12 @@ export default function PlaylistsPage() {
           </div>
         </Card>
       </div>
+
+      {/* <PlaylistFiltersComponent 
+        filters={{}}
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
 
       {/* Playlists Table */}
       <DataTable

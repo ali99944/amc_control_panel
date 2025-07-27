@@ -1,7 +1,7 @@
 "use client"
 
 import React from "react"
-import { useForm, Controller } from "react-hook-form"
+import { useForm, Controller, SubmitHandler } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { playlistFormSchema, type PlaylistFormData } from "./playlist-form-schema"
 import type { Playlist } from "../../types/playlist"
@@ -12,6 +12,7 @@ import PlaylistBuilder from "../../components/ui/playlist-builder"
 import Switch from "../../components/ui/switch"
 import Textarea from "../../components/ui/textarea"
 import { Song } from "../../types/song"
+import Select from "../../components/ui/select"
 
 interface PlaylistFormProps {
   initialData?: Playlist
@@ -46,6 +47,7 @@ export default function PlaylistForm({
       description: initialData?.description || "",
       is_public: initialData?.is_public ?? true,
       song_ids: initialSongs.map(song => song.id) || [],
+      source: 'editorial',
     },
   })
 
@@ -57,7 +59,7 @@ export default function PlaylistForm({
     setValue("song_ids", songs.map(song => song.id))
   }
 
-  const handleFormSubmit = (data: PlaylistFormData) => {
+  const handleFormSubmit: SubmitHandler<PlaylistFormData> = (data) => {
     onSubmit({
       ...data,
       ...(selectedImage && { cover_image: selectedImage }),
@@ -142,6 +144,39 @@ export default function PlaylistForm({
           />
         </div>
       </div>
+
+{/* Source Selection */}
+<div>
+  <Controller
+    name="source"
+    control={control}
+    render={({ field }) => (
+      <div className="space-y-2">
+        <label className="block text-sm font-medium text-gray-700">مصدر قائمة التشغيل</label>
+        <Select
+          {...field}
+          options={[
+            {
+              label: "تحريري",
+              value: "editorial"
+            },
+            {
+              label: "محتوي نظام",
+              value: "curated"
+            },
+            {
+              label: "ترند",
+              value: "trending"
+            },
+          ]}
+        />
+        {errors.source && (
+          <p className="text-sm text-red-600">{errors.source.message}</p>
+        )}
+      </div>
+    )}
+  />
+</div>
 
       {/* Songs Selection Section */}
       <div className="space-y-4">

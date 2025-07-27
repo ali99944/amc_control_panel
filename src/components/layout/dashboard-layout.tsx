@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Link, useLocation, Outlet, useNavigate } from "react-router-dom"
-import { LayoutDashboard, Users, Music, ListMusic, Settings, BarChart3, Menu, X, User, LogOut, Palette, Mic, Shield, TagsIcon, ShieldAlertIcon } from 'lucide-react'
+import { LayoutDashboard, Users, Music, ListMusic, Settings, BarChart3, Menu, X, User, LogOut, Palette, Mic, Shield, TagsIcon, ShieldAlertIcon, AlbumIcon } from 'lucide-react'
 import { Suspense } from 'react'
 import Dropdown from "../ui/dropdown"
 import Avatar from "../ui/avatar"
@@ -18,6 +18,7 @@ const navigation = [
   { name: "إدارة الأنواع", href: "/genres", icon: Palette },
   { name: "ادارة الكلمات المفتاحية", href: "tags", icon: TagsIcon },
   { name: "قوائم التشغيل", href: "/playlists", icon: ListMusic },
+  { name: "الألبومات", href: "/albums", icon: AlbumIcon },
   // { name: "الإشعارات", href: "/notifications", icon: BellRing },
   { name: "الإحصائيات", href: "/analytics", icon: BarChart3 },
   { name: "التقارير", href: "/reports", icon: BarChart3 },

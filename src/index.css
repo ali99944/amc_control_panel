@@ -237,3 +237,176 @@ body {
 .pdf-viewer-fullscreen .pdf-viewer-iframe {
   height: calc(100vh - 120px) !important;
 }
+
+
+/* album builder */
+
+/* Album Builder Styles */
+.album-builder-container {
+  position: relative;
+}
+
+/* Drag and Drop Styles */
+.draggable-song {
+  transition: all 0.2s ease;
+  transform-origin: center;
+}
+
+.draggable-song:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.draggable-song.is-dragging {
+  transform: rotate(5deg);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+/* Track Number Styling */
+.track-number {
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Roboto Mono", monospace;
+  font-weight: 600;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  border-radius: 6px;
+  padding: 4px 8px;
+  min-width: 32px;
+  text-align: center;
+}
+
+/* Song Selection Styles */
+.song-selector {
+  transition: all 0.3s ease;
+}
+
+.song-selector:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(45, 106, 79, 0.1);
+}
+
+.song-selector.selected {
+  background: linear-gradient(135deg, rgba(45, 106, 79, 0.05), rgba(45, 106, 79, 0.1));
+  border-color: #2d6a4f;
+  transform: translateY(-1px);
+}
+
+/* Modal Animations */
+.album-builder-modal {
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Loading States */
+.album-builder-loading {
+  position: relative;
+  overflow: hidden;
+}
+
+.album-builder-loading::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .album-builder-modal {
+    margin: 10px;
+    max-height: calc(100vh - 20px);
+  }
+
+  .song-selector {
+    padding: 12px;
+  }
+
+  .track-number {
+    min-width: 28px;
+    font-size: 12px;
+  }
+}
+
+/* Custom Scrollbar */
+.album-builder-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+
+.album-builder-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 3px;
+}
+
+.album-builder-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 3px;
+}
+
+.album-builder-scroll::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Drag Handle Styles */
+.drag-handle {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+}
+
+.drag-handle:hover {
+  opacity: 1;
+}
+
+/* Empty State Animations */
+.empty-state {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Success States */
+.success-animation {
+  animation: successPulse 0.6s ease-out;
+}
+
+@keyframes successPulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}

@@ -13,6 +13,7 @@ import DeleteGenreDialog from "./delete-genre-dialog"
 import UpdateGenreDialog from "./update-genre-dialog"
 import { getStorageFile } from "../../lib/storage"
 import { formatDate } from "../../lib/date"
+// import GenreFiltersComponent from "./genres-filter"
 
 
 export default function GenresPage() {
@@ -185,6 +186,12 @@ export default function GenresPage() {
           </div>
         </Card>
       </div>
+
+      {/* <GenreFiltersComponent 
+        filters={{}}
+        onClearFilters={() => {}}
+        onFiltersChange={() => {}}
+      /> */}
 
       {/* Genres Table */}
       <DataTable

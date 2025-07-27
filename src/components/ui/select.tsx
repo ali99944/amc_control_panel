@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ChevronDown, Check } from 'lucide-react'
+import { ChevronDown, Check, AlertCircle } from 'lucide-react'
 
 interface SelectOption {
   value: string
@@ -17,9 +17,22 @@ interface SelectProps {
   className?: string
   size?: "sm" | "md" | "lg"
   disabled?: boolean
+  error?: string
+  label?: string
 }
 
-export default function Select({ id, options, value, onChange, placeholder = "اختر...", className = "", size = "sm", disabled = false }: SelectProps) {
+export default function Select({ 
+  id, 
+  options, 
+  value, 
+  onChange, 
+  placeholder = "اختر...", 
+  className = "", 
+  size = "sm", 
+  disabled = false,
+  error,
+  label
+}: SelectProps) {
   const [isOpen, setIsOpen] = useState(false)
   const selectRef = useRef<HTMLDivElement>(null)
 
@@ -43,36 +56,50 @@ export default function Select({ id, options, value, onChange, placeholder = "ا
   }, [])
 
   return (
-    <div className="relative" ref={selectRef}>
-      <button
-        id={id}
-        type="button"
-        onClick={disabled ? undefined : () => setIsOpen(!isOpen)}
-        disabled={disabled}
-        className={`w-full border border-gray-200 bg-white rounded focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 flex items-center justify-between text-right ${sizes[size]} ${className} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
-      >
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
-        <span className={selectedOption ? "text-gray-900" : "text-gray-500"}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
-      </button>
+    <div className="w-full space-y-1" ref={selectRef}>
+      {label && (
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700 mb-1">
+          {label}
+        </label>
+      )}
+      <div className="relative">
+        <button
+          id={id}
+          type="button"
+          onClick={disabled ? undefined : () => setIsOpen(!isOpen)}
+          disabled={disabled}
+          className={`w-full border ${error ? 'border-red-500' : 'border-gray-200'} bg-white rounded focus:outline-none ${error ? 'focus:ring-red-500 focus:border-red-500' : 'focus:ring-primary focus:border-primary'} focus:ring transition-all duration-200 flex items-center justify-between text-right ${sizes[size]} ${className} ${disabled ? "cursor-not-allowed opacity-50" : ""}`}
+          aria-invalid={error ? "true" : "false"}
+        >
+          <ChevronDown className={`w-4 h-4 ${error ? 'text-red-500' : 'text-gray-400'} transition-transform ${isOpen ? "rotate-180" : ""}`} />
+          <span className={selectedOption ? "text-gray-900" : "text-gray-500"}>
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
+        </button>
 
-      {isOpen && (
-        <div className="absolute border shadow border-gray-300 top-full mt-2 w-full bg-white rounded-lg z-50 max-h-60 overflow-y-auto custom-scroll">
-          {options.map((option) => (
-            <button
-              key={option.value}
-              onClick={() => {
-                onChange(option.value)
-                setIsOpen(false)
-              }}
-              disabled={disabled}
-              className="w-full px-4 py-2 text-right hover:bg-gray-50 transition-colors flex items-center gap-2"
-            >
-              {option.value === value && <Check className="w-4 h-4 text-accent" />}
-              <span>{option.label}</span>
-            </button>
-          ))}
+        {isOpen && (
+          <div className="absolute border shadow border-gray-300 top-full mt-2 w-full bg-white rounded-lg z-50 max-h-60 overflow-y-auto custom-scroll">
+            {options.map((option) => (
+              <button
+                key={option.value}
+                onClick={() => {
+                  onChange(option.value)
+                  setIsOpen(false)
+                }}
+                disabled={disabled}
+                className="w-full px-4 py-2 text-right hover:bg-gray-50 transition-colors flex items-center gap-2"
+              >
+                {option.value === value && <Check className="w-4 h-4 text-accent" />}
+                <span>{option.label}</span>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {error && (
+        <div className="flex items-center mt-1 space-x-1 space-x-reverse text-red-500 text-sm">
+          <AlertCircle className="w-4 h-4" />
+          <span>{error}</span>
         </div>
       )}
     </div>

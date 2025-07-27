@@ -19,6 +19,15 @@ import TermsConditionsPage from "./pages/terms-conditions/terms-conditions-page"
 import TagsPage from "./pages/tags/tags-page";
 import ContactMessagesPage from "./pages/contact-messages/contact-messages-page";
 import { ContentReportExample, EngagementReportExample, UsersReportExample } from "./components/reports/report-usage-examples";
+import AlbumsPage from "./pages/albums/albums";
+import AlbumDetailsPage from "./pages/album-details/album-details-page";
+import LabeledSwitchExamples from "./pages/dev";
+import PodcastsPage from "./pages/podcasts/podcasts_page";
+import PodcastDetailsPage from "./pages/podcasts/details/podcast_details_page";
+import PaymentsPage from "./pages/payments/payments_page";
+import PaymentDetailsPage from "./pages/payments/payment_details_page";
+import PaymentInvoicePage from "./pages/payments/payment_invoice_page";
+import SubscriptionsPage from "./pages/subscriptions/subscriptions_page";
 
 const router = createBrowserRouter([
     {
@@ -99,15 +108,43 @@ const router = createBrowserRouter([
                 path: '/contact-messages',
                 element: <ContactMessagesPage />
             },
+            {
+                path: '/albums',
+                element: <AlbumsPage />
+            },
+            {
+                path: '/albums/:id',
+                element: <AlbumDetailsPage />
+            },
+            {
+                path: '/podcasts',
+                element: <PodcastsPage />
+            },
+            {
+                path: '/podcasts/:id',
+                element: <PodcastDetailsPage />
+            },
+            {
+                path: '/payments',
+                element: <PaymentsPage />
+            },
+            {
+                path: '/payments/:id',
+                element: <PaymentDetailsPage />
+            },
+            {
+                path: '/payments/:id/invoice',
+                element: <PaymentInvoicePage />
+            },
+            {
+                path: '/subscriptions',
+                element: <SubscriptionsPage />
+            },
         ],
     },
     {
         path: '/dev',
-        element: <>
-            <EngagementReportExample />
-            <ContentReportExample />
-            <UsersReportExample />
-        </>
+        element: <LabeledSwitchExamples />
     },
     {
         path: '/login',

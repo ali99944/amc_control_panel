@@ -7,7 +7,7 @@ export interface Artist {
   is_active: boolean
   created_at: string
   updated_at: string | null
-  total_followers: number
+  followers_count: number
   songs_count?: number
   albums_count?: number
 }

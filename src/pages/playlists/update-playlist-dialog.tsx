@@ -15,7 +15,7 @@ interface UpdatePlaylistDialogProps {
 }
 
 export default function UpdatePlaylistDialog({ isOpen, onClose, playlist, onSuccess }: UpdatePlaylistDialogProps) {
-  const { mutate: updatePlaylist, isPending } = useUpdatePlaylist(() => {
+  const { mutate: updatePlaylist, isPending } = useUpdatePlaylist(playlist?.id, () => {
     onClose()
     onSuccess?.()
   })

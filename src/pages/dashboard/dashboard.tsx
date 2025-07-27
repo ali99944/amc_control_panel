@@ -143,7 +143,7 @@ export default function Dashboard() {
                     <p className="font-medium text-gray-900 truncate">{song?.title || `أغنية رقم ${index + 1}`}</p>
                     <p className="text-sm text-gray-600 truncate">{song?.artist?.name || `الفنان ${index + 1}`}</p>
                   </div>
-                  <div className="text-sm text-gray-500">{formatNumber(song?.plays_count || 1234)} تشغيل</div>
+                  <div className="text-sm text-gray-500">{formatNumber(song?.plays_count || 0)} تشغيل</div>
                 </div>
               ))}
 

@@ -88,63 +88,48 @@ export default function SongForm({
       {/* Artist and Genre Row */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Artist Select */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            الفنان <span className="text-red-500">*</span>
-          </label>
-          <Controller
-            name="artist_id"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                className={`${
-                  errors.artist_id ? "border-red-500" : "border-gray-300"
-                }`}
-                options={
-                  artists.filter(artist => artist.is_active)
-                  .map(artist => {
-                    return {
-                      label: artist.name,
-                      value: artist.id.toString()
-                    }
-                  })
-                }
-              />
-            )}
-          />
-          {errors.artist_id && <p className="text-sm text-red-600 mt-1">{errors.artist_id.message}</p>}
-        </div>
+        <Controller
+          name="artist_id"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              label="الفنان"
+              error={errors.artist_id?.message}
+              options={
+                artists.filter(artist => artist.is_active)
+                .map(artist => {
+                  return {
+                    label: artist.name,
+                    value: artist.id.toString()
+                  }
+                })
+              }
+            />
+          )}
+        />
 
         {/* Genre Select */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
-            النوع الموسيقي <span className="text-red-500">*</span>
-          </label>
-          <Controller
-            name="genre_id"
-            control={control}
-            render={({ field }) => (
-              <Select
-                {...field}
-                className={`${
-                  errors.genre_id ? "border-red-500" : "border-gray-300"
-                }`}
-
-                options={
-                  genres.filter(genre => genre.is_active)
-                  .map(genre => {
-                    return {
-                      label: genre.name,
-                      value: genre.id.toString()
-                    }
-                  })
-                }
-              />
-            )}
-          />
-          {errors.genre_id && <p className="text-sm text-red-600 mt-1">{errors.genre_id.message}</p>}
-        </div>
+        <Controller
+          name="genre_id"
+          control={control}
+          render={({ field }) => (
+            <Select
+              {...field}
+              label="النوع الموسيقي"
+              error={errors.genre_id?.message}
+              options={
+                genres.filter(genre => genre.is_active)
+                .map(genre => {
+                  return {
+                    label: genre.name,
+                    value: genre.id.toString()
+                  }
+                })
+              }
+            />
+          )}
+        />
       </div>
 
       {/* Release Date and Track Number Row */}

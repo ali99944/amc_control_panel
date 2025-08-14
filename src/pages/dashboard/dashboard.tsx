@@ -1,269 +1,183 @@
 "use client"
 
-import { 
-  Music, Users, PlayCircle, Home, 
-  // Disc,
-  Headphones, BarChart2,
-  User, 
-} from "lucide-react"
-import Card from "../../components/ui/card"
-import Toolbar from "../../components/ui/toolbar"
-// import Chart from "../../components/ui/chart"
-import { useSongs } from "../../hooks/use-songs"
-import { useArtists } from "../../hooks/use-artists"
-import { usePlaylists } from "../../hooks/use-playlists"
-import { usePlatformStats } from "../../hooks/use-statistics"
-import { ScrollArea } from "../../components/ui/scroll-area"
-import EmptyState from "../../components/empty_state"
-import { useGenres } from "../../hooks/use-genres"
-import { getStorageFile } from "../../lib/storage"
+import { DollarSign, ShoppingBag, MessageSquare, Package } from "lucide-react"
+import { LineChart } from "@mui/x-charts/LineChart"
 
-export default function Dashboard() {
-  // Fetch data
-  const { data: songs } = useSongs()
-  const { data: artists } = useArtists()
-  const { data: genres } = useGenres()
-  
-  const { data: playlists } = usePlaylists()
-  const { data: platformStats } = usePlatformStats()
-  // const { data: engagementChart } = useChartData('engagement', '7d')
-  
-  // Format numbers
-  const formatNumber = (num: number) => {
-    if (!num) return "0"
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`
-    }
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`
-    }
-    return num.toString()
+// Your UI Components
+import Toolbar from "../../components/ui/toolbar"
+import Card from "../../components/ui/card"
+import DataTable, { Column } from "../../components/datatable"
+import { Badge } from "../../components/ui/badge"
+import Avatar from "../../components/ui/avatar"
+
+// Your Custom Hooks (these remain the same)
+import { useDashboardKpis, useRecentOrders, useTopProducts, useSalesOverTime } from "../../hooks/use-dashboard"
+import type { RecentOrder } from "../../types/dashboard"
+import { formatDate } from "../../lib/date" // Assuming formatDate is locale-aware
+
+export default function DashboardPage() {
+  // Fetch all necessary data using the custom hooks
+  const { data: kpis, isLoading: kpisLoading } = useDashboardKpis()
+  const { data: recentOrders = [], isLoading: ordersLoading } = useRecentOrders()
+  const { data: topProducts = [], isLoading: productsLoading } = useTopProducts()
+  const { data: salesData = [], isLoading: salesLoading } = useSalesOverTime("30d")
+
+  // Helper function to format currency in EGP for an Arabic locale
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("ar-EG", { // Arabic (Egypt) locale
+      style: "currency",
+      currency: "EGP", // Egyptian Pound
+      minimumFractionDigits: 2,
+    }).format(amount)
   }
 
+  // Define columns for the Recent Orders DataTable in Arabic
+  const orderColumns: Column<RecentOrder>[] = [
+    {
+      key: "order_code",
+      title: "كود الطلب",
+      render: (value) => <span className="font-mono text-primary font-medium">{value}</span>,
+    },
+    { key: "customer_name", title: "العميل" },
+    {
+      key: "grand_total",
+      title: "الإجمالي",
+      render: (value) => <span className="font-semibold">{formatCurrency(value)}</span>,
+    },
+    {
+      key: "status",
+      title: "الحالة",
+      render: (status: RecentOrder["status"]) => {
+        const statusMap = {
+          pending: { label: "قيد الانتظار", variant: "default" },
+          processing: { label: "قيد المعالجة", variant: "secondary" },
+          shipped: { label: "تم الشحن", variant: "default" },
+          delivered: { label: "تم التوصيل", variant: "secondary" },
+          cancelled: { label: "ملغي", variant: "destructive" },
+        }
+        const { label, variant } = statusMap[status] || statusMap.pending
+        return <Badge variant={variant as "default" | "secondary" | "destructive"}>{label}</Badge>
+      },
+    },
+    {
+      key: "created_at",
+      title: "التاريخ",
+      render: (date) => formatDate(date),
+    },
+  ]
+
+  // Main KPI cards configuration in Arabic
+  const kpiCards = [
+    {
+      title: "إجمالي الإيرادات",
+      value: kpis ? formatCurrency(kpis.totalRevenue) : "...",
+      icon: DollarSign,
+      loading: kpisLoading,
+    },
+    {
+      title: "الطلبات الجديدة (اليوم)",
+      value: kpis ? kpis.newOrdersToday : "...",
+      icon: ShoppingBag,
+      loading: kpisLoading,
+    },
+    {
+      title: "الرسائل المعلقة",
+      value: kpis ? kpis.pendingMessages : "...",
+      icon: MessageSquare,
+      loading: kpisLoading,
+    },
+    {
+      title: "إجمالي المنتجات",
+      value: kpis ? kpis.totalProducts : "...",
+      icon: Package,
+      loading: kpisLoading,
+    },
+  ]
 
   return (
-      <div className="space-y-4">
-        {/* Page Header */}
-        <Toolbar title="لوحة التحكم الرئيسية">
-          <Home />
-        </Toolbar>
+    <div className="space-y-6" dir="rtl">
+      <Toolbar title="نظرة عامة" />
 
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          <Card>
+      {/* KPI Stats Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpiCards.map((card, index) => (
+          <Card key={index}>
             <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                <Music className="w-6 h-6 text-white" />
+              <div className="p-3 bg-primary/10 rounded-lg">
+                <card.icon className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <p className="text-sm text-gray-600">إجمالي الأغاني</p>
-                <p className="text-2xl font-bold text-primary">
-                  {formatNumber(songs?.length || 0)}
-                </p>
+                <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{card.loading ? "..." : card.value}</p>
               </div>
             </div>
           </Card>
+        ))}
+      </div>
 
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                <Users className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">المستخدمين النشطين</p>
-                <p className="text-2xl font-bold text-primary">
-                  {formatNumber(platformStats?.users?.active || 0)}
-                </p>
-
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                <PlayCircle className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">قوائم التشغيل</p>
-                <p className="text-2xl font-bold text-primary">
-                  {playlists?.length}
-                </p>
-              </div>
-            </div>
-          </Card>
-
-          <Card>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                <Headphones className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">الانواع</p>
-                <p className="text-2xl font-bold text-primary">
-                  {genres?.length}
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
-
-        {/* Engagement Chart */}
-        {/* {engagementChart && (
+      {/* Charts & Top Products Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Sales Chart */}
+        <div className="lg:col-span-2">
           <Card>
             <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">نشاط الاستماع (آخر 7 أيام)</h3>
-              <p className="text-sm text-gray-600">التشغيلات وساعات الاستماع اليومية</p>
+              <h3 className="text-lg font-semibold text-gray-900">المبيعات خلال آخر 30 يومًا</h3>
+              <p className="text-sm text-gray-500">نظرة عامة على الإيرادات اليومية.</p>
             </div>
-            <Chart data={engagementChart} type="area" height={250} />
-          </Card>
-        )} */}
-
-        {/* Content Cards */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <Card>
-            <h3 className="text-lg font-bold text-primary mb-4">الأغاني الأكثر تشغيلاً</h3>
-            <ScrollArea maxHeight={320}>
-            <div className="space-y-3 ">
-              {(songs?.slice(0, 5) || Array(5).fill(null)).map((song, index) => (
-                <div key={song?.id || index} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
-                    {song?.cover_image ? (
-                      <img src={getStorageFile(song.cover_image)!} alt={song.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Music className="w-5 h-5 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{song?.title || `أغنية رقم ${index + 1}`}</p>
-                    <p className="text-sm text-gray-600 truncate">{song?.artist?.name || `الفنان ${index + 1}`}</p>
-                  </div>
-                  <div className="text-sm text-gray-500">{formatNumber(song?.plays_count || 0)} تشغيل</div>
-                </div>
-              ))}
-
-              {
-                songs?.length == 0 && (
-                  <EmptyState
-                    message="لا توجد اغاني"
-                    icon={Music}
-                  />
-                )
-              }
-            </div>
-            </ScrollArea>
-          </Card>
-
-          <Card>
-          <h3 className="text-lg font-bold text-primary mb-4">الفنانين المميزين</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-            {(artists?.filter(a => a.is_featured)?.slice(0, 5) || Array(5).fill(null)).map((artist, index) => (
-              <div key={artist?.id || index} className="flex flex-col items-center text-center">
-                <div className="w-20 h-20 bg-gray-100 rounded-full overflow-hidden mb-2">
-                  {artist?.image ? (
-                    <img src={artist.image} alt={artist.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Users className="w-8 h-8 text-gray-400" />
-                    </div>
-                  )}
-                </div>
-                <p className="font-medium text-gray-900">{artist?.name || `الفنان ${index + 1}`}</p>
-                <p className="text-xs text-gray-600">{formatNumber(artist?.total_followers || 1000 * (index + 1))} متابع</p>
-              </div>
-            ))}
-
-          </div>
-
-          {
-              artists?.filter(artist => artist.is_featured).length == 0 && (
-                <EmptyState
-                  message="لا يوجد فنانين مميزين"
-                  icon={User}
+            <div className="h-[300px]">
+              {salesLoading ? (
+                <div className="h-full w-full bg-gray-200 animate-pulse rounded-lg"></div>
+              ) : (
+                <LineChart
+                  xAxis={[{ data: salesData.map(d => new Date(d.date)), scaleType: "time" }]}
+                  series={[{ data: salesData.map(d => d.revenue), color: "#6D4C41" }]}
+                  grid={{ vertical: true, horizontal: true }}
                 />
-              )
-            }
-        </Card>
-
-          {/* <Card>
-            <h3 className="text-lg font-bold text-primary mb-4">النشاط الأخير</h3>
-            <ScrollArea height={320}>
-            <div className="space-y-3">
-              {[
-                "تم إضافة أغنية جديدة",
-                "انضم مستخدم جديد",
-                "تم إنشاء قائمة تشغيل",
-                "تم تحديث معلومات فنان",
-                "تم حذف أغنية",
-              ].map((activity, index) => (
-                <div key={index} className="flex items-center gap-3 p-3 border-b border-gray-100 last:border-0">
-                  <div className="w-2 h-2 bg-primary rounded-full"></div>
-                  <div className="flex-1">
-                    <p className="text-sm">{activity}</p>
-                    <p className="text-xs text-gray-500">منذ {index + 1} دقائق</p>
-                  </div>
-                </div>
-              ))}
+              )}
             </div>
-            </ScrollArea>
-          </Card> */}
+          </Card>
         </div>
 
-        
-
-        {/* Additional Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-
-
-          {/* Engagement Stats */}
-          <Card>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-primary">التفاعل</h3>
-              <BarChart2 className="w-5 h-5 text-primary" />
-            </div>
+        {/* Top Selling Products */}
+        <div>
+          <Card className="h-full">
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">المنتجات الأكثر مبيعًا</h3>
             <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">ساعات الاستماع</span>
-                <span className="font-bold">{formatNumber(platformStats?.engagement?.total_listening_hours || 0)} ساعة</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">متوسط مدة الجلسة</span>
-                <span className="font-bold">{platformStats?.engagement?.average_session_duration || 0} دقيقة</span>
-              </div>
-              {/* <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">المستخدمين النشطين يومياً</span>
-                <span className="font-bold">{formatNumber(platformStats?.engagement?.daily_active_users || 2300)}</span>
-              </div> */}
+              {productsLoading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-3 animate-pulse">
+                    <div className="w-10 h-10 bg-gray-200 rounded-md"></div>
+                    <div className="flex-1 space-y-2">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                topProducts.map((product) => (
+                  <div key={product.id} className="flex items-center gap-3">
+                    <Avatar src={product.image || "/placeholder.svg"} alt={product.name} size="md" />
+                    <div className="flex-1">
+                      <p className="font-medium text-sm truncate">{product.name}</p>
+                      <p className="text-xs text-gray-500">{product.sales_count} مبيعات</p>
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </Card>
-
-          {/* Content Stats */}
-          {/* <Card>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-lg font-bold text-primary">المحتوى</h3>
-              <Disc className="w-5 h-5 text-primary" />
-            </div>
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">الفنانين</span>
-                <span className="font-bold">{formatNumber(platformStats?.content?.total_artists || artists?.length || 350)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">الأغاني</span>
-                <span className="font-bold">{formatNumber(platformStats?.content?.total_songs || songs?.length || 1234)}</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-sm text-gray-600">التصنيفات</span>
-                <span className="font-bold">{formatNumber(platformStats?.content?.total_genres || 24)}</span>
-              </div>
-            </div>
-          </Card> */}
         </div>
       </div>
+
+      {/* Recent Orders Table */}
+      <div>
+        <Card className="p-0">
+          <div className="p-4 border-b border-gray-200">
+            <h3 className="text-lg font-semibold text-gray-900">الطلبات الأخيرة</h3>
+          </div>
+          <DataTable data={recentOrders} columns={orderColumns} loading={ordersLoading} pageSize={5} />
+        </Card>
+      </div>
+    </div>
   )
 }

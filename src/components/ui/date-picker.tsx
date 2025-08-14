@@ -224,12 +224,12 @@ export default function DatePicker({
         disabled={disabled}
         className={`
           w-full flex items-center justify-between gap-2 px-4 py-1.5 border rounded text-right
-          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white hover:border-gray-400"}
+          ${disabled ? "bg-gray-100 cursor-not-allowed" : "bg-white cursor-pointer"}
           ${error ? "border-red-500" : "border-gray-300"}
-          focus:outline-none focus:ring
+          focus:outline-none
         `}
       >
-        <Calendar className="w-4 h-4 text-gray-400" />
+        <Calendar className="w-4 h-4 text-primary text-gray-400" />
         <span className={selectedDate ? "text-gray-900" : "text-gray-500"}>
           {selectedDate ? formatDate(selectedDate) : placeholder}
         </span>
@@ -248,14 +248,14 @@ export default function DatePicker({
                 onClick={() => navigateYear("prev")}
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-primary" />
               </button>
               <button
                 type="button"
                 onClick={() => navigateMonth("prev")}
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
-                <ChevronRight className="w-4 h-4" />
+                <ChevronRight className="w-4 h-4 text-primary" />
               </button>
             </div>
 
@@ -271,14 +271,14 @@ export default function DatePicker({
                 onClick={() => navigateMonth("next")}
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4 text-primary" />
               </button>
               <button
                 type="button"
                 onClick={() => navigateYear("next")}
                 className="p-1 hover:bg-gray-100 rounded transition-colors cursor-pointer"
               >
-                <ChevronLeft className="w-4 h-4" />
+                <ChevronLeft className="w-4 h-4 text-primary" />
               </button>
             </div>
           </div>
@@ -299,7 +299,7 @@ export default function DatePicker({
           {(showTime || format === "datetime") && (
             <div className="border-t border-gray-200 pt-4">
               <div className="flex items-center gap-2 justify-center">
-                <Clock className="w-4 h-4 text-gray-400" />
+                <Clock className="w-4 h-4 text-primary text-gray-400" />
                 <div className="flex items-center gap-2">
                   <select
                     value={timeValue.hours}

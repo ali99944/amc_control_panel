@@ -1,305 +1,210 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { useState, useContext, useEffect } from "react"
-import { Save, Settings, Users, Shield } from 'lucide-react'
-import { useGetQuery, useMutationAction } from "../../hooks/queries-actions"
-import SkeletonLoader from "../../components/skeleton_page_loader"
-import { NotificationContext } from "../../providers/notification-provider"
-import { Input } from "../../components/ui/input"
-import Button from "../../components/ui/button"
-import Switch from "../../components/ui/switch"
-import { AppSettings } from "../../types"
+import { useState, useEffect } from "react"
+import { useForm, Controller } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { Settings as SettingsIcon, AtSign, Share2, Save, Loader2 } from "lucide-react"
+import { useSettings, useUpdateSettings } from "../../hooks/use-settings"
+import { settingsFormSchema, type SettingsFormData } from "../../types/settings"
 import Toolbar from "../../components/ui/toolbar"
-import { getApiError } from "../../lib/error_handler"
-import Textarea from "../../components/ui/textarea"
-
-
-
+import Button from "../../components/ui/button"
+import Card from "../../components/ui/card"
+import { Input } from "../../components/ui/input"
+import { Label } from "../../components/ui/label"
+import { Textarea } from "../../components/ui/textarea"
+import LabeledSwitch from "../../components/ui/labeled-switch"
 
 export default function SettingsPage() {
-  const [activeTab, setActiveTab] = useState("app")
-  const { addNotification } = useContext(NotificationContext)
+  const [activeTab, setActiveTab] = useState("general")
+  const { data: settings, isLoading: isFetching } = useSettings()
+  const { mutate: updateSettings, isPending } = useUpdateSettings()
 
-  // Fetch settings
   const {
-    data: settings,
-    isLoading: isFetching,
-    refetch,
-  } = useGetQuery<AppSettings>({
-    key: ["settings"],
-    url: "settings",
-    options: {
-      initialData: {
-        app: {
-          name: "مركز علي الإعلامي",
-          description: "منصة الموسيقى العربية الرائدة",
-          logo: "/logo.png",
-          maintenance_mode: false,
-          support_email: "support@amc.alitarek.com",
-          copyright: '',
-          version: ''
-        },
-        users: {
-          max_playlist_size: 1000,
-          max_playlists_per_user: 100,
-        },
-        security: {
-          require_email_verification: true,
-          session_timeout_hours: 24,
-          max_login_attempts: 5,
-          enable_explicit_content: false,
-        },
-      },
-    },
+    register,
+    handleSubmit,
+    control,
+    reset,
+    formState: { errors },
+  } = useForm<SettingsFormData>({
+    resolver: zodResolver(settingsFormSchema),
   })
 
-  const [formData, setFormData] = useState<AppSettings>(settings!)
-
-  // Update form data when settings are loaded
   useEffect(() => {
     if (settings) {
-      setFormData(settings)
+      reset(settings)
     }
-  }, [settings])
+  }, [settings, reset])
 
-  // Save settings mutation
-  const saveSettingsMutation = useMutationAction<void, AppSettings>({
-    method: "post",
-    url: "settings",
-    key: ["settings"],
-    onSuccessCallback: () => {
-      addNotification("تم حفظ الإعدادات بنجاح", "success")
-      refetch()
-    },
-    onErrorCallback: (error) => {
-      const errorMessage = getApiError(error)
-      console.log(errorMessage);
-      
-      addNotification(errorMessage.message, "error")
-    },
-  })
-
-  const handleInputChange = (section: keyof AppSettings, field: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: value,
-      },
-    }))
+  const handleFormSubmit = (data: SettingsFormData) => {
+    updateSettings(data)
   }
-
-  const handleSaveAll = () => {
-    saveSettingsMutation.mutate(formData)
-  }
-
+  
   const tabs = [
-    { id: "app", name: "التطبيق", icon: Settings },
-    { id: "social", name: "المستخدمين", icon: Users },
-    { id: "security", name: "الأمان", icon: Shield },
+    { id: "general", name: "الإعدادات العامة", icon: SettingsIcon },
+    { id: "contact", name: "بيانات التواصل", icon: AtSign },
+    { id: "social", name: "الروابط الاجتماعية", icon: Share2 },
   ]
-
+  
   if (isFetching) {
-    return <SkeletonLoader cardCount={4} />
+    return <div className="flex justify-center items-center h-96"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>
   }
 
   return (
-    <div className="space-y-4">
-      {/* Header */}
-      <Toolbar title="اعدادات النظام">
-        <Button
-            onClick={handleSaveAll}
-            disabled={saveSettingsMutation.isPending}
-            variant='primary-inverted'
-          >
-            <Save size={20} className="ml-2" />
-            {saveSettingsMutation.isPending ? "جاري الحفظ..." : "حفظ جميع الإعدادات"}
-          </Button>
+    <div className="space-y-6" dir="rtl">
+      <Toolbar title="إعدادات النظام">
+        <Button onClick={handleSubmit(handleFormSubmit)} loading={isPending}>
+          <Save className="w-4 h-4 ml-2" />
+          حفظ التغييرات
+        </Button>
       </Toolbar>
 
-
-
-      {/* Tabs */}
-      <div className="bg-white rounded-xl border border-gray-200">
-        <div className="border-b border-gray-200">
-          <nav className="flex gap-x-8 px-6">
-            {tabs.map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
-                  activeTab === tab.id
-                    ? "border-primary text-primary"
-                    : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
-                }`}
-              >
-                <tab.icon size={20} className="ml-2" />
-                {tab.name}
-              </button>
-            ))}
-          </nav>
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <div className="lg:col-span-1">
+          <Card className="p-2">
+            <nav className="flex lg:flex-col gap-1">
+              {tabs.map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex items-center w-full text-right p-3 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === tab.id
+                      ? "bg-primary/10 text-primary"
+                      : "text-gray-600 hover:bg-gray-50"
+                  }`}
+                >
+                  <tab.icon className="w-5 h-5 ml-3" />
+                  {tab.name}
+                </button>
+              ))}
+            </nav>
+          </Card>
         </div>
 
-        <div className="p-4">
-          {/* App Settings */}
-          {activeTab === "app" && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">إعدادات التطبيق</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">اسم التطبيق</label>
-                  <Input
-                    type="text"
-                    value={formData.app.name}
-                    onChange={(e) => handleInputChange("app", "name", e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">بريد الدعم</label>
-                  <Input
-                    type="email"
-                    value={formData.app.support_email}
-                    onChange={(e) => handleInputChange("app", "support_email", e.target.value)}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">شعار التطبيق</label>
-                  <Input
-                    type="text"
-                    value={formData.app.logo}
-                    onChange={(e) => handleInputChange("app", "logo", e.target.value)}
-                    placeholder="/logo.png"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">حقوق الملكية</label>
-                <Input
-                  value={formData.app.copyright}
-                  onChange={(e) => handleInputChange("app", "copyrights", e.target.value)}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">وصف التطبيق</label>
-                <Textarea
-                  value={formData.app.description}
-                  onChange={(e) => handleInputChange("app", "description", e.target.value)}
-                  rows={6}
-                />
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                  <div>
-                    <h3 className="font-medium text-gray-900">وضع الصيانة</h3>
-                    <p className="text-sm text-gray-600">تعطيل التطبيق مؤقتاً للصيانة</p>
+        <div className="lg:col-span-3">
+          <form onSubmit={handleSubmit(handleFormSubmit)}>
+            <Card className="space-y-6">
+              {/* --- General Settings Tab --- */}
+              {activeTab === 'general' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-3">الإعدادات العامة</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="general.app_name">اسم الموقع *</Label>
+                      <Input id="general.app_name" {...register("general.app_name")} />
+                      {errors.general?.app_name && <p className="text-sm text-red-600 mt-1">{errors.general.app_name.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="general.app_url">رابط الموقع *</Label>
+                      <Input id="general.app_url" {...register("general.app_url")} />
+                      {errors.general?.app_url && <p className="text-sm text-red-600 mt-1">{errors.general.app_url.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="general.logo_url">رابط اللوجو</Label>
+                      <Input id="general.logo_url" {...register("general.logo_url")} />
+                    </div>
+                     <div>
+                      <Label htmlFor="general.favicon_url">رابط أيقونة الموقع (Favicon)</Label>
+                      <Input id="general.favicon_url" {...register("general.favicon_url")} />
+                    </div>
+                     <div>
+                      <Label htmlFor="general.support_email">بريد الدعم الفني *</Label>
+                      <Input id="general.support_email" {...register("general.support_email")} />
+                      {errors.general?.support_email && <p className="text-sm text-red-600 mt-1">{errors.general.support_email.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="general.copyright_text">نص حقوق النشر</Label>
+                      <Input id="general.copyright_text" {...register("general.copyright_text")} placeholder="© {year} San Segal." />
+                    </div>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <Switch
-                      checked={formData.app.maintenance_mode}
-                      onChange={(e) => handleInputChange("app", "maintenance_mode", e)}
-                      // className="sr-only peer"
-                    />
-                    {/* <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/20 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div> */}
-                  </label>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Social Settings */}
-          {activeTab === "social" && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">إعدادات المستخدمين والتفاعل</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الحد الأقصى لحجم قائمة التشغيل</label>
-                  <Input
-                    type="number"
-                    value={formData.users.max_playlist_size}
-                    onChange={(e) => handleInputChange("users", "max_playlist_size", Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    الحد الأقصى لقوائم التشغيل لكل مستخدم
-                  </label>
-                  <Input
-                    type="number"
-                    value={formData.users.max_playlists_per_user}
-                    onChange={(e) => handleInputChange("users", "max_playlists_per_user", Number(e.target.value))}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-
-
-
-
-              </div>
-            </div>
-          )}
-
-          {/* Security Settings */}
-          {activeTab === "security" && (
-            <div className="space-y-6">
-              <h2 className="text-2xl font-bold text-gray-900">إعدادات الأمان والخصوصية</h2>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">مهلة انتهاء الجلسة (ساعات)</label>
-                  <Input
-                    type="number"
-                    value={formData.security.session_timeout_hours}
-                    onChange={(e) => handleInputChange("security", "session_timeout_hours", Number(e.target.value))}
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">الحد الأقصى لمحاولات تسجيل الدخول</label>
-                  <Input
-                    type="number"
-                    value={formData.security.max_login_attempts}
-                    onChange={(e) => handleInputChange("security", "max_login_attempts", Number(e.target.value))}
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                   <div>
-                    <h3 className="font-medium text-gray-900">تأكيد البريد الإلكتروني مطلوب</h3>
-                    <p className="text-sm text-gray-600">يجب على المستخدمين تأكيد بريدهم الإلكتروني</p>
+                    <Label htmlFor="general.maintenance_message">رسالة الصيانة</Label>
+                    <Textarea id="general.maintenance_message" {...register("general.maintenance_message")} rows={3} />
                   </div>
-                  <Switch
-                      checked={formData.security.require_email_verification}
-                      onChange={(e) => handleInputChange("security", "require_email_verification", e)}
-                    />
+                  <Controller
+                    control={control}
+                    name="general.maintenance_mode"
+                    render={({ field }) => (
+                        <LabeledSwitch
+                            title="وضع الصيانة"
+                            description="تعطيل الموقع مؤقتًا للزوار وعرض رسالة الصيانة."
+                            checked={field.value}
+                            onChange={field.onChange}
+                        />
+                    )}
+                  />
                 </div>
+              )}
 
-
-
-
-                <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+              {/* --- Contact Settings Tab --- */}
+              {activeTab === 'contact' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-3">بيانات التواصل</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <Label htmlFor="contact.public_email">البريد الإلكتروني العام *</Label>
+                        <Input id="contact.public_email" {...register("contact.public_email")} />
+                        {errors.contact?.public_email && <p className="text-sm text-red-600 mt-1">{errors.contact.public_email.message}</p>}
+                    </div>
+                     <div>
+                        <Label htmlFor="contact.phone_number">رقم الهاتف</Label>
+                        <Input id="contact.phone_number" {...register("contact.phone_number")} />
+                    </div>
+                     <div>
+                        <Label htmlFor="contact.whatsapp_number">رقم واتساب</Label>
+                        <Input id="contact.whatsapp_number" {...register("contact.whatsapp_number")} />
+                    </div>
+                     <div>
+                        <Label htmlFor="contact.working_hours">ساعات العمل</Label>
+                        <Input id="contact.working_hours" {...register("contact.working_hours")} />
+                    </div>
+                  </div>
                   <div>
-                    <h3 className="font-medium text-gray-900">السماح بالمحتوى الصريح</h3>
-                    <p className="text-sm text-gray-600">السماح بعرض المحتوى المصنف للبالغين</p>
+                    <Label htmlFor="contact.address_line_1">العنوان</Label>
+                    <Input id="contact.address_line_1" {...register("contact.address_line_1")} />
                   </div>
-                  <Switch
-                      checked={formData.security.enable_explicit_content}
-                      onChange={(e) => handleInputChange("security", "enable_explicit_content", e)}
-                    />
+                   <div>
+                    <Label htmlFor="contact.google_maps_url">رابط خرائط جوجل</Label>
+                    <Input id="contact.google_maps_url" {...register("contact.google_maps_url")} />
+                    {errors.contact?.google_maps_url && <p className="text-sm text-red-600 mt-1">{errors.contact.google_maps_url.message}</p>}
+                  </div>
                 </div>
-              </div>
-            </div>
-          )}
+              )}
+
+              {/* --- Social Media Settings Tab --- */}
+              {activeTab === 'social' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-3">الروابط الاجتماعية</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="social.facebook_url">رابط فيسبوك</Label>
+                      <Input id="social.facebook_url" {...register("social.facebook_url")} />
+                      {errors.social?.facebook_url && <p className="text-sm text-red-600 mt-1">{errors.social.facebook_url.message}</p>}
+                    </div>
+                     <div>
+                      <Label htmlFor="social.instagram_url">رابط انستغرام</Label>
+                      <Input id="social.instagram_url" {...register("social.instagram_url")} />
+                      {errors.social?.instagram_url && <p className="text-sm text-red-600 mt-1">{errors.social.instagram_url.message}</p>}
+                    </div>
+                     <div>
+                      <Label htmlFor="social.twitter_url">رابط تويتر</Label>
+                      <Input id="social.twitter_url" {...register("social.twitter_url")} />
+                      {errors.social?.twitter_url && <p className="text-sm text-red-600 mt-1">{errors.social.twitter_url.message}</p>}
+                    </div>
+                     <div>
+                      <Label htmlFor="social.pinterest_url">رابط بينترست</Label>
+                      <Input id="social.pinterest_url" {...register("social.pinterest_url")} />
+                      {errors.social?.pinterest_url && <p className="text-sm text-red-600 mt-1">{errors.social.pinterest_url.message}</p>}
+                    </div>
+                     <div>
+                      <Label htmlFor="social.tiktok_url">رابط تيك توك</Label>
+                      <Input id="social.tiktok_url" {...register("social.tiktok_url")} />
+                      {errors.social?.tiktok_url && <p className="text-sm text-red-600 mt-1">{errors.social.tiktok_url.message}</p>}
+                    </div>
+                  </div>
+                </div>
+              )}
+            </Card>
+          </form>
         </div>
       </div>
     </div>

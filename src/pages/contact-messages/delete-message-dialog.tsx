@@ -1,35 +1,32 @@
+"use client"
+
 import DangerDialog from "../../components/ui/danger-dialog"
-import { useDeleteContactMessage } from "../../hooks/use-contact-messages"
+import { useDeleteContactMessage } from "../../hooks/use-contact-message"
 import { ContactMessage } from "../../types/contact-message"
 
+
 interface DeleteMessageDialogProps {
+  message: ContactMessage | null
   isOpen: boolean
   onClose: () => void
-  message: ContactMessage | null
-  onSuccess?: () => void
 }
 
-export default function DeleteMessageDialog({ isOpen, onClose, message, onSuccess }: DeleteMessageDialogProps) {
-  const { mutate: deleteMessage, isPending } = useDeleteContactMessage(() => {
-    onClose()
-    onSuccess?.()
-  })
-
-  const handleConfirm = () => {
-    if (!message) return
-    deleteMessage({ id: message.id })
-  }
-
+export function DeleteMessageDialog({ message, isOpen, onClose }: DeleteMessageDialogProps) {
+  const { mutate: deleteMessage, isPending } = useDeleteContactMessage()
   if (!message) return null
+
+  const handleDelete = () => {
+    deleteMessage({ id: message.id }, { onSuccess: onClose })
+  }
 
   return (
     <DangerDialog
       isOpen={isOpen}
       onClose={onClose}
-      onConfirm={handleConfirm}
+      onConfirm={handleDelete}
       title="حذف الرسالة"
-      message={`هل أنت متأكد من حذف رسالة "${message.subject}" من ${message.name}؟ هذا الإجراء لا يمكن التراجع عنه.`}
-      confirmText="حذف الرسالة"
+      message={`هل أنت متأكد من حذف رسالة "${message.subject}"؟ هذا الإجراء لا يمكن التراجع عنه.`}
+      confirmText="نعم, حذف"
       loading={isPending}
     />
   )

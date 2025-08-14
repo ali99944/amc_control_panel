@@ -1,71 +1,81 @@
 "use client"
 
-import { LucideIcon } from "lucide-react"
-import { InputHTMLAttributes, ReactNode } from "react"
+import type React from "react"
+import { useState, useId, useCallback } from "react"
+import { cn } from "../../lib/utils"
 
-interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, "size"> {
-  inputSize?: "sm" | "md" | "lg"
-  icon?: LucideIcon
-  iconPosition?: "left" | "right"
-  label?: ReactNode
-  error?: string
+interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  label?: string
+  contentBefore?: React.ReactNode
+  contentAfter?: React.ReactNode
 }
 
-export function Input({ 
-  inputSize = "sm", 
-  icon: Icon, 
-  iconPosition = "right", 
-  label,
-  error,
-  className = "", 
-  ...props 
-}: InputProps) {
-  const baseClasses = "border bg-white border-gray-300 rounded focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 w-full"
-  
-  const sizes = {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-3 text-base",
-    lg: "px-5 py-4 text-lg"
-  }
+export function Input({ label, contentBefore, contentAfter, className, disabled = false, id, ...props }: InputProps) {
+  const inputId = useId()
+  const uniqueId = id || inputId
+  const [isFocused, setIsFocused] = useState(false)
 
-  const errorClasses = error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""
-
-  if (Icon) {
-    return (
-      <div className="relative">
-        {label && <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>}
-        <input 
-          className={`${baseClasses} ${sizes[inputSize]} ${iconPosition === 'right' ? 'pr-10' : 'pl-10'} ${errorClasses} ${className}`}
-          {...props}
-        />
-        <div className={`absolute top-1/2 transform -translate-y-1/2 ${iconPosition === 'right' ? 'right-3' : 'left-3'} text-gray-400`}>
-          {<Icon className="w-4 h-4" />}
-        </div>
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      </div>
-    )
-  }
-
-  if (label) {
-    return (
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
-        <input 
-          className={`${baseClasses} ${sizes[inputSize]} ${errorClasses} ${className}`}
-          {...props}
-        />
-        {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-      </div>
-    )
-  }
+  const handleFocus = useCallback(() => setIsFocused(true), [])
+  const handleBlur = useCallback(() => setIsFocused(false), [])
 
   return (
-    <div>
-      <input 
-        className={`${baseClasses} ${sizes[inputSize]} ${errorClasses} ${className}`}
-        {...props}
-      />
-      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
+    <div className={cn("w-full", className)}>
+      {label && (
+        <label htmlFor={uniqueId} className="block text-base font-normal text-gray-900 mb-2">
+          {label}
+        </label>
+      )}
+      <div
+        className={cn(
+          "relative flex items-center w-full border border-gray-300 rounded overflow-hidden",
+          "transition-all duration-200 ease-out",
+        //   isFocused ? "border-primary ring-1 ring-primary" : "border-gray-300",
+          disabled ? "bg-gray-50 text-gray-400 cursor-not-allowed" : "bg-white",
+          // Blue bottom border on focus
+          isFocused ? "after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary" : 'after:absolute after:bottom-0 after:left-0 after:h-[1.2px] after:w-full after:bg-primary',
+        )}
+      >
+        {contentBefore && (
+          <div
+            className={cn(
+              "flex items-center px-3 text-gray-500",
+              disabled && "text-gray-400",
+              // Add border-r if contentBefore is present and not disabled
+              contentBefore && !disabled && "border-r border-gray-200",
+            )}
+          >
+            {contentBefore}
+          </div>
+        )}
+        <input
+          id={uniqueId}
+          className={cn(
+            "flex-1 px-3 py-2 text-sm outline-none bg-transparent",
+            "transition-colors duration-200 ease-out",
+            isFocused && "bg-blue-50", // Light blue background on focus
+            disabled ? "text-gray-500" : "text-gray-900",
+            // Remove default border as parent div handles it
+            "border-none focus:ring-0 focus:outline-none",
+          )}
+          {...props}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          disabled={disabled}
+        />
+        {contentAfter && (
+          <div
+          onMouseDown={(e) => e.preventDefault()}
+            className={cn(
+              "flex items-center px-3 text-gray-500",
+              disabled && "text-gray-400",
+              // Add border-l if contentAfter is present and not disabled
+              contentAfter && !disabled && "border-l border-gray-200",
+            )}
+          >
+            {contentAfter}
+          </div>
+        )}
+      </div>
     </div>
   )
 }

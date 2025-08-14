@@ -1,6 +1,10 @@
 "use client"
 
 import type React from "react"
+import { Home, LogOut } from "lucide-react"
+import { Link } from "react-router-dom"
+import { useAppDispatch } from "../../redux/hook"
+import { logout } from "../../redux/reducers/auth_reducer"
 
 interface ToolbarProps {
   title: string
@@ -9,13 +13,33 @@ interface ToolbarProps {
 }
 
 export default function Toolbar({ title, children, className = "" }: ToolbarProps) {
+  const dispatch = useAppDispatch()
+
+  const handleLogout = () => {
+    // Handle logout logic here
+    localStorage.clear()
+    dispatch(logout())
+    window.location.href = "/login"
+  }
+
   return (
-    <div className={`bg-primary rounded-primary px-4 py-2 text-white/90 ${className}`}>
+    <div className={`bg-primary/80 sticky top-6 z-50 rounded-lg px-2 py-2 text-white/90 ${className}`}>
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl mb-2">{title}</h1>
+        <div className="flex items-center gap-4 pr-2">
+          <Link to="/" className="hover:text-white/70 transition-colors">
+            <Home size={24} />
+          </Link>
+          <h1 className="text-lg mb-2">{title}</h1>
         </div>
-        {children && <div>{children}</div>}
+        <div className="flex items-center gap-2">
+          {children && <div>{children}</div>}
+          <button 
+            onClick={handleLogout}
+            className="hover:bg-destructive/85 bg-destructive p-1.5 rounded transition-colors text-white cursor-pointer"
+          >
+            <LogOut size={24} />
+          </button>
+        </div>
       </div>
     </div>
   )

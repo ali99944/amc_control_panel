@@ -13,7 +13,7 @@ export const useAxios = (
     headers: {
       "Content-Type": contentType as string,
       accept: "application/json",
-      authorization: token,
+      authorization: `Bearer ${token}`,
       "Access-Control-Allow-Origin": "*",
     },
   });

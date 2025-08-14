@@ -1,36 +1,46 @@
 "use client"
 
-import type { TextareaHTMLAttributes, ReactNode } from "react"
+import type React from "react"
+import { useState, useId, useCallback } from "react"
+import { cn } from "../../lib/utils"
 
-interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
-  size?: "sm" | "md" | "lg"
-  error?: string
-  label?: ReactNode
+interface TextareaProps extends React.TextareaHTMLAttributes<HTMLTextAreaElement> {
+  label?: string
+  resizable?: boolean
 }
 
-export default function Textarea({ size = "md", error, label, className = "", ...props }: TextareaProps) {
-  const baseClasses =
-    "border border-gray-300 rounded-lg focus:outline-none focus:ring focus:ring-primary focus:border-primary transition-all duration-200 resize-none"
+export function Textarea({ label, resizable = true, className, disabled = false, id, ...props }: TextareaProps) {
+  const textareaId = useId()
+  const uniqueId = id || textareaId
+  const [isFocused, setIsFocused] = useState(false)
 
-  const sizes = {
-    sm: "px-3 py-2 text-sm",
-    md: "px-4 py-3 text-base",
-    lg: "px-5 py-4 text-lg",
-  }
-
-  const errorClasses = error ? "border-red-500 focus:ring-red-500 focus:border-red-500" : ""
+  const handleFocus = useCallback(() => setIsFocused(true), [])
+  const handleBlur = useCallback(() => setIsFocused(false), [])
 
   return (
-    <div className="w-full">
-      {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
-      <textarea
-        className={`${baseClasses} ${sizes[size]} ${errorClasses} ${className} w-full text-right`}
-        {...props}
-      />
-      {error && (
-        <p className="mt-1 text-sm text-red-600 text-right">{error}</p>
+    <div className={cn("w-full", className)}>
+      {label && (
+        <label htmlFor={uniqueId} className="block text-base font-normal text-gray-900 mb-2">
+          {label}
+        </label>
       )}
+      <textarea
+        id={uniqueId}
+        className={cn(
+          "flex min-h-[80px] w-full rounded border px-3 py-2 text-sm outline-none",
+          "transition-all duration-200 ease-out",
+          isFocused ? "border-primary ring-[0.5px] ring-primary" : "border-gray-300",
+          disabled ? "bg-gray-50 text-gray-400 cursor-not-allowed" : "bg-white text-gray-900",
+          resizable ? "resize-y" : "resize-none",
+          // Blue bottom border on focus
+          isFocused ? "after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-full after:bg-primary" : '',
+          className, // Apply custom classes last
+        )}
+        {...props}
+        onFocus={handleFocus}
+        onBlur={handleBlur}
+        disabled={disabled}
+      />
     </div>
   )
 }
-

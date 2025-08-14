@@ -1,33 +1,14 @@
-import { ManagerPermission } from "./permission"
+import { z } from "zod"
 
 export interface Manager {
   id: number
   name: string
-  username: string
-  role: 'admin' | 'super_admin'
-  manager_permissions: ManagerPermission[]
-  is_active: boolean
-  created_at: string
-  updated_at: string | null
-  last_login: string | null
-  profile_picture?: string | null
+  email: string
 }
 
-export interface CreateManagerData {
-  name: string
-  username: string
-  // role: 'admin' | 'super_admin'
-  password: string
-  permissions: string[]
-}
+export const loginFormSchema = z.object({
+  email: z.string().email("البريد الإلكتروني غير صحيح."),
+  password: z.string().min(6, "كلمة المرور يجب أن تكون 6 أحرف على الأقل."),
+})
 
-export interface UpdateManagerData {
-  name: string
-  username: string
-  // role: 'admin' | 'super_admin'
-  permissions: string[]
-}
-
-export interface ManagerPermissionsData {
-  permissions: string[]
-}
+export type LoginFormData = z.infer<typeof loginFormSchema>

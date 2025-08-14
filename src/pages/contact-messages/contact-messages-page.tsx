@@ -1,110 +1,95 @@
 "use client"
+
 import { useState } from "react"
-import { Mail, Eye, Trash2, User, Calendar, MessageSquare, Clock } from "lucide-react"
-import ViewMessageDialog from "./view-message-dialog"
-import DeleteMessageDialog from "./delete-message-dialog"
+import { Eye, Trash2, Mail, Inbox, Clock } from "lucide-react"
 import DataTable, { Column } from "../../components/datatable"
+import Toolbar from "../../components/ui/toolbar"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
-import Toolbar from "../../components/ui/toolbar"
-import { useContactMessages } from "../../hooks/use-contact-messages"
-import { formatDate, formatDateTime } from "../../lib/date"
+import { formatDate } from "../../lib/date"
+import { useContactMessages } from "../../hooks/use-contact-message"
 import { ContactMessage } from "../../types/contact-message"
+import { DeleteMessageDialog } from "./delete-message-dialog"
+import { ViewMessageDialog } from "./view-message-dialog"
 
 export default function ContactMessagesPage() {
-  const [isViewDialogOpen, setIsViewDialogOpen] = useState(false)
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null)
+  const { data: messages = [], isLoading } = useContactMessages()
 
-  // Fetch contact messages data
-  const { data: messages = [], isLoading, refetch } = useContactMessages()
+  const [dialogState, setDialogState] = useState<{
+    viewOpen: boolean;
+    deleteOpen: boolean;
+    selectedMessage: ContactMessage | null;
+  }>({ viewOpen: false, deleteOpen: false, selectedMessage: null })
 
-  // Calculate stats
-  const now = new Date()
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
-  const thisWeek = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)
-  const thisMonth = new Date(now.getFullYear(), now.getMonth(), 1)
+  // --- Event Handlers ---
+  const handleViewMessage = (message: ContactMessage) => {
+    setDialogState({ ...dialogState, viewOpen: true, selectedMessage: message })
+  }
 
+  const handleDeleteMessage = (message: ContactMessage) => {
+    setDialogState({ ...dialogState, deleteOpen: true, selectedMessage: message })
+  }
+
+  const closeAllDialogs = () => {
+    setDialogState({ viewOpen: false, deleteOpen: false, selectedMessage: null })
+  }
+
+  // --- Statistics ---
   const stats = {
     total: messages.length,
-    today: messages.filter((msg) => new Date(msg.created_at) >= today).length,
-    thisWeek: messages.filter((msg) => new Date(msg.created_at) >= thisWeek).length,
-    thisMonth: messages.filter((msg) => new Date(msg.created_at) >= thisMonth).length,
+    unread: messages.filter(m => !m.isRead).length,
+    today: messages.filter(m => new Date(m.receivedAt).toDateString() === new Date().toDateString()).length,
   }
 
-  // Handle view message
-  const handleViewMessage = (message: ContactMessage) => {
-    setSelectedMessage(message)
-    setIsViewDialogOpen(true)
-  }
+  const kpiCards = [
+    { title: "إجمالي الرسائل", value: stats.total, icon: Mail },
+    { title: "الرسائل غير المقروءة", value: stats.unread, icon: Inbox },
+    { title: "رسائل اليوم", value: stats.today, icon: Clock },
+  ]
 
-  // Handle delete message
-  const handleDeleteMessage = (message: ContactMessage) => {
-    setSelectedMessage(message)
-    setIsDeleteDialogOpen(true)
-  }
-
-  // Handle dialog success
-  const handleDialogSuccess = () => {
-    refetch()
-  }
-
-  // Get message preview (first 100 characters)
-  const getMessagePreview = (message: string): string => {
-    return message.length > 100 ? message.substring(0, 100) + "..." : message
-  }
-
-  // DataTable columns
+  // --- DataTable Columns ---
   const columns: Column<ContactMessage>[] = [
     {
-      key: "name",
+      key: "sender",
       title: "المرسل",
-      sortable: true,
-      render: (value: string, row: ContactMessage) => (
-        <div>
-          <div className="flex items-center gap-2">
-            <User className="w-4 h-4 text-gray-400" />
-            <span className="font-medium text-gray-900">{value}</span>
-          </div>
-          <div className="text-sm text-gray-500 mt-1">{row.email}</div>
+      render: (_, row) => (
+        <div className={!row.isRead ? "font-bold" : ""}>
+          <p className="text-gray-900">{row.fullName}</p>
+          <p className="text-sm text-gray-500">{row.email}</p>
         </div>
-      ),
+      )
     },
     {
       key: "subject",
       title: "الموضوع",
-      sortable: true,
-      render: (value: string, row: ContactMessage) => (
-        <div>
-          <div className="font-medium text-gray-900 line-clamp-1">{value}</div>
-          <div className="text-sm text-gray-500 line-clamp-2 mt-1">{getMessagePreview(row.message)}</div>
-        </div>
-      ),
+      render: (subject) => <p className="line-clamp-2">{subject}</p>
     },
     {
-      key: "created_at",
-      title: "تاريخ الإرسال",
-      sortable: true,
-      render: (value: string) => (
+      key: "status",
+      title: "الحالة",
+      render: (_, row) => (
         <div className="flex items-center gap-2">
-          <Calendar className="w-4 h-4 text-gray-400" />
-          <div>
-            <div className="text-sm font-medium text-gray-900">{formatDate(value)}</div>
-            <div className="text-xs text-gray-500">{formatDateTime(value).split(" ")[1]}</div>
-          </div>
+            {!row.isRead && <div className="w-2.5 h-2.5 bg-primary rounded-full animate-pulse"></div>}
+            <span className={!row.isRead ? 'font-semibold text-primary' : 'text-gray-600'}>
+                {row.isRead ? 'مقروءة' : 'جديدة'}
+            </span>
         </div>
-      ),
+      )
+    },
+    {
+      key: "receivedAt",
+      title: "تاريخ الاستلام",
+      render: (date) => formatDate(date),
     },
     {
       key: "actions",
       title: "الإجراءات",
-      width: "140px",
-      render: (_, row: ContactMessage) => (
+      render: (_, row) => (
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="secondary" onClick={() => handleViewMessage(row)} title="عرض الرسالة">
+          <Button variant="secondary" size="sm" onClick={() => handleViewMessage(row)}>
             <Eye className="w-4 h-4" />
           </Button>
-          <Button size="sm" variant="danger" onClick={() => handleDeleteMessage(row)} title="حذف">
+          <Button variant="danger" size="sm" onClick={() => handleDeleteMessage(row)}>
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
@@ -113,90 +98,44 @@ export default function ContactMessagesPage() {
   ]
 
   return (
-    <div className="space-y-4">
-      {/* Page Header */}
+    <div className="space-y-6" dir="rtl">
       <Toolbar title="رسائل التواصل" />
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Mail className="w-5 h-5 text-white" />
+      {/* Statistics Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        {kpiCards.map((card, index) => (
+          <Card key={index}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-lg"><card.icon className="w-6 h-6 text-primary" /></div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{isLoading ? "..." : card.value}</p>
+              </div>
             </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي الرسائل</p>
-              <p className="text-lg font-bold text-primary">{stats.total}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">اليوم</p>
-              <p className="text-lg font-bold text-primary">{stats.today}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">هذا الأسبوع</p>
-              <p className="text-lg font-bold text-primary">{stats.thisWeek}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <MessageSquare className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">هذا الشهر</p>
-              <p className="text-lg font-bold text-primary">{stats.thisMonth}</p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        ))}
       </div>
 
-      {/* Messages Table */}
-      <DataTable
-        data={messages}
-        columns={columns}
-        loading={isLoading}
-        searchable
-        exportable
-        // defaultSort={{ key: "created_at", direction: "desc" }}
-        emptyState={
-          <div className="text-center py-8">
-            <Mail className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <p className="text-gray-500">لا توجد رسائل تواصل</p>
-            <p className="text-sm text-gray-400 mt-2">ستظهر رسائل المستخدمين هنا عند إرسالها</p>
-          </div>
-        }
-      />
-
+      <Card className="p-0 overflow-hidden">
+        <DataTable
+          columns={columns}
+          data={messages}
+          loading={isLoading}
+          searchable
+          exportable
+        />
+      </Card>
+      
       {/* Dialogs */}
       <ViewMessageDialog
-        isOpen={isViewDialogOpen}
-        onClose={() => setIsViewDialogOpen(false)}
-        message={selectedMessage}
+        isOpen={dialogState.viewOpen}
+        onClose={closeAllDialogs}
+        message={dialogState.selectedMessage}
       />
-
       <DeleteMessageDialog
-        isOpen={isDeleteDialogOpen}
-        onClose={() => setIsDeleteDialogOpen(false)}
-        message={selectedMessage}
-        onSuccess={handleDialogSuccess}
+        isOpen={dialogState.deleteOpen}
+        onClose={closeAllDialogs}
+        message={dialogState.selectedMessage}
       />
     </div>
   )

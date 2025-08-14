@@ -6,10 +6,23 @@ import { cn } from "../../lib/utils"
 interface CardProps {
   children: React.ReactNode
   className?: string
+  variant?: "default" | "interactive"
+  onClick?: () => void
 }
 
-export default function Card({ children, className = "" }: CardProps) {
-  return <div className={cn("bg-white p-4 rounded-xl", className)}>{children}</div>
+export default function Card({ children, className = "", variant = "default", onClick }: CardProps) {
+  return (
+    <div 
+      className={cn(
+        "bg-white p-4 rounded-xl shadow",
+        variant === "interactive" && "cursor-pointer hover:bg-white/40 transition-shadow duration-300",
+        className
+      )}
+      onClick={variant === "interactive" ? onClick : undefined}
+    >
+      {children}
+    </div>
+  )
 }
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

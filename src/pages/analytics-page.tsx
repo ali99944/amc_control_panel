@@ -1,300 +1,113 @@
 "use client"
 
-import { useState } from "react"
-import { TrendingUp, TrendingDown, Users, Music, PlayCircle} from 'lucide-react'
-import Card from "../components/ui/card"
+import { DollarSign, ShoppingBag, Package, TrendingUp } from "lucide-react"
+import { BarChart, LineChart, PieChart, pieArcLabelClasses } from "@mui/x-charts"
+import { useSalesByCityStats, useSalesOverTime, useStatisticsKpis, useTopProductsStats } from "../hooks/use-statistics"
 import Toolbar from "../components/ui/toolbar"
-import Button from "../components/ui/button"
-import Chart from "../components/ui/chart"
-import {
-  usePlatformStats,
-  useChartData,
-  useTopItems,
-} from "../hooks/use-statistics"
-import DatePicker from "../components/ui/date-picker"
-import EmptyState from "../components/empty_state"
+import Card from "../components/ui/card"
 
 export default function StatisticsPage() {
-  const [dateRange, setDateRange] = useState({
-    start: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-    end: new Date().toISOString().split('T')[0]
-  })
-  const [selectedPeriod, setSelectedPeriod] = useState('30d')
+  // Fetch all statistics data
+  const { data: kpis, isLoading: kpisLoading } = useStatisticsKpis()
+  const { data: salesData = [], isLoading: salesLoading } = useSalesOverTime("30d")
+  const { data: topProducts = [], isLoading: topProductsLoading } = useTopProductsStats()
+  const { data: salesByCity = [], isLoading: cityLoading } = useSalesByCityStats()
 
-  // Fetch data
-  const { data: platformStats } = usePlatformStats(dateRange)
-  console.log(platformStats);
-  
-  const { data: userGrowthChart } = useChartData('user-growth', selectedPeriod)
-  // const { data: revenueChart } = useChartData('revenue', selectedPeriod)
-  const { data: engagementChart } = useChartData('engagement', selectedPeriod)
-  const { data: topSongs } = useTopItems('songs', 5)
-  const { data: topArtists } = useTopItems('artists', 5)
-  const { data: topPlaylists } = useTopItems('playlists', 5)
+  const formatCurrency = (amount: number) => new Intl.NumberFormat("ar-EG", { style: "currency", currency: "EGP" }).format(amount)
 
-  // Format numbers
-  const formatNumber = (num: number) => {
-    if (num >= 1000000) {
-      return `${(num / 1000000).toFixed(1)}M`
-    }
-    if (num >= 1000) {
-      return `${(num / 1000).toFixed(1)}K`
-    }
-    return num
-  }
-
-  // Format currency
-  // const formatCurrency = (amount: number) => {
-  //   return new Intl.NumberFormat('ar-SA', {
-  //     style: 'currency',
-  //     currency: 'SAR'
-  //   }).format(amount)
-  // }
-
-  // Format percentage
-  const formatPercentage = (value: number) => {
-    const sign = value >= 0 ? '+' : ''
-    return `${sign}${value}%`
-  }
-
-  const periodOptions = [
-    { value: '7d', label: '7 أيام' },
-    { value: '30d', label: '30 يوم' },
-    { value: '90d', label: '90 يوم' },
-    { value: '1y', label: 'سنة' },
+  const kpiCards = [
+    { title: "إجمالي الإيرادات", value: kpis ? formatCurrency(kpis.totalRevenue) : "...", icon: DollarSign, loading: kpisLoading },
+    { title: "إجمالي الطلبات", value: kpis ? kpis.totalOrders : "...", icon: ShoppingBag, loading: kpisLoading },
+    { title: "المنتجات المباعة", value: kpis ? kpis.totalProductsSold : "...", icon: Package, loading: kpisLoading },
+    { title: "متوسط قيمة الطلب", value: kpis ? formatCurrency(kpis.averageOrderValue) : "...", icon: TrendingUp, loading: kpisLoading },
   ]
 
-  return (
-    <div className="space-y-6">
-      {/* Page Header */}
-      <Toolbar title="الإحصائيات والتحليلات">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <DatePicker
-              value={dateRange.start}
-              onChange={(e) => setDateRange(prev => ({ ...prev, start: e?.toLocaleDateString() ?? 'no-date' }))}
-              className="bg-white/10 border-white/20 text-white placeholder-white/50"
-            />
-            <span className="text-white/70">إلى</span>
-            <DatePicker
-              value={dateRange.end}
-              onChange={(e) => setDateRange(prev => ({ ...prev, end: e?.toLocaleDateString() ?? 'no-date' }))}
-              className="bg-white/10 border-white/20 text-white placeholder-white/50"
-            />
-          </div>
-        </div>
-      </Toolbar>
+  // Chart brand color
+  const primaryColor = "#6D4C41";
 
-      {/* Period Selector */}
-      <div className="flex gap-2">
-        {periodOptions.map((option) => (
-          <Button
-            key={option.value}
-            variant={selectedPeriod === option.value ? "primary" : "secondary"}
-            size="sm"
-            onClick={() => setSelectedPeriod(option.value)}
-          >
-            {option.label}
-          </Button>
+  return (
+    <div className="space-y-6" dir="rtl">
+      <Toolbar title="الإحصائيات والتحليلات" />
+
+      {/* KPI Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpiCards.map((card, index) => (
+          <Card key={index}>
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-primary/10 rounded-lg"><card.icon className="w-6 h-6 text-primary" /></div>
+              <div>
+                <p className="text-sm font-medium text-gray-500">{card.title}</p>
+                <p className="text-2xl font-bold text-gray-900">{card.loading ? "..." : card.value}</p>
+              </div>
+            </div>
+          </Card>
         ))}
       </div>
 
-      {/* Main Stats Cards */}
+      {/* Main Sales Chart */}
+      <Card>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">نظرة عامة على المبيعات (آخر 30 يومًا)</h3>
+        <div className="h-[350px]">
+          {salesLoading ? (
+            <div className="h-full w-full bg-gray-200 animate-pulse rounded-lg" />
+          ) : (
+            <LineChart
+              xAxis={[{ data: salesData.map(d => new Date(d.date)), scaleType: "time", valueFormatter: (date) => date.toLocaleDateString('ar-EG') }]}
+              series={[{ data: salesData.map(d => d.revenue), color: primaryColor, area: true, curve: "catmullRom" }]}
+              grid={{ vertical: true, horizontal: true }}
+              sx={{ '.MuiLineElement-root': { strokeWidth: 3 }, '.MuiAreaElement-root': { fill: "url(#gradient)", fillOpacity: 0.2 } }}
+            >
+                <defs>
+                    <linearGradient id="gradient" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor={primaryColor} stopOpacity={0.8}/>
+                        <stop offset="95%" stopColor={primaryColor} stopOpacity={0}/>
+                    </linearGradient>
+                </defs>
+            </LineChart>
+          )}
+        </div>
+      </Card>
       
-
-      {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* User Growth Chart */}
-        {userGrowthChart && (
-          <Card>
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">نمو المستخدمين</h3>
-              <p className="text-sm text-gray-600">عدد المستخدمين الجدد خلال الفترة المحددة</p>
-            </div>
-            <Chart data={userGrowthChart} type="area" height={250} />
-          </Card>
-        )}
-
-        {/* Revenue Chart */}
-        {/* {revenueChart && (
-          <Card>
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">الإيرادات</h3>
-              <p className="text-sm text-gray-600">تطور الإيرادات خلال الفترة المحددة</p>
-            </div>
-            <Chart data={revenueChart} type="bar" height={250} />
-          </Card>
-        )} */}
-
-        {/* Engagement Chart */}
-        {engagementChart && (
-          <Card className="">
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">مؤشرات التفاعل</h3>
-              <p className="text-sm text-gray-600">التشغيلات وساعات الاستماع اليومية</p>
-            </div>
-            <Chart data={engagementChart} type="line" height={300} />
-          </Card>
-        )}
-      </div>
-
-      {/* Top Items Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Top Songs */}
-        {topSongs && (
-          <Card>
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">الأغاني الأكثر تشغيلاً</h3>
-            </div>
-            <div className="space-y-3">
-              {topSongs.map((song, index) => (
-                <div key={song.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
-                    {song.image ? (
-                      <img src={song.image || "/placeholder.svg"} alt={song.name} className="w-full h-full object-cover" />
+      {/* Secondary Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
+        <div className="lg:col-span-3">
+            <Card className="h-full">
+                 <h3 className="text-lg font-semibold text-gray-900 mb-4">المنتجات الأكثر مبيعًا</h3>
+                 <div className="h-[300px]">
+                    {topProductsLoading ? (
+                        <div className="h-full w-full bg-gray-200 animate-pulse rounded-lg" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Music className="w-4 h-4 text-gray-400" />
-                      </div>
+                         <BarChart
+                            dataset={topProducts.map((product, id) => ({ id, product_name: product.product_name, total_sold: product.total_sold }))}
+                            yAxis={[{ scaleType: 'band', dataKey: 'product_name' }]}
+                            series={[{ dataKey: 'total_sold', color: primaryColor }]}
+                            layout="horizontal"
+                            grid={{ vertical: true }}
+                        />
                     )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{song.name}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">{formatNumber(song.value)} تشغيل</span>
-                      <div className="flex items-center gap-1">
-                        {song.change >= 0 ? (
-                          <TrendingUp className="w-3 h-3 text-green-600" />
-                        ) : (
-                          <TrendingDown className="w-3 h-3 text-red-600" />
-                        )}
-                        <span className={`text-xs ${song.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {formatPercentage(song.change)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {
-              topSongs.length == 0 && (
-                <EmptyState 
-                  message="لا توجد بيانات"
-                  icon={Music}
-                />
-              )
-            }
-          </Card>
-        )}
-
-        {/* Top Artists */}
-        {topArtists && (
-          <Card>
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">الفنانين الأكثر استماعاً</h3>
-            </div>
-            <div className="space-y-3">
-              {topArtists.map((artist, index) => (
-                <div key={artist.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="w-10 h-10 bg-gray-100 rounded-full overflow-hidden">
-                    {artist.image ? (
-                      <img src={artist.image || "/placeholder.svg"} alt={artist.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Users className="w-4 h-4 text-gray-400" />
-                      </div>
+                 </div>
+            </Card>
+        </div>
+        <div className="lg:col-span-2">
+            <Card className="h-full">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">التوزيع الجغرافي للمبيعات</h3>
+                <div className="h-[300px]">
+                    {cityLoading ? (
+                         <div className="h-full w-full bg-gray-200 animate-pulse rounded-lg" />
+                    ): (
+                        <PieChart
+                            series={[{
+                                data: salesByCity.map((city, id) => ({ id, value: city.order_count, label: city.city })),
+                                innerRadius: 50,
+                                arcLabel: (item) => `${item.value}`,
+                            }]}
+                            sx={{ [`& .${pieArcLabelClasses.root}`]: { fill: 'white', fontSize: 14 } }}
+                            colors={['#6D4C41', '#8D6E63', '#A1887F', '#BCAAA4', '#D7CCC8', '#EFEBE9']} // Palette of brown shades
+                        />
                     )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{artist.name}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">{formatNumber(artist.value)} متابع</span>
-                      <div className="flex items-center gap-1">
-                        {artist.change >= 0 ? (
-                          <TrendingUp className="w-3 h-3 text-green-600" />
-                        ) : (
-                          <TrendingDown className="w-3 h-3 text-red-600" />
-                        )}
-                        <span className={`text-xs ${artist.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {formatPercentage(artist.change)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
                 </div>
-              ))}
-            </div>
-
-            {
-              topArtists.length == 0 && (
-                <EmptyState 
-                  message="لا توجد بيانات"
-                  icon={Music}
-                />
-              )
-            }
-          </Card>
-        )}
-
-        {/* Top Playlists */}
-        {topPlaylists && (
-          <Card>
-            <div className="mb-4">
-              <h3 className="text-lg font-bold text-primary">قوائم التشغيل الأكثر شعبية</h3>
-            </div>
-            <div className="space-y-3">
-              {topPlaylists.map((playlist, index) => (
-                <div key={playlist.id} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
-                    {index + 1}
-                  </div>
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden">
-                    {playlist.image ? (
-                      <img src={playlist.image || "/placeholder.svg"} alt={playlist.name} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <PlayCircle className="w-4 h-4 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{playlist.name}</p>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">{formatNumber(playlist.value)} تشغيل</span>
-                      <div className="flex items-center gap-1">
-                        {playlist.change >= 0 ? (
-                          <TrendingUp className="w-3 h-3 text-green-600" />
-                        ) : (
-                          <TrendingDown className="w-3 h-3 text-red-600" />
-                        )}
-                        <span className={`text-xs ${playlist.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {formatPercentage(playlist.change)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {
-              topPlaylists.length == 0 && (
-                <EmptyState 
-                  message="لا توجد بيانات"
-                  icon={Music}
-                />
-              )
-            }
-          </Card>
-        )}
+            </Card>
+        </div>
       </div>
     </div>
   )

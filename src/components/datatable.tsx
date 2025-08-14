@@ -3,7 +3,7 @@
 
 import type { ReactNode } from "react"
 import { useState, useMemo } from "react"
-import { ChevronUp, ChevronDown, Download, Search } from "lucide-react"
+import { ChevronUp, ChevronDown, Download } from "lucide-react"
 import { Input } from "./ui/input"
 import Button from "./ui/button"
 
@@ -189,18 +189,18 @@ export default function DataTable<T extends Record<string, any>>({
 
   return (
     <div className="space-y-4">
-      <div className={`bg-white rounded-xl border border-gray-200 ${className}`}>
+      <div className={`bg-white rounded-xl  ${className}`}>
       {/* Header */}
       <div className="p-4 border-b border-gray-200">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-4 flex-1">
             {searchable && (
-              <div className="relative max-w-sm">
+              <div className="relative w-xs">
                 <Input
                   placeholder="البحث..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  icon={Search}
+                  
                 />
               </div>
             )}
@@ -274,11 +274,26 @@ export default function DataTable<T extends Record<string, any>>({
               </tr>
             ) : paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + (selectable ? 1 : 0)} className="p-8 text-center">
+                <td colSpan={columns.length + (selectable ? 1 : 0)} className="p-12 text-center">
                   {emptyState || (
-                    <div className="text-gray-500">
-                      <div className="text-4xl mb-2">📭</div>
-                      <p>لا توجد بيانات للعرض</p>
+                    <div className="flex flex-col items-center justify-center text-gray-500">
+                      <div className="w-24 h-24 mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                        <svg 
+                          className="w-12 h-12 text-gray-400"
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path 
+                            strokeLinecap="round" 
+                            strokeLinejoin="round" 
+                            strokeWidth={1.5}
+                            d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
+                          />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-medium mb-1">لا توجد بيانات</h3>
+                      <p className="text-sm text-gray-400">لم يتم العثور على أي بيانات للعرض في الوقت الحالي</p>
                     </div>
                   )}
                 </td>

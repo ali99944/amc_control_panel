@@ -1,54 +1,70 @@
-# React + TypeScript + Vite
+# 🧩 Frontend Feature Implementation Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> A structured overview of all frontend features, including their pages, sub-functionalities, API implementations, and current development/test status.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔐 Feature: Authentication
 
-## Expanding the ESLint configuration
+| Page / Item | Sub-Item | Description | Status | Error | Notes |
+|-------------|----------|-------------|--------|-------|-------|
+| Login Page  | UI Layout | Form layout, fields, buttons | ✅ Implemented | - | Fully responsive |
+|             | Auth API | Call `/auth/login` | ✅ Implemented | - | Token handled |
+|             | Error Handling | Display server & validation errors | 🚧 Under Work | Wrong 500 message | Needs better UX |
+| Register Page | UI Layout | Form fields + checkbox | ✅ Implemented | - | - |
+|               | Register API | Call `/auth/register` | ✅ Implemented | - | - |
+|               | Password Strength | Validate client-side strength | ❌ Not Started | - | - |
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## 🎵 Feature: Songs
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+| Page / Item     | Sub-Item         | Description                         | Status | Error         | Notes                    |
+|------------------|------------------|-------------------------------------|--------|---------------|--------------------------|
+| Songs Page       | UI Grid          | Display list of songs               | ✅ Implemented | -           | Responsive & paginated  |
+|                  | Songs API        | Call `/songs` to fetch list         | ✅ Implemented | -           | Uses caching            |
+| Songs Detail     | Song Info UI     | Display name, artist, duration      | ✅ Implemented | -           | -                        |
+|                  | Like Button      | Like song logic + API `/like`       | 🚧 Under Work | 500 on retry | Retry not handled yet    |
+|                  | Playback Preview | 30s preview playback                | ✅ Implemented | -           | Uses HTML5 audio         |
+|                  | Comments Section | List + add comment                  | ❌ Not Started | -           | Backend not ready        |
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## 📂 Feature: Playlist Management
+
+| Page / Item       | Sub-Item            | Description                        | Status | Error       | Notes                |
+|-------------------|---------------------|------------------------------------|--------|-------------|----------------------|
+| Playlist Page     | Create Playlist     | Form + API `/playlists/create`     | ✅ Implemented | -         | -                    |
+|                   | Delete Playlist     | Button + API `/playlists/delete`   | ✅ Implemented | -         | Confirm dialog added |
+| Playlist Detail   | Add Song to Playlist| Dropdown + API `/playlist/add`     | 🚧 Under Work | UI flickers | Fix loading state     |
+|                   | Remove Song         | Remove song logic                  | ❌ Not Started | -         | Waiting on design     |
+|                   | Share Playlist      | Generate public link               | ❌ Not Started | -         | Planned v2 feature    |
+
+---
+
+## 📌 Legend
+
+- ✅ Implemented
+- 🚧 Under Work
+- ❌ Not Started
+- `Error`: Any known issue (message, bug, edge case)
+- `Notes`: Additional dev notes, blockers, decisions
+
+---
+
+## 🧮 Summary
+
+| Feature              | Items | ✅ | 🚧 | ❌ |
+|----------------------|-------|----|-----|----|
+| Authentication       | 6     | 4  | 1   | 1  |
+| Songs                | 6     | 4  | 1   | 1  |
+| Playlist Management  | 5     | 2  | 1   | 2  |
+
+---
+
+## 🚀 Next Actions
+
+- [ ] Complete error handling for login
+- [ ] Build `Comments Section` for song detail
+- [ ] Finalize playlist sharing feature for v2
+

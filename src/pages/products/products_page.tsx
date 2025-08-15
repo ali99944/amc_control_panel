@@ -43,16 +43,16 @@ export default function ProductsPage() {
       title: "المنتج",
       render: (_, row) => (
         <div className="flex items-center gap-3">
-          <Avatar src={row.image} alt={row.ar_name} size="md" />
+          <Avatar src={row.image} alt={row.name.ar} size="md" />
           <div>
-            <p className="font-semibold">{row.ar_name}</p>
-            <p className="text-sm text-gray-500">{row.en_name}</p>
+            <p className="font-semibold">{row.name.ar}</p>
+            <p className="text-sm text-gray-500">{row.name.en}</p>
           </div>
         </div>
       ),
     },
     {
-      key: "original_price",
+      key: "price",
       title: "السعر",
       render: (price) => <span className="font-mono">{formatCurrency(price)}</span>,
     },

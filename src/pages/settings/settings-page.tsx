@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Settings as SettingsIcon, AtSign, Share2, Save, Loader2 } from "lucide-react"
+import { Settings as SettingsIcon, AtSign, Share2, Save, Loader2, Store } from "lucide-react"
 import { useSettings, useUpdateSettings } from "../../hooks/use-settings"
 import { settingsFormSchema, type SettingsFormData } from "../../types/settings"
 import Toolbar from "../../components/ui/toolbar"
@@ -31,11 +31,18 @@ export default function SettingsPage() {
 
   useEffect(() => {
     if (settings) {
+      console.log(settings);
+      
       reset(settings)
     }
   }, [settings, reset])
 
-  const handleFormSubmit = (data: SettingsFormData) => {
+  useEffect(() => {
+    console.log(errors);
+    
+  }, [errors])
+
+  const handleFormSubmit = (data: SettingsFormData) => {    
     updateSettings(data)
   }
   
@@ -43,6 +50,7 @@ export default function SettingsPage() {
     { id: "general", name: "الإعدادات العامة", icon: SettingsIcon },
     { id: "contact", name: "بيانات التواصل", icon: AtSign },
     { id: "social", name: "الروابط الاجتماعية", icon: Share2 },
+    { id: "store", name: "اعدادات المتجر", icon: Store },
   ]
   
   if (isFetching) {
@@ -203,6 +211,24 @@ export default function SettingsPage() {
                   </div>
                 </div>
               )}
+
+              {/* {activeTab === 'store' && (
+                <div className="space-y-4">
+                  <h3 className="text-lg font-semibold border-b pb-3">اعدادات المتجر</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="store.currency">عملة المتجر</Label>
+                      <Input id="store.currency" {...register("store.currency")} />
+                      {errors.store?.currency && <p className="text-sm text-red-600 mt-1">{errors.store.currency.message}</p>}
+                    </div>
+                    <div>
+                      <Label htmlFor="store.delivery_fee">ضريبة التوصيل</Label>
+                      <Input id="store.delivery_fee" {...register("store.delivery_fee")} />
+                      {errors.store?.delivery_fee && <p className="text-sm text-red-600 mt-1">{errors.store.delivery_fee.message}</p>}
+                    </div>
+                  </div>
+                </div>
+              )} */}
             </Card>
           </form>
         </div>

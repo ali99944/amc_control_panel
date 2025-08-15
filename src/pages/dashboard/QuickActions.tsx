@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { FaBolt, FaTimes } from 'react-icons/fa'
-import { PlusCircle, ShoppingBag, Package, Users, Tag, BarChart2, Settings, LogOut } from 'lucide-react'
+import { FaBolt, FaFemale, FaQuestion, FaTimes } from 'react-icons/fa'
+import { PlusCircle, ShoppingBag, Package, BarChart2, Settings, LogOut, Star, MessageCircle, Search, FileIcon, Megaphone } from 'lucide-react'
 import { NavigateFunction, useNavigate } from 'react-router-dom'
 
 interface QuickAction {
@@ -17,11 +17,16 @@ function getQuickActionItems (navigate: NavigateFunction) {
   return [
     { id: 'add-product', icon: PlusCircle, label: 'إضافة منتج', onClick: () => navigate('products/create'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
     { id: 'manage-products', icon: ShoppingBag, label: 'إدارة المنتجات', onClick: () => navigate('products'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
-    { id: 'orders', icon: Package, label: 'الطلبات', onClick: () => console.log('فتح الطلبات'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
-    { id: 'customers', icon: Users, label: 'العملاء', onClick: () => console.log('فتح قائمة العملاء'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
-    { id: 'discounts', icon: Tag, label: 'كوبونات الخصم', onClick: () => console.log('فتح كوبونات الخصم'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'orders', icon: Package, label: 'الطلبات', onClick: () => navigate('orders'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'faqs', icon: FaQuestion, label: 'الاسئلة', onClick: () => navigate('faqs'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'models', icon: FaFemale, label: 'الموديلات', onClick: () => navigate('models'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
     { id: 'analytics', icon: BarChart2, label: 'الإحصائيات', onClick: () => navigate('analytics'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
-    { id: 'settings', icon: Settings, label: 'الإعدادات', onClick: () => console.log('فتح الإعدادات'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'settings', icon: Settings, label: 'الإعدادات', onClick: () => navigate('settings'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'testimonials', icon: Star, label: 'التعليقات', onClick: () => navigate('testimonials'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'contact-messages', icon: MessageCircle, label: 'رسائل التواصل', onClick: () => navigate('contact-messages'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'seo', icon: Search, label: 'SEO', onClick: () => navigate('seo'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'policies', icon: FileIcon, label: 'السياسات', onClick: () => navigate('policies'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
+    { id: 'promotions', icon: Megaphone, label: 'شريط العروض', onClick: () => navigate('promotions'), bgColor: 'bg-primary/10', textColor: 'text-primary' },
     { id: 'logout', icon: LogOut, label: 'تسجيل الخروج', onClick: () => console.log('تسجيل الخروج'), bgColor: 'bg-destructive/10', textColor: 'text-destructive' },
   ] as QuickAction[]
 }
@@ -49,7 +54,7 @@ export const QuickActions: React.FC = () => {
                 <FaTimes className="w-4 h-4 cursor-pointer" />
               </button>
             </div>
-            <div className="p-2 grid grid-cols-4 gap-2">
+            <div className="p-2 grid grid-cols-5 gap-2">
               <AnimatePresence>
                 {quickActions.map((action) => (
                   <motion.button

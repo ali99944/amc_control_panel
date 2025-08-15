@@ -68,7 +68,7 @@ export function TestimonialFormDialog({ testimonial, isOpen, onClose }: Testimon
             name="product_id"
             render={({ field }) => (
               <Select
-                options={products.map(p => ({ label: p.ar_name, value: String(p.id) }))}
+                options={products.map(p => ({ label: p.name.en, value: String(p.id) }))}
                 value={field.value}
                 onChange={value => field.onChange(String(value))}
                 placeholder={productsLoading ? "جاري التحميل..." : "اختر منتجًا"}

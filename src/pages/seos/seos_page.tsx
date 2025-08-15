@@ -17,8 +17,8 @@ export default function SeoPage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {Array.from({ length: 3 }).map((_, i) => (
-            <Card key={i} className="h-48 animate-pulse bg-gray-200">
-                <div></div>
+            <Card key={i} className="h-48 !bg-white/60">
+                <div className="animate-pulse bg-gray-200 h-full"></div>
             </Card>
           ))}
         </div>

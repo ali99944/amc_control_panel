@@ -35,6 +35,14 @@ export interface AppSettings {
 }
 
 export const settingsFormSchema = z.object({
+  contact: z.object({
+    public_email: z.string().email("البريد الإلكتروني العام غير صحيح."),
+    phone_number: z.string().optional(),
+    whatsapp_number: z.string().optional(),
+    address_line_1: z.string().optional(),
+    google_maps_url: z.string().url("رابط خرائط جوجل غير صحيح.").optional().or(z.literal('')),
+    working_hours: z.string().optional(),
+  }),
   general: z.object({
     app_name: z.string().min(1, "اسم التطبيق مطلوب."),
     app_url: z.string().url("رابط التطبيق غير صحيح."),
@@ -45,14 +53,6 @@ export const settingsFormSchema = z.object({
     maintenance_message: z.string().optional(),
     copyright_text: z.string().optional(),
   }),
-  contact: z.object({
-    public_email: z.string().email("البريد الإلكتروني العام غير صحيح."),
-    phone_number: z.string().optional(),
-    whatsapp_number: z.string().optional(),
-    address_line_1: z.string().optional(),
-    google_maps_url: z.string().url("رابط خرائط جوجل غير صحيح.").optional().or(z.literal('')),
-    working_hours: z.string().optional(),
-  }),
   social: z.object({
     facebook_url: z.string().url("رابط فيسبوك غير صحيح.").optional().or(z.literal('')),
     instagram_url: z.string().url("رابط انستغرام غير صحيح.").optional().or(z.literal('')),
@@ -60,6 +60,11 @@ export const settingsFormSchema = z.object({
     pinterest_url: z.string().url("رابط بينترست غير صحيح.").optional().or(z.literal('')),
     tiktok_url: z.string().url("رابط تيك توك غير صحيح.").optional().or(z.literal('')),
   }),
+
+  // store: z.object({
+  //   currency: z.string().default('ج.م'),
+  //   delivery_fee: z.number().default(0),
+  // })
 })
 
 export type SettingsFormData = z.infer<typeof settingsFormSchema>

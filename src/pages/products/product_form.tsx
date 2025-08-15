@@ -1,4 +1,3 @@
-"use client"
 
 import { useForm, useFieldArray, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,7 +10,8 @@ import Button from "../../components/ui/button"
 import { Select } from "../../components/ui/select"
 import ImagePicker from "../../components/ui/image-picker"
 import { Product, ProductFormData, productFormSchema } from "../../types/product"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
 interface ProductFormProps {
   product?: Product
@@ -28,11 +28,11 @@ export function ProductForm({ product, onSubmit, isLoading }: ProductFormProps) 
   } = useForm<ProductFormData>({
     resolver: zodResolver(productFormSchema),
     defaultValues: {
-      ar_name: product?.ar_name || "",
-      en_name: product?.en_name || "",
-      ar_description: product?.ar_description || "",
-      en_description: product?.en_description || "",
-      original_price: product?.original_price || 0,
+      ar_name: product?.name.ar || "",
+      en_name: product?.name.en || "",
+      ar_description: product?.description.ar || "",
+      en_description: product?.description.en || "",
+      original_price: product?.price || 0,
       status: product?.status || "draft",
       discount: product?.discount,
       discount_type: product?.discount_type,
@@ -45,7 +45,20 @@ export function ProductForm({ product, onSubmit, isLoading }: ProductFormProps) 
     name: "specifications",
   })
 
-  const [image, setImage] = useState<File | null>(null)
+  const [image, setImage] = useState<File | undefined | null>()
+
+  const getRemoteFile = async (url: string) => {
+    const blog = await axios.get(url, {
+      headers: {
+        'Access-Control-Allow-Origin': '*'
+      }
+    })
+    console.log(typeof blog.data);
+  }
+
+  useEffect(() => {
+    getRemoteFile("C:\\Users\\RTX\\Downloads\\20250808_1007_Virevo Logo Design_simple_compose_01k24837aye6crgyxmz8bp1fwm.png")
+  }, [])
 
   const handleFormSubmit = (data: ProductFormData) => {
     const formData = new FormData()
@@ -60,10 +73,13 @@ export function ProductForm({ product, onSubmit, isLoading }: ProductFormProps) 
     if(image) {
       formData.append('image', image)
     }
+    console.log(specsObject);
 
     Object.entries(data).forEach(([key, value]) => {
+      console.log(`${key} - ${value}`);
+       
       if (key === 'specifications') {
-        formData.append(key, JSON.stringify(specsObject));
+        formData.append(key, JSON.stringify([specsObject]));
       } else if (value !== undefined && value !== null) {
         formData.append(key, String(value));
       }

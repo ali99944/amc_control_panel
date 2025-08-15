@@ -18,7 +18,7 @@ export function useModels() {
  * Hook to fetch a simple list of products (for the attach dialog).
  */
 export function useProductList() {
-  return useGetQuery<Pick<Product, 'id' | 'ar_name'>[]>({
+  return useGetQuery<Product[]>({
     key: ["product-list"],
     url: "products?list=true", // Assume an endpoint that returns a light version
   })

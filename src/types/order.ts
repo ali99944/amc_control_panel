@@ -15,16 +15,17 @@ export interface Order {
   order_code: string
   status: OrderStatus
   customer: {
-    fullName: string
+    first_name: string
+    last_name: string
     email: string
     phone: string
   }
-  shippingAddress: {
+  shipping_address: {
       address: string
       city: string
   }
   financials: {
-    grandTotal: number
+    grand_total: number
   }
   items: OrderItem[]
   created_at: string

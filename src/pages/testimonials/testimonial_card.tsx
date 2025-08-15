@@ -37,12 +37,12 @@ export function TestimonialCard({ testimonial, onEdit, onDelete }: TestimonialCa
         {testimonial.product.name && (
           <div className="text-xs text-gray-600 flex items-start gap-2 pt-2 border-t">
             <LinkIcon className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-            {testimonial.product.isActive ? (
+            {testimonial.product ? (
               <a href={`/products/${testimonial.product.id}`} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">
-                شهادة على منتج: <span className="font-semibold">{testimonial.product.name}</span>
+                شهادة على منتج: <span className="font-semibold">{testimonial.product.name.ar}</span>
               </a>
             ) : (
-              <span>شهادة على منتج: {testimonial.product.name} (محذوف)</span>
+              <span>شهادة على منتج: {'testimonial.product?.product_name'} (محذوف)</span>
             )}
           </div>
         )}

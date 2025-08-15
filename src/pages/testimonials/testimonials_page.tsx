@@ -36,7 +36,7 @@ export default function TestimonialsPage() {
   // --- Statistics ---
   const stats = useMemo(() => ({
     total: testimonials.length,
-    linkedToProduct: testimonials.filter(t => t.product.isActive).length,
+    linkedToProduct: testimonials.filter(t => t.product).length,
   }), [testimonials])
 
   const kpiCards = [
@@ -47,7 +47,7 @@ export default function TestimonialsPage() {
   return (
     <div className="space-y-6" dir="rtl">
       <Toolbar title="شهادات العملاء">
-        <Button onClick={() => handleOpenForm()}>
+        <Button onClick={() => handleOpenForm()} variant="primary-inverted">
           <Plus className="w-4 h-4 ml-2" />
           إضافة شهادة جديدة
         </Button>

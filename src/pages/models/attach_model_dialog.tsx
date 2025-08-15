@@ -18,7 +18,7 @@ export function AttachModelDialog({ model, isOpen, onClose }: AttachModelDialogP
   const { mutate: attachModel, isPending } = useAttachModel()
   if (!model) return null
 
-  const productOptions: SelectOption[] = products.map(p => ({ label: p.ar_name, value: String(p.id) }))
+  const productOptions: SelectOption[] = products.map(p => ({ label: p.name.ar, value: String(p.id) }))
 
   const handleAttach = () => {
     if (!selectedProductId) return

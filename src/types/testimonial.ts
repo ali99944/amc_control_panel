@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { Product } from "./product"
 
 // The main data structure for a testimonial
 export interface Testimonial {
@@ -6,11 +7,7 @@ export interface Testimonial {
   name: string
   location?: string
   review: string
-  product: {
-    id: number | null
-    name: string
-    isActive: boolean
-  }
+  product: Product
   created_at: string
 }
 

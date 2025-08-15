@@ -15,6 +15,8 @@ export default function OrderDetailsPage() {
   const orderId = Number(id)
 
   const { data: order, isLoading, refetch } = useOrder(orderId)
+  console.log(order);
+  
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus(orderId)
 
   if (isLoading) {
@@ -54,7 +56,7 @@ export default function OrderDetailsPage() {
             <div className="space-y-4 pt-4">
               {order.items.map(item => (
                 <div key={item.id} className="flex items-center gap-4">
-                  <img src={item.product_image} alt={item.product_name} className="w-16 h-16 object-cover rounded-md border" />
+                  <img src={item.product_image} alt={item.product_name} className="w-16 h-16 object-cover rounded-md bg-neutral-light" />
                   <div className="flex-grow">
                     <p className="font-semibold">{item.product_name}</p>
                     <p className="text-sm text-gray-500">الكمية: {item.quantity}</p>
@@ -70,7 +72,7 @@ export default function OrderDetailsPage() {
                  {/* This would be expanded with subtotal, tax, shipping etc. if available */}
                  <div className="flex justify-between font-semibold text-lg">
                     <span>الإجمالي النهائي</span>
-                    <span>{formatCurrency(order.financials.grandTotal)}</span>
+                    <span>{formatCurrency(order.financials.grand_total)}</span>
                  </div>
              </div>
           </Card>
@@ -93,9 +95,9 @@ export default function OrderDetailsPage() {
           <Card>
             <h3 className="text-lg font-semibold mb-4 border-b pb-3 flex items-center gap-2"><User className="w-5 h-5 text-primary"/> بيانات العميل</h3>
             <div className="space-y-3 pt-4 text-sm">
-                <p className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-400"/> {order.customer.fullName}</p>
+                <p className="flex items-center gap-2"><Hash className="w-4 h-4 text-gray-400"/> {order.customer.first_name} {order.customer.last_name}</p>
                 <p className="flex items-center gap-2"><Phone className="w-4 h-4 text-gray-400"/> {order.customer.phone}</p>
-                <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-400"/> {order.shippingAddress.address}, {order.shippingAddress.city}</p>
+                <p className="flex items-center gap-2"><MapPin className="w-4 h-4 text-gray-400"/> {order.shipping_address.address}, {order.shipping_address.city}</p>
             </div>
           </Card>
         </div>

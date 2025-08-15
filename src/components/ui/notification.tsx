@@ -50,7 +50,7 @@ export default function Notification({ id, message, type }: NotificationProps) {
       shadow: "shadow-[#f77f00]/20",
     },
     success: {
-      bg: "bg-primary",
+      bg: "bg-secondary",
       border: "border-primary/60",
       icon: <Info className="w-5 h-5 !text-white" />,
       text: "text-white",

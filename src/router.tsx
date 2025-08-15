@@ -15,6 +15,9 @@ import UpdateSeoPage from "./pages/seos/update_seo_page";
 import OrdersPage from "./pages/orders/orders_page";
 import OrderDetailsPage from "./pages/orders/order_details_page";
 import { ProtectedLayout } from "./components/layout/protected_layout";
+import PoliciesPage from "./pages/policies";
+import UpdatePolicyPage from "./pages/policies/update";
+import PromotionsPage from "./pages/promotions/promotions_page";
 
 const router = createBrowserRouter([
     {
@@ -78,7 +81,19 @@ const router = createBrowserRouter([
             {
                 path: '/settings',
                 element: <SettingsPage />
-            }
+            },
+            {
+                path: '/policies',
+                element: <PoliciesPage />
+            },
+            {
+                path: '/policies/:id/update',
+                element: <UpdatePolicyPage />
+            },
+            {
+                path: '/promotions',
+                element: <PromotionsPage />
+            },
         ],
     },
     {

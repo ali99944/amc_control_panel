@@ -94,8 +94,8 @@ export default function ModelsPage() {
                   {model.products.length > 0 ? (
                     model.products.map(product => (
                       <div key={product.id} className="flex items-center justify-between text-xs bg-gray-50 p-1.5 rounded">
-                        <span className="truncate">{product.ar_name}</span>
-                        <button onClick={() => openUnlinkDialog(model.id, product.id, product.ar_name)} className="text-red-500 hover:text-red-700 p-1">
+                        <span className="truncate">{product.name.ar}</span>
+                        <button onClick={() => openUnlinkDialog(model.id, product.id, product.name.ar)} className="text-red-500 hover:text-red-700 p-1">
                             <Link2Off className="w-3 h-3"/>
                         </button>
                       </div>

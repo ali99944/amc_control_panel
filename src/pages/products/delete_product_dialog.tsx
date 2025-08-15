@@ -36,7 +36,7 @@ export function DeleteProductDialog({ product, onSuccess }: DeleteProductDialogP
         onClose={() => setIsOpen(false)}
         onConfirm={handleDelete}
         title="حذف المنتج"
-        message={`هل أنت متأكد من حذف المنتج "${product.ar_name}"؟ لا يمكن التراجع عن هذا الإجراء.`}
+        message={`هل أنت متأكد من حذف المنتج "${product.name.ar}"؟ لا يمكن التراجع عن هذا الإجراء.`}
         confirmText="نعم, حذف"
         loading={isPending}
       />

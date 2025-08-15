@@ -10,12 +10,16 @@ export interface ProductVariant {
 // Interface for the main product data
 export interface Product {
   id: number
-  en_name: string
-  ar_name: string
-  en_description: string
-  ar_description: string
+  name: {
+    en: string
+    ar: string
+  }
+  description: {
+    en: string
+    ar: string
+  }
   image: string
-  original_price: number
+  price: number
   discount?: number
   discount_type?: "percentage" | "fixed"
   stock: number

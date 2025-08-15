@@ -12,7 +12,7 @@ import { Textarea } from "../../components/ui/textarea"
 import Card from "../../components/ui/card"
 import { Label } from "../../components/ui/label"
 import ImagePicker from "../../components/ui/image-picker"
-import { ArrowRight, Save, Loader2 } from "lucide-react"
+import { Save, Loader2 } from "lucide-react"
 export default function UpdateSeoPage() {
     const { id } = useParams<{ id: string }>()
     const navigate = useNavigate()
@@ -61,9 +61,14 @@ export default function UpdateSeoPage() {
     return (
         <div className="space-y-6" dir="rtl">
             <Toolbar title={''}>
-                <Button variant="secondary" onClick={() => navigate("/seo")}>
-                    <ArrowRight className="w-4 h-4 ml-2" /> العودة
-                </Button>
+                <div className="flex items-center gap-2">
+                    <Button type="submit" variant="secondary" loading={isPending} size="sm">
+                        <Save className="w-4 h-4 ml-2" /> حفظ التغييرات
+                    </Button>
+                    <Button variant="primary-inverted" onClick={() => navigate("/seo")}>
+                        العودة
+                    </Button>
+                </div>
             </Toolbar>
 
             <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
@@ -119,17 +124,11 @@ export default function UpdateSeoPage() {
                     </div>
                 </Card>
 
-                <Card>
+                {/* <Card>
                     <h3 className="text-lg font-semibold mb-4 border-b pb-3">البيانات المنظمة (JSON-LD)</h3>
                     <Textarea {...register("structuredData")} rows={8} placeholder={`{\n  "@context": "https://schema.org",\n  "@type": "WebSite",\n  "url": "https://sansegal.com/",\n  "name": "San Segal"\n}`} />
                     {errors.structuredData && <p className="text-sm text-red-600 mt-1">{errors.structuredData.message}</p>}
-                </Card>
-
-                <div className="flex justify-end pt-4 border-t">
-                    <Button type="submit" loading={isPending} size="md">
-                        <Save className="w-4 h-4 ml-2" /> حفظ التغييرات
-                    </Button>
-                </div>
+                </Card> */}
             </form>
             <div />
 

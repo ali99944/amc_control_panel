@@ -6,7 +6,7 @@ export interface AppModel {
   image: string;
   width: number;
   height: number;
-  products: Pick<Product, "id" | "ar_name" | "image">[]; // Products linked to this model
+  products: Pick<Product, "id" | "name" | "image">[]; // Products linked to this model
   created_at: string;
 }
 // Zod schema for the creation form

@@ -29,7 +29,7 @@ export default function UpdateProductPage() {
 
   return (
     <div className="space-y-6" dir="rtl">
-      <Toolbar title={`تعديل المنتج: ${product.ar_name}`}>
+      <Toolbar title={`تعديل المنتج: ${product.name.ar}`}>
         <Button variant="secondary" onClick={() => navigate("/products")}>
           <ArrowRight className="w-4 h-4 ml-2" />
           العودة إلى المنتجات

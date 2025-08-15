@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { Eye, Trash2, ShoppingBag, Clock, Truck, CheckCircle } from "lucide-react"
 import { useOrders, useDeleteOrder } from "../../hooks/use-orders"
 import type { Order } from "../../types/order"
@@ -16,7 +16,6 @@ import { formatDate } from "../../lib/date"
 export default function OrdersPage() {
   const navigate = useNavigate()
   const { data: orders = [], isLoading, refetch } = useOrders()
-  console.log(orders);
   
   const { mutate: deleteOrder, isPending: isDeleting } = useDeleteOrder()
 
@@ -39,9 +38,21 @@ export default function OrdersPage() {
   const formatCurrency = (amount: number) => new Intl.NumberFormat("ar-EG", { style: "currency", currency: "EGP" }).format(amount)
 
   const columns: Column<Order>[] = [
-    { key: "order_code", title: "كود الطلب", render: (val) => <span className="font-mono text-primary font-semibold">{val}</span> },
-    { key: "customer.fullName", title: "العميل" },
-    { key: "financials.grandTotal", title: "الإجمالي", render: (val) => formatCurrency(val) },
+    { key: "order_code", title: "كود الطلب", render: (val, order: Order) => {
+      return (
+        <Link to={`/orders/${order.id}`} className="hover:underline underline-offset-2">
+          <span className="font-mono text-primary font-semibold">{val}</span>
+        </Link>
+      )
+    } },
+    { 
+      key: ["customer", 'first_name'], title: "العميل", render(_, order: Order) {
+        return (
+          <p>{order.customer.first_name} {order.customer.last_name}</p>
+        )
+      }, 
+    },
+    { key: ["financials", "grand_total"], title: "الإجمالي", render: (val) => formatCurrency(val) },
     { 
       key: "status", 
       title: "الحالة", 
@@ -89,7 +100,7 @@ export default function OrdersPage() {
       </div>
 
       <Card className="p-0 overflow-hidden">
-        <DataTable columns={columns} data={orders} loading={isLoading} searchable />
+        <DataTable pageSize={6} columns={columns} data={orders} loading={isLoading} searchable />
       </Card>
 
       <DangerDialog

@@ -25,19 +25,19 @@ export default function Toolbar({ title, children, className = "" }: ToolbarProp
   return (
     <div className={`bg-primary/80 sticky top-6 z-50 rounded-lg px-2 py-2 text-white/90 ${className}`}>
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4 pr-2">
-          <Link to="/" className="hover:text-white/70 transition-colors">
+        <div className="flex items-center gap-4 ">
+          <Link to="/" className="hover:text-white/70 transition-colors bg-secondary p-1.5 rounded">
             <Home size={24} />
           </Link>
-          <h1 className="text-lg mb-2">{title}</h1>
+          <h1 className="text-md">{title}</h1>
         </div>
         <div className="flex items-center gap-2">
           {children && <div>{children}</div>}
           <button 
             onClick={handleLogout}
-            className="hover:bg-destructive/85 bg-destructive p-1.5 rounded transition-colors text-white cursor-pointer"
+            className="hover:bg-destructive/85 bg-destructive p-2 rounded transition-colors text-white cursor-pointer"
           >
-            <LogOut size={24} />
+            <LogOut size={20} />
           </button>
         </div>
       </div>

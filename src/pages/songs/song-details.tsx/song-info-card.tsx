@@ -1,15 +1,14 @@
 "use client"
 import { useState } from "react"
-import { Music, User, Tag, Calendar, Clock, Play, Pause, Heart, Share2, Download, Edit, Save, X } from 'lucide-react'
+import { Music, User, Tag, Calendar, Clock, Heart, Edit, Save, X } from 'lucide-react'
 import Button from "../../../components/ui/button"
 import Card from "../../../components/ui/card"
-import Select from "../../../components/ui/select"
+import { Select } from "../../../components/ui/select"
 import { formatDate } from "../../../lib/date"
 import { getStorageFile } from "../../../lib/storage"
 import { Genre } from "../../../types"
 import { Artist } from "../../../types/artist"
 import { Song } from "../../../types/song"
-import AudioPlayer from "./audio-player"
 
 
 interface SongInfoCardProps {
@@ -32,14 +31,7 @@ export default function SongInfoCard({
   artists,
   genres,
   isUpdating,
-  onUpdateSong,
-  onPlay,
-  onShare,
-  onDownload,
-  isPlaying,
-  currentTime,
-  duration,
-  onSeek,
+  onUpdateSong
 }: SongInfoCardProps) {
   const [isEditingDetails, setIsEditingDetails] = useState(false)
   const [selectedArtistId, setSelectedArtistId] = useState<number>(song.artist?.id || 0)
@@ -95,7 +87,7 @@ export default function SongInfoCard({
                 {isEditingDetails ? (
                   <Select
                     value={selectedArtistId?.toString()}
-                    onChange={(value) => setSelectedArtistId(Number.parseInt(value))}
+                    onChange={(value) => setSelectedArtistId(Number.parseInt(value as string))}
                     options={artists.map((artist) => ({
                       label: artist.name,
                       value: artist.id.toString(),
@@ -110,7 +102,7 @@ export default function SongInfoCard({
                 {isEditingDetails ? (
                   <Select
                     value={selectedGenreId?.toString()}
-                    onChange={(value) => setSelectedGenreId(Number.parseInt(value))}
+                    onChange={(value) => setSelectedGenreId(Number.parseInt(value as string))}
                     options={genres.map((genre) => ({
                       label: genre.name,
                       value: genre.id.toString(),
@@ -157,10 +149,7 @@ export default function SongInfoCard({
 
           {/* Stats */}
           <div className="flex items-center gap-6 text-sm text-gray-600">
-            <div className="flex items-center gap-1">
-              <Play className="w-4 h-4" />
-              {song.plays_count} تشغيل
-            </div>
+
             <div className="flex items-center gap-1">
               <Heart className="w-4 h-4" />
               {song.likes_count ?? 0} إعجاب
@@ -171,35 +160,11 @@ export default function SongInfoCard({
             </div>
           </div>
 
-          {/* Action Buttons */}
-          <div className="flex items-center gap-3">
-            <Button variant="primary" onClick={onPlay}>
-              {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-              {isPlaying ? "إيقاف" : "تشغيل"}
-            </Button>
-            <Button variant="secondary" onClick={onShare}>
-              <Share2 className="w-4 h-4" />
-              مشاركة
-            </Button>
-            <Button variant="secondary" onClick={onDownload}>
-              <Download className="w-4 h-4" />
-              تحميل
-            </Button>
-          </div>
+
         </div>
       </div>
 
-      {/* Audio Player */}
-      <div className="mt-6">
-        <AudioPlayer
-          src={getStorageFile(song?.original_audio?.file_url    ) ?? ""}
-          isPlaying={isPlaying}
-          currentTime={currentTime}
-          duration={duration}
-          onPlay={onPlay}
-          onSeek={onSeek}
-        />
-      </div>
+
     </Card>
   )
 }

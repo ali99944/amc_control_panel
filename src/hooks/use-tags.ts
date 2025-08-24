@@ -63,4 +63,51 @@ export function useDeleteTag(tag_id: number | undefined, onSuccess?: () => void)
   })
 }
 
+// Hook for fetching song tags
+export function useSongTags(songId: number) {
+  return useGetQuery<Tag[]>({
+    url: `songs/${songId}/tags`,
+    key: ["song-tags", songId],
+  })
+}
+
+// Hook for adding a tag to a song
+export function useAddSongTag(songId: number | undefined, onSuccess?: () => void) {
+  const { notify } = useNotifications()
+
+  return useMutationAction({
+    method: "post",
+    url: `songs/${songId}/tags`,
+    onSuccessCallback: () => {
+      notify.success("تم إضافة التاغ للأغنية بنجاح")
+      onSuccess?.()
+    },
+    onErrorCallback: (error) => {
+      notify.error(error.message || "حدث خطأ أثناء إضافة التاغ للأغنية")
+    },
+  })
+}
+
+// Hook for removing a tag from a song
+export function useDeleteSongTag(
+  songId: number | undefined,
+  tagId: number | undefined,
+  onSuccess?: () => void
+) {
+  const { notify } = useNotifications()
+
+  return useMutationAction({
+    method: "delete",
+    url: `songs/${songId}/tags/${tagId}`,
+    onSuccessCallback: () => {
+      notify.success("تم حذف التاغ من الأغنية بنجاح")
+      onSuccess?.()
+    },
+    onErrorCallback: (error) => {
+      notify.error(error.message || "حدث خطأ أثناء حذف التاغ من الأغنية")
+    },
+  })
+}
+
+
 export type { CreateTagData, UpdateTagData }

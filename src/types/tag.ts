@@ -5,9 +5,6 @@ export interface Tag {
   created_at: string;
   updated_at: string;
   song_tags?: SongTag[];
-  _count?: {
-    song_tags: number;
-  };
 }
 
 export interface SongTag {

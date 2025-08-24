@@ -14,7 +14,7 @@ export const managerFormSchema = z.object({
 
   password: z
     .string()
-    .min(8, "يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل")
+    // .min(8, "يجب أن تكون كلمة المرور مكونة من 8 أحرف على الأقل")
     .optional(),
   permissions: z
     .array(z.string())

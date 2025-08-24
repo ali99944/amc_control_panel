@@ -33,7 +33,9 @@ export function Input({
   if (Icon) {
     return (
       <div className="relative">
-        {label && <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>}
+        {label && (
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+        )}
         <input 
           className={`${baseClasses} ${sizes[inputSize]} ${iconPosition === 'right' ? 'pr-10' : 'pl-10'} ${errorClasses} ${className}`}
           {...props}

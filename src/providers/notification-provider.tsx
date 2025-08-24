@@ -37,7 +37,7 @@ export default function NotificationProvider({ children }: { children: ReactNode
       {children}
       
       {/* Notification Container */}
-      <div className="fixed top-4 right-4 z-50 max-w-sm w-full space-y-2" dir="ltr">
+      <div className="fixed top-4 right-4 z-[9999] max-w-sm w-full space-y-2" dir="ltr">
         <AnimatePresence mode="popLayout">
           {notifications.map((notification) => (
             <Notification

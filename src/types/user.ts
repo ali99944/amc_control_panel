@@ -10,6 +10,7 @@ interface User {
     is_banned: boolean;
     joined_at: string;
     last_login_time: string | null;
+    deleted_at: string | null
 }
 
 export default User

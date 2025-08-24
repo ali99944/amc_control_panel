@@ -7,7 +7,7 @@ import { useState } from "react"
 import { Label } from "recharts"
 import Button from "../../components/ui/button"
 import { Input } from "../../components/ui/input"
-import Select from "../../components/ui/select"
+import { Select } from "../../components/ui/select"
 import Switch from "../../components/ui/switch"
 import Textarea from "../../components/ui/textarea"
 import { useArtists } from "../../hooks/use-artists"
@@ -52,8 +52,8 @@ export default function AlbumForm({
       release_date: initialData?.release_date ? 
         new Date(initialData.release_date).toISOString().split('T')[0] : "",
       album_type: initialData?.album_type || "Album",
-      is_active: initialData?.is_active,
-      is_featured: initialData?.is_featured,
+      is_active: initialData?.is_active as boolean | undefined,
+      is_featured: initialData?.is_featured as boolean | undefined,
     },
   })
 
@@ -170,7 +170,7 @@ export default function AlbumForm({
         </Label>
         <Select
           value={watchedValues.artist_id?.toString()}
-          onChange={(value) => setValue("artist_id", parseInt(value))}
+          onChange={(value) => setValue("artist_id", parseInt(value as string))}
           options={[
             { label: "اختر فنان", value: "0" },
             ...artists.map((artist) => ({
@@ -178,7 +178,7 @@ export default function AlbumForm({
               value: artist.id.toString(),
             })),
           ]}
-          error={errors.artist_id?.message}
+          // error={errors.artist_id?.message}
         />
       </div>
 
@@ -192,7 +192,7 @@ export default function AlbumForm({
             value={watchedValues.album_type}
             onChange={(value) => setValue("album_type", value as Album['album_type'])}
             options={albumTypeOptions}
-            error={errors.album_type?.message}
+            // error={errors.album_type?.message}
           />
         </div>
 

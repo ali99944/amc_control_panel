@@ -1,14 +1,14 @@
 "use client"
-import { Plus, FileAudio, Play, Download, Trash2 } from "lucide-react"
+import { Plus, FileAudio, Download, Trash2 } from "lucide-react"
 import Button from "../../../components/ui/button"
 import Card from "../../../components/ui/card"
 import { Song, SongVersion } from "../../../types/song"
+import { formatDate } from "../../../lib/date"
 
 interface AudioVersionsCardProps {
   song: Song
   onGenerateVersion: () => void
   onDeleteVersion: (version: SongVersion) => void
-  onPlayVersion: (version: SongVersion) => void
   onDownloadVersion: (version: SongVersion) => void
 }
 
@@ -16,7 +16,6 @@ export default function AudioVersionsCard({
   song,
   onGenerateVersion,
   onDeleteVersion,
-  onPlayVersion,
   onDownloadVersion,
 }: AudioVersionsCardProps) {
   const formatFileSize = (bytes: number): string => {
@@ -61,10 +60,7 @@ export default function AudioVersionsCard({
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button size="sm" variant="secondary" onClick={() => onPlayVersion(song?.original_audio as unknown as SongVersion)}>
-                <Play className="w-4 h-4" />
-                تشغيل
-              </Button>
+
               <Button
                 size="sm"
                 variant="secondary"
@@ -90,18 +86,14 @@ export default function AudioVersionsCard({
                   <div className="text-sm text-gray-600 flex items-center gap-4">
                     <span>{version.format.toUpperCase()}</span>
                     <span>{version.bitrate} kbps</span>
-                    <span>{formatFileSize(version.filesize)}</span>
+                    <span>{formatFileSize(version.file_size)}</span>
                     <span className="text-xs text-gray-500">
-                      {new Date(version.created_at).toLocaleDateString("ar-SA")}
+                      {formatDate(version.created_at)}
                     </span>
                   </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Button size="sm" variant="secondary" onClick={() => onPlayVersion(version)}>
-                  <Play className="w-4 h-4" />
-                  تشغيل
-                </Button>
                 <Button size="sm" variant="secondary" onClick={() => onDownloadVersion(version)}>
                   <Download className="w-4 h-4" />
                   تحميل

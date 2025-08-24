@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useMemo } from "react"
+import { useState } from "react"
 import { useGetQuery, useMutationAction } from "./queries-actions"
 import { useNotifications } from "./use-notification"
 import type { AlbumBuilderSong, AlbumBuilderState } from "../types/album-builder"
@@ -18,7 +18,7 @@ export function useAlbumBuilder(albumId: number) {
   })
 
   // Fetch album songs
-  const { data: albumSongs = [], refetch: refetchAlbumSongs } = useGetQuery<AlbumBuilderSong[]>({
+  const {  refetch: refetchAlbumSongs } = useGetQuery<AlbumBuilderSong[]>({
     url: `albums/${albumId}/songs`,
     key: ["album-songs", albumId],
     options: {
@@ -27,7 +27,7 @@ export function useAlbumBuilder(albumId: number) {
   })
 
   // Fetch available songs
-  const { data: availableSongs = [], refetch: refetchAvailableSongs } = useGetQuery<AlbumBuilderSong[]>({
+  const { refetch: refetchAvailableSongs } = useGetQuery<AlbumBuilderSong[]>({
     url: `songs`,
     key: ["available-songs", albumId, state.searchQuery, state.filterArtist, state.filterGenre],
     options: {
@@ -77,10 +77,10 @@ export function useAlbumBuilder(albumId: number) {
   })
 
   // Memoize songs data to prevent unnecessary re-renders
-  const songsData = useMemo(() => ({
-    selectedSongs: albumSongs,
-    availableSongs: availableSongs,
-  }), [albumSongs, availableSongs])
+  // const songsData = useMemo(() => ({
+  //   selectedSongs: albumSongs,
+  //   availableSongs: availableSongs,
+  // }), [albumSongs, availableSongs])
 
 //   useEffect(() => {
 //     setState(prev => ({

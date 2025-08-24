@@ -51,3 +51,28 @@ export function useBanUser(id: number | undefined, onSuccess?: () => void) {
     },
   })
 }
+
+export function useDeletedUsers() {
+  return useGetQuery<User[]>({
+    url: "deleted-users",
+    key: ["deleted-users"],
+  })
+}
+
+// Hook for restoring a user
+export function useRestoreUser(user_id: number | undefined, onSuccess?: () => void) {
+  const { notify } = useNotifications()
+
+  return useMutationAction({
+    method: "post",
+    url: `users/${user_id}/restore-account`,
+    onSuccessCallback: () => {
+      notify.success("تم استعادة المستخدم بنجاح")
+      onSuccess?.()
+    },
+    onErrorCallback: (error) => {
+      notify.error(error.message || "حدث خطأ أثناء استعادة المستخدم")
+    },
+  })
+}
+

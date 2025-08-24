@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Edit } from "lucide-react"
 import { ManagerForm } from "./manager-form"
-import { useManagers } from "../../hooks/use-managers"
+import { useUpdateManager } from "../../hooks/use-managers"
 import type { Manager } from "../../types/manager"
 import type { ManagerFormData } from "./manager-form-schema"
 import Button from "../../components/ui/button"
@@ -15,10 +15,10 @@ interface UpdateManagerDialogProps {
 
 export function UpdateManagerDialog({ manager }: UpdateManagerDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { updateManager, isUpdating } = useManagers()
+  const { updateManager, isUpdating } = useUpdateManager(manager?.id)
 
   const handleSubmit = (data: ManagerFormData) => {
-    updateManager(manager?.id, {
+    updateManager({
       name: data.name,
       username: data.username,
       permissions: data.permissions ?? [],

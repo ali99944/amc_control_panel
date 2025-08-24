@@ -94,3 +94,8 @@ export const getCategoryLabel = (categoryKey: string): string => {
 export const getRoleLabel = (role: string): string => {
   return ROLE_LABELS[role] || role
 }
+
+// Check if manager has a permission or not
+export const hasPermission = (managerPermissions: string[], permissionName: string): boolean => {
+  return managerPermissions.includes(permissionName)
+}

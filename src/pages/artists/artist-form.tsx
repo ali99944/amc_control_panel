@@ -9,9 +9,8 @@ import type { Artist } from "../../types/artist"
 import { Input } from "../../components/ui/input"
 import Button from "../../components/ui/button"
 import ImagePicker from "../../components/ui/image-picker"
-import Switch from "../../components/ui/switch"
 import Textarea from "../../components/ui/textarea"
-import { getStorageFile } from "../../lib/storage"
+import LabeledSwitch from "../../components/ui/labeled-switch"
 
 interface ArtistFormProps {
   initialData?: Artist
@@ -101,7 +100,7 @@ export default function ArtistForm({
             <p className="text-sm text-gray-600 mb-2">الصورة الحالية:</p>
             <div className="w-20 h-20 bg-gray-100 rounded-lg overflow-hidden">
               <img
-                src={getStorageFile(initialData.image) || "/placeholder.svg"}
+                src={initialData.image || "/placeholder.svg"}
                 alt="Current artist"
                 className="w-full h-full object-cover"
               />
@@ -111,19 +110,18 @@ export default function ArtistForm({
       </div>
 
       {/* Status Switches */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="gap-6 space-y-4">
         {/* Featured Switch */}
         <div>
           <Controller
             name="is_featured"
             control={control}
             render={({ field }) => (
-              <Switch
+              <LabeledSwitch
                 checked={field.value}
                 onChange={field.onChange}
-                label="فنان مميز"
                 description="عرض الفنان في القسم المميز"
-                color="warning"
+                title="فنان مميز"
               />
             )}
           />
@@ -135,12 +133,11 @@ export default function ArtistForm({
             name="is_active"
             control={control}
             render={({ field }) => (
-              <Switch
+              <LabeledSwitch
                 checked={field.value}
                 onChange={field.onChange}
-                label="نشط"
                 description="هل تريد تفعيل هذا الفنان؟"
-                color="success"
+                title="تفعيل الفنان؟"
               />
             )}
           />

@@ -21,17 +21,19 @@ export default function TagsPage() {
 
   // Fetch tags data
   const { data: tags = [], isLoading, refetch } = useTags()
+  console.log(tags);
+  
 
   // Calculate stats
   const stats = {
     total: tags.length,
-    totalUsage: tags.reduce((acc, tag) => acc + (tag._count?.song_tags || 0), 0),
+    totalUsage: tags.reduce((acc, tag) => acc + (tag.song_tags?.length || 0), 0),
     mostUsed: tags.reduce(
-      (prev, current) => ((prev._count?.song_tags || 0) > (current._count?.song_tags || 0) ? prev : current),
+      (prev, current) => ((prev.song_tags?.length || 0) > (current?.song_tags?.length || 0) ? prev : current),
       tags[0],
     ),
     averageUsage:
-      tags.length > 0 ? Math.round(tags.reduce((acc, tag) => acc + (tag._count?.song_tags || 0), 0) / tags.length) : 0,
+      tags.length > 0 ? Math.round(tags.reduce((acc, tag) => acc + (tag.song_tags?.length || 0), 0) / tags.length) : 0,
   }
 
   // Handle edit tag
@@ -70,13 +72,13 @@ export default function TagsPage() {
       ),
     },
     {
-      key: "_count.song_tags",
+      key: "song_tags",
       title: "عدد الاستخدامات",
       sortable: true,
       render: (_, row: Tag) => (
         <div className="flex items-center gap-2">
           <Music className="w-4 h-4 text-gray-400" />
-          <span className="text-sm font-medium">{row._count?.song_tags || 0} أغنية</span>
+          <span className="text-sm font-medium">{row?.song_tags?.length || 0} أغنية</span>
         </div>
       ),
     },

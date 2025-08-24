@@ -33,7 +33,7 @@ export interface SongVersion {
   quality: string
   format: string
   file_url: string
-  filesize: number
+  file_size: number
   bitrate: number
   created_at: string
 }

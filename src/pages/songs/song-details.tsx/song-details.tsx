@@ -20,6 +20,7 @@ import SongHeader from "./song-header"
 import SongInfoCard from "./song-info-card"
 import { getApiError } from "../../../lib/error_handler"
 import { AxiosError } from "axios"
+import SongTags from "./song_tags"
 
 export default function SongDetailsPage() {
   const navigate = useNavigate()
@@ -41,6 +42,8 @@ export default function SongDetailsPage() {
 
   // Fetch data
   const { data: song, isLoading, refetch } = useSong(songId)
+  console.log(song);
+  
   const { data: artists = [] } = useArtists()
   const { data: genres = [] } = useGenres()
 
@@ -110,11 +113,6 @@ export default function SongDetailsPage() {
   }
   
 
-  const handlePlayVersion = (version: SongVersion) => {
-    console.log(version);
-    
-    notify.info("تشغيل النسخة المحددة")
-  }
 
   const handleDownloadVersion = async (version: SongVersion) => {
     try {
@@ -188,6 +186,8 @@ export default function SongDetailsPage() {
 
       <LyricsCard lyrics={song.lyrics || ""} isUpdating={isUpdating} onSave={handleSaveLyrics} />
 
+      <SongTags song_id={song.id} />
+
       <AudioVersionsCard
         song={song}
         onGenerateVersion={() => setIsGenerateDialogOpen(true)}
@@ -195,7 +195,6 @@ export default function SongDetailsPage() {
           setSelectedVersion(version)
           setIsDeleteVersionDialogOpen(true)
         }}
-        onPlayVersion={handlePlayVersion}
         onDownloadVersion={handleDownloadVersion}
       />
 

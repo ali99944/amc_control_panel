@@ -9,7 +9,7 @@ interface CardProps {
 }
 
 export default function Card({ children, className = "" }: CardProps) {
-  return <div className={cn("bg-white p-4 rounded-xl", className)}>{children}</div>
+  return <div className={cn("bg-white p-4 shadow-sm rounded-lg", className)}>{children}</div>
 }
 
 const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

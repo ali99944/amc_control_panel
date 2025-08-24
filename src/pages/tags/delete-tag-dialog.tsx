@@ -22,7 +22,7 @@ export default function DeleteTagDialog({ isOpen, onClose, tag, onSuccess }: Del
 
   if (!tag) return null
 
-  const songsCount = tag._count?.song_tags || 0
+  const songsCount = tag?.song_tags?.length || 0
 
   return (
     <DangerDialog

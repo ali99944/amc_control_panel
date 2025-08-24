@@ -15,7 +15,7 @@ export const formatAlbumDuration = (seconds: number): string => {
   return `${minutes}د`
 }
 
-export const getAlbumTypeLabel = (type: Album["album_type"]): string => {
+export const getAlbumTypeLabel = (type: 'single' | 'ep' | 'album' | 'compilation'): string => {
   switch (type) {
     case "single":
       return "أغنية منفردة"
@@ -30,7 +30,7 @@ export const getAlbumTypeLabel = (type: Album["album_type"]): string => {
   }
 }
 
-export const getAlbumTypeColor = (type: Album["album_type"]): string => {
+export const getAlbumTypeColor = (type: 'single' | 'ep' | 'album' | 'compilation'): string => {
   switch (type) {
     case "single":
       return "bg-blue-100 text-blue-800"

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { Trash2 } from "lucide-react"
-import { useManagers } from "../../hooks/use-managers"
+import { useDeleteManager } from "../../hooks/use-managers"
 import type { Manager } from "../../types/manager"
 import Button from "../../components/ui/button"
 import DangerDialog from "../../components/ui/danger-dialog"
@@ -13,10 +13,10 @@ interface DeleteManagerDialogProps {
 
 export function DeleteManagerDialog({ manager }: DeleteManagerDialogProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { deleteManager } = useManagers()
+  const { deleteManager } = useDeleteManager(manager?.id)
 
   const handleDelete = () => {
-    deleteManager(manager.id)
+    deleteManager()
     setIsOpen(false)
   }
 

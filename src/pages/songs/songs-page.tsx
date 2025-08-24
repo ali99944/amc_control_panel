@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Plus, Music, Eye, Edit, Trash2, Clock, Calendar } from 'lucide-react'
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
-import Card from "../../components/ui/card"
 import Toolbar from "../../components/ui/toolbar"
 import { useSongs } from "../../hooks/use-songs"
 import CreateSongDialog from "./create-song-dialog"
@@ -13,8 +12,7 @@ import UpdateSongDialog from "./update-song-dialog"
 import { useNavigate } from "react-router-dom"
 import { Song } from "../../types/song"
 import { formatDate } from "../../lib/date"
-// import { getStorageFile } from "../../lib/storage"
-// import SongFiltersComponent from "./songs-filter"
+import StatisticCard from "../../components/ui-components/statistic-card"
 
 
 export default function SongsPage() {
@@ -190,10 +188,10 @@ const formatDuration = (seconds: number): string => {
       width: "120px",
       render: (_, row: Song) => (
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="secondary" onClick={() => handleEditSong(row)}>
+          <Button size="sm" variant="secondary" onClick={() => handleEditSong(row)} className="!px-2">
             <Edit className="w-4 h-4" />
           </Button>
-          <Button size="sm" variant="danger" onClick={() => handleDeleteSong(row)}>
+          <Button size="sm" variant="danger" onClick={() => handleDeleteSong(row)} className="!px-2">
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
@@ -211,78 +209,32 @@ const formatDuration = (seconds: number): string => {
       </Toolbar>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي الأغاني</p>
-              <p className="text-lg font-bold text-primary">{stats.total}</p>
-            </div>
-          </div>
-        </Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3  gap-4">
+        <StatisticCard
+          stat={{
+            icon: Music,
+            name: 'إجمالي الأغاني',
+            value: stats.total || 0,
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Eye className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">النشطة</p>
-              <p className="text-lg font-bold text-primary">{stats.active}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: Eye,
+            name: 'النشطة',
+            value: stats.active || 0,
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">محتوى صريح</p>
-              <p className="text-lg font-bold text-primary">{stats.explicit}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: Calendar,
+            name: 'محتوى صريح',
+            value: stats.explicit || 0,
+          }}
+        />
 
-        {/* <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Play className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي التشغيل</p>
-              <p className="text-lg font-bold text-primary">{formatNumber(stats.totalPlays)}</p>
-            </div>
-          </div>
-        </Card>
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Heart className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي الإعجابات</p>
-              <p className="text-lg font-bold text-primary">{formatNumber(stats.totalLikes)}</p>
-            </div>
-          </div>
-        </Card> */}
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">مع كلمات</p>
-              <p className="text-lg font-bold text-primary">{stats.withLyrics}</p>
-            </div>
-          </div>
-        </Card>
       </div>
 
       {/* <SongFiltersComponent

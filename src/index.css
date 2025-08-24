@@ -23,7 +23,7 @@ body {
   --secondary: #000000;
   --accent: #10b981;
   --background: #ededed;
-  --container: #0f172b;
+  --container: #000;
   --destructive: #cd4227;
   --destructive-foreground: #fff;
 }
@@ -41,25 +41,43 @@ body {
   --radius-primary: 12px
 }
 
+
+/* Spotify-style custom scrollbar */
 .custom-scroll {
+  /* For Firefox */
   scrollbar-width: thin;
-
-  /* scrollbar-width: 2px !important; */
-  scroll-behavior: smooth !important;
-  scroll-snap-type: mandatory !important;
-  scrollbar-color: var(--primary) !important;
-  scrollbar-track-color: #004d5c !important;
-
-  /* --webkit-scrollbar-width: 2px !important; */
-  --webkit-scroll-behavior: smooth !important;
-  --webkit-scroll-snap-type: mandatory !important;
-  --webkit-scrollbar-color: var(--primary) !important;
-  --webkit-scrollbar-track-color: #004d5c !important;
-
-  scrollbar-arrow-color: transparent !important;
-
-  appearance: none;
+  scrollbar-color: #9ca3af #f3f4f6;
 }
+
+.custom-scroll::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+  background: #f3f4f6;
+  border-radius: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 6px;
+  border: 2px solid #f3f4f6;
+  transition: background-color 0.2s ease;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:active {
+  background: #4b5563;
+}
+
+.custom-scroll::-webkit-scrollbar-corner {
+  background: #f3f4f6;
+}
+
 
 
 /* Custom Swiper styles */
@@ -408,5 +426,23 @@ body {
   }
   100% {
     transform: scale(1);
+  }
+}
+
+
+.ripple {
+  position: absolute;
+  border-radius: 50%;
+  transform: scale(0);
+  background-color: rgba(255, 255, 255, 0.5);
+  animation: ripple-animation 800ms ease-out;
+  pointer-events: none;
+  z-index: 10;
+}
+
+@keyframes ripple-animation {
+  to {
+    transform: scale(4);
+    opacity: 0;
   }
 }

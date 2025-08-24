@@ -4,7 +4,6 @@ import type { Album } from "../../types/album"
 import Button from '../../components/ui/button'
 import Toolbar from '../../components/ui/toolbar'
 import { formatDate } from '../../lib/date'
-import { getStorageFile } from '../../lib/storage'
 
 interface AlbumHeaderProps {
   album: Album
@@ -90,7 +89,7 @@ export default function AlbumHeader({
             <div className="w-48 h-48 bg-gray-100 rounded-xl overflow-hidden">
               {album.image ? (
                 <img
-                  src={getStorageFile(album.image) || "/placeholder.svg"}
+                  src={album.image || "/placeholder.svg"}
                   alt={album.name}
                   className="w-full h-full object-cover"
                 />

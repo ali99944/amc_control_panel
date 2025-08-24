@@ -12,7 +12,7 @@ import PlaylistBuilder from "../../components/ui/playlist-builder"
 import Switch from "../../components/ui/switch"
 import Textarea from "../../components/ui/textarea"
 import { Song } from "../../types/song"
-import Select from "../../components/ui/select"
+import { Select } from "../../components/ui/select"
 
 interface PlaylistFormProps {
   initialData?: Playlist
@@ -68,7 +68,6 @@ export default function PlaylistForm({
 
   return (
     <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-6">
-      {/* Basic Info Section */}
       <div className="space-y-4">
         <h4 className="text-md font-medium text-gray-900">معلومات قائمة التشغيل</h4>
         

@@ -4,7 +4,6 @@ import { useState } from "react"
 import { Plus, Music, Globe, Lock, Edit, Trash2, Clock } from "lucide-react"
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
-import Card from "../../components/ui/card"
 import Toolbar from "../../components/ui/toolbar"
 import { usePlaylists } from "../../hooks/use-playlists"
 import { Playlist } from "../../types/playlist"
@@ -13,6 +12,7 @@ import DeletePlaylistDialog from "./delete-playlist-dialog"
 import UpdatePlaylistDialog from "./update-playlist-dialog"
 import Tooltip from "../../components/ui/tooltip"
 import { formatDate } from "../../lib/date"
+import StatisticCard from "../../components/ui-components/statistic-card"
 // import PlaylistFiltersComponent from "./playlists_filter"
 
 
@@ -30,11 +30,13 @@ export default function PlaylistsPage() {
     total: playlists.length,
     public: playlists.filter((p) => p.is_public).length,
     private: playlists.filter((p) => !p.is_public).length,
-    totalSongs: playlists.reduce((acc, playlist) => acc + playlist.songs_count, 0),
-    totalDuration: playlists.reduce((acc, playlist) => acc + playlist.total_duration, 0),
+    totalSongs: playlists.reduce((acc, playlist) => acc + playlist.songs.length, 0),
+    totalDuration: playlists.reduce((acc, playlist) => acc + 
+      playlist.songs.reduce((accs, song) => accs + song.original_audio.duration, 0)
+    , 0),
     averageSongs:
       playlists.length > 0
-        ? Math.round(playlists.reduce((acc, playlist) => acc + playlist.songs_count, 0) / playlists.length)
+        ? Math.round(playlists.reduce((acc, playlist) => acc + playlist.songs.length, 0) / playlists.length)
         : 0,
   }
 
@@ -125,11 +127,11 @@ export default function PlaylistsPage() {
           <div className="text-sm text-gray-500 flex items-center gap-3 mt-1">
             <span className="flex items-center gap-1">
               <Music className="w-3 h-3" />
-              {row.songs_count} أغنية
+              {row.songs.length} أغنية
             </span>
             <span className="flex items-center gap-1">
               <Clock className="w-3 h-3" />
-              {formatDuration(row.total_duration)}
+              {formatDuration(row.songs.reduce((acc, song) => acc + song.original_audio.duration,0))}
             </span>
           </div>
         </div>
@@ -177,10 +179,10 @@ export default function PlaylistsPage() {
       render: (_, row: Playlist) => (
         <div className="flex items-center gap-2">
 
-          <Button size="sm" variant="secondary" onClick={() => handleEditPlaylist(row)} title="تعديل">
+          <Button size="sm" variant="secondary" onClick={() => handleEditPlaylist(row)} className="!px-2" title="تعديل">
             <Edit className="w-4 h-4" />
           </Button>
-          <Button size="sm" variant="danger" onClick={() => handleDeletePlaylist(row)} title="حذف">
+          <Button size="sm" variant="danger" onClick={() => handleDeletePlaylist(row)} className="!px-2" title="حذف">
             <Trash2 className="w-4 h-4" />
           </Button>
         </div>
@@ -192,84 +194,60 @@ export default function PlaylistsPage() {
     <div className="space-y-4">
       {/* Page Header */}
       <Toolbar title="إدارة قوائم التشغيل">
-        <Button variant="primary-inverted" icon={Plus} onClick={() => setIsCreateDialogOpen(true)}>
-          إنشاء قائمة تشغيل جديدة
+        <Button variant="primary-inverted" icon={Plus} onClick={() => setIsCreateDialogOpen(true)} className="!py-2.5 !px-2.5">
         </Button>
       </Toolbar>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي القوائم</p>
-              <p className="text-lg font-bold text-primary">{stats.total}</p>
-            </div>
-          </div>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Globe className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">القوائم العامة</p>
-              <p className="text-lg font-bold text-primary">{stats.public}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard 
+          stat={{
+            icon: Music,
+            name: 'اجمالي القوائم',
+            value: stats.total
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Lock className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">القوائم الخاصة</p>
-              <p className="text-lg font-bold text-primary">{stats.private}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard 
+          stat={{
+            icon: Globe,
+            name: 'القوائم العامة',
+            value: stats.public
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي الأغاني</p>
-              <p className="text-lg font-bold text-primary">{stats.totalSongs}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard 
+          stat={{
+            icon: Lock,
+            name: 'القوائم الخاصة',
+            value: stats.private
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Clock className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي المدة</p>
-              <p className="text-lg font-bold text-primary">{formatTotalDuration(stats.totalDuration)}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard 
+          stat={{
+            icon: Music,
+            name: 'إجمالي الأغاني',
+            value: stats.totalSongs
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">متوسط الأغاني</p>
-              <p className="text-lg font-bold text-primary">{stats.averageSongs}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard 
+          stat={{
+            icon: Clock,
+            name: 'إجمالي المدة',
+            value: formatTotalDuration(stats.totalDuration)
+          }}
+        />
+
+        <StatisticCard 
+          stat={{
+            icon: Music,
+            name: 'متوسط الأغاني',
+            value: stats.averageSongs
+          }}
+        />
       </div>
 
       {/* <PlaylistFiltersComponent 

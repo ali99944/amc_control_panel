@@ -8,10 +8,10 @@ import Button from "../../components/ui/button"
 import ColorPicker from "../../components/ui/color-picker"
 import ImagePicker from "../../components/ui/image-picker"
 import { Input } from "../../components/ui/input"
-import Switch from "../../components/ui/switch"
 import Textarea from "../../components/ui/textarea"
 import { getStorageFile } from "../../lib/storage"
 import { Genre } from "../../types"
+import LabeledSwitch from "../../components/ui/labeled-switch"
 
 interface GenreFormProps {
   initialData?: Genre
@@ -86,7 +86,7 @@ export default function GenreForm({
       />
 
       {/* Color and Status Row */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div>
         {/* Color Picker */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">اللون المميز</label>
@@ -100,23 +100,23 @@ export default function GenreForm({
           {errors.color && <p className="text-sm text-red-600 mt-1">{errors.color.message}</p>}
         </div>
 
-        {/* Active Switch */}
-        <div className="flex items-start flex-col">
-          <label className="block text-sm font-medium text-gray-700 mb-2">الحالة</label>
+
+      </div>
+              {/* Active Switch */}
+          <div>
           <Controller
             name="is_active"
             control={control}
             render={({ field }) => (
-              <Switch
+              <LabeledSwitch
                 checked={field.value}
                 onChange={field.onChange}
-                label="نشط"
+                title="نشط"
                 description="هل تريد تفعيل هذا النوع الموسيقي؟"
               />
             )}
           />
         </div>
-      </div>
 
       {/* Image Picker */}
       <div>

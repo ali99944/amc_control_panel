@@ -9,7 +9,7 @@ import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd"
 import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
 import { Input } from "../../components/ui/input"
-import Select from "../../components/ui/select"
+import { Select } from "../../components/ui/select"
 
 interface AlbumBuilderProps {
   albumId: number
@@ -236,7 +236,7 @@ export default function AlbumBuilder({ albumId, onSongsChange }: AlbumBuilderPro
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Select
                     value={state.filterArtist?.toString() || ""}
-                    onChange={(value) => updateFilters(value ? Number.parseInt(value) : null, state.filterGenre)}
+                    onChange={(value) => updateFilters(value ? Number.parseInt(value as string) : null, state.filterGenre)}
                     options={[
                       { label: "جميع الفنانين", value: "" },
                       ...artists.map((artist) => ({
@@ -247,7 +247,7 @@ export default function AlbumBuilder({ albumId, onSongsChange }: AlbumBuilderPro
                   />
                   <Select
                     value={state.filterGenre?.toString() || ""}
-                    onChange={(value) => updateFilters(state.filterArtist, value ? Number.parseInt(value) : null)}
+                    onChange={(value) => updateFilters(state.filterArtist, value ? Number.parseInt(value as string) : null)}
                     options={[
                       { label: "جميع الأنواع", value: "" },
                       ...genres.map((genre) => ({

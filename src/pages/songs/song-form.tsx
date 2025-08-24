@@ -15,7 +15,7 @@ import DatePicker from "../../components/ui/date-picker"
 import ImagePicker from "../../components/ui/image-picker"
 import Switch from "../../components/ui/switch"
 import Textarea from "../../components/ui/textarea"
-import Select from "../../components/ui/select"
+import { Select } from "../../components/ui/select"
 import LyricsEditor from "../../components/ui/lyrics-editor"
 import { formatDate } from "../../lib/date"
 
@@ -95,7 +95,7 @@ export default function SongForm({
             <Select
               {...field}
               label="الفنان"
-              error={errors.artist_id?.message}
+              // error={errors.artist_id?.message}
               options={
                 artists.filter(artist => artist.is_active)
                 .map(artist => {
@@ -117,7 +117,7 @@ export default function SongForm({
             <Select
               {...field}
               label="النوع الموسيقي"
-              error={errors.genre_id?.message}
+              // error={errors.genre_id?.message}
               options={
                 genres.filter(genre => genre.is_active)
                 .map(genre => {

@@ -4,13 +4,14 @@ import { useState } from "react"
 import { Users, UserCheck, UserX, ShieldOff, Trash2, Calendar, Phone } from "lucide-react"
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
-import Card from "../../components/ui/card"
 import Toolbar from "../../components/ui/toolbar"
 import { useUsers } from "../../hooks/use-users"
 import User from "../../types/user"
 import BanUserDialog from "./ban-user-dialog"
 import DeleteUserDialog from "./delete-user-dialog"
 import { formatDate } from "../../lib/date"
+import { useNavigate } from "react-router-dom"
+import StatisticCard from "../../components/ui-components/statistic-card"
 // import UserFiltersComponent from "./users-filter"
 
 
@@ -200,78 +201,63 @@ export default function UsersPage() {
     },
   ]
 
+  const navigate = useNavigate()
+
   return (
     <div className="space-y-4">
       {/* Page Header */}
       <Toolbar title="إدارة المستخدمين">
-        <div className="flex items-center gap-2 text-white/90 text-sm">
-          <Users className="w-4 h-4" />
-          <span>إجمالي: {stats.total} مستخدم</span>
-        </div>
+        <Button
+          size="sm"
+          variant="primary-inverted"
+          onClick={() => navigate("/users/trash")}
+        >
+          <Trash2 className="w-4 h-4" />
+          <span>المستخدمين المحذوفين</span>
+        </Button>
       </Toolbar>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-6 gap-4">
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Users className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي المستخدمين</p>
-              <p className="text-lg font-bold text-primary">{stats.total}</p>
-            </div>
-          </div>
-        </Card>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <StatisticCard
+          stat={{
+            icon: Users,
+            name: "المستخدمين",
+            value: stats.total,
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <UserCheck className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">المستخدمين النشطين</p>
-              <p className="text-lg font-bold text-primary">{stats.active}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: UserCheck,
+            name: "المستخدمين النشطين",
+            value: stats.active,
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <ShieldOff className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">المحظورين</p>
-              <p className="text-lg font-bold text-primary">{stats.banned}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: ShieldOff,
+            name: "المحظورين",
+            value: stats.banned,
+          }}
+        />
 
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <UserX className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">غير النشطين</p>
-              <p className="text-lg font-bold text-primary">{stats.inactive}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: UserX,
+            name: "غير النشطين",
+            value: stats.inactive,
+          }}
+        />
 
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Calendar className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">انضموا مؤخراً</p>
-              <p className="text-lg font-bold text-primary">{stats.recentlyJoined}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: Calendar,
+            name: "انضموا مؤخراً",
+            value: stats.recentlyJoined,
+          }}
+        />
       </div>
 
       {/* <UserFiltersComponent 

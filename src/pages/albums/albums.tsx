@@ -1,33 +1,27 @@
 "use client"
 import { useState } from "react"
-import { Plus, Music, Calendar, User, Star, Grid, List } from "lucide-react"
+import { Plus, Music, Calendar, User, Star, Edit, Trash } from "lucide-react"
 import CreateAlbumDialog from "./create-album-dialog"
 import UpdateAlbumDialog from "./update-album-dialog"
 import DeleteAlbumDialog from "./delete-album-dialog"
-import AlbumCard from "./album-card"
 import DataTable, { Column } from "../../components/datatable"
 import Button from "../../components/ui/button"
-import Card from "../../components/ui/card"
 import Toolbar from "../../components/ui/toolbar"
-import { useAlbums, useToggleAlbumStatus, useToggleAlbumFeatured } from "../../hooks/use-albums"
+import { useAlbums } from "../../hooks/use-albums"
 import { formatDate } from "../../lib/date"
 import { Album } from "../../types/album"
 import { Link } from "react-router-dom"
+import StatisticCard from "../../components/ui-components/statistic-card"
 
 export default function AlbumsPage() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
   const [isUpdateDialogOpen, setIsUpdateDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
   const [selectedAlbum, setSelectedAlbum] = useState<Album | null>(null)
-  const [viewMode, setViewMode] = useState<"grid" | "table">("table")
   // const [filters, setFilters] = useState<AlbumFilters>({})
 
   // Fetch albums data
   const { data: albums = [], isLoading, refetch } = useAlbums({})
-
-  // Mutations
-  const { mutate: toggleStatus } = useToggleAlbumStatus(() => refetch())
-  const { mutate: toggleFeatured } = useToggleAlbumFeatured(() => refetch())
 
   // Calculate stats
   const stats = {
@@ -46,14 +40,6 @@ export default function AlbumsPage() {
   const handleDeleteAlbum = (album: Album) => {
     setSelectedAlbum(album)
     setIsDeleteDialogOpen(true)
-  }
-
-  const handleToggleStatus = (album: Album) => {
-    toggleStatus({ id: album.id })
-  }
-
-  const handleToggleFeatured = (album: Album) => {
-    toggleFeatured({ id: album.id })
   }
 
   const handleDialogSuccess = () => {
@@ -149,13 +135,13 @@ export default function AlbumsPage() {
         <div className="flex items-center gap-2">
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${
-              value ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+              value ? "bg-primary/20 text-primary" : "bg-red-100 text-red-800"
             }`}
           >
             {value ? "نشط" : "غير نشط"}
           </span>
           {row.is_featured && (
-            <span className="bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full text-xs font-medium">مميز</span>
+            <span className="bg-amber-100 text-amber-800 px-2 py-1 rounded-full text-xs font-medium">مميز</span>
           )}
         </div>
       ),
@@ -166,11 +152,11 @@ export default function AlbumsPage() {
       width: "200px",
       render: (_, row: Album) => (
         <div className="flex items-center gap-2">
-          <Button size="sm" variant="secondary" onClick={() => handleEditAlbum(row)}>
-            تعديل
+          <Button size="sm" variant="secondary" onClick={() => handleEditAlbum(row)} className="!px-2" icon={Edit}>
+            
           </Button>
-          <Button size="sm" variant="danger" onClick={() => handleDeleteAlbum(row)}>
-            حذف
+          <Button size="sm" variant="danger" onClick={() => handleDeleteAlbum(row)} className="!px-2" icon={Trash}>
+            
           </Button>
         </div>
       ),
@@ -182,22 +168,7 @@ export default function AlbumsPage() {
       {/* Page Header */}
       <Toolbar title="إدارة الألبومات">
         <div className="flex items-center gap-2">
-          <Button
-            variant={viewMode === "grid" ? "primary" : "secondary"}
-            size="sm"
-            onClick={() => setViewMode("grid")}
-            icon={Grid}
-          >
-            شبكة
-          </Button>
-          <Button
-            variant={viewMode === "table" ? "primary" : "secondary"}
-            size="sm"
-            onClick={() => setViewMode("table")}
-            icon={List}
-          >
-            جدول
-          </Button>
+
           <Button variant="primary-inverted" icon={Plus} onClick={() => setIsCreateDialogOpen(true)}>
             إنشاء ألبوم جديد
           </Button>
@@ -206,85 +177,40 @@ export default function AlbumsPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي الألبومات</p>
-              <p className="text-lg font-bold text-primary">{stats.total}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">الألبومات النشطة</p>
-              <p className="text-lg font-bold text-primary">{stats.active}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Star className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">الألبومات المميزة</p>
-              <p className="text-lg font-bold text-primary">{stats.featured}</p>
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-              <Music className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <p className="text-xs text-gray-600">إجمالي الأغاني</p>
-              <p className="text-lg font-bold text-primary">{stats.totalSongs}</p>
-            </div>
-          </div>
-        </Card>
+        <StatisticCard
+          stat={{
+            icon: Music,
+            name: "إجمالي الألبومات",
+            value: stats.total,
+          }}
+        />
+        <StatisticCard
+          stat={{
+            icon: Music,
+            name: "الألبومات النشطة",
+            value: stats.active,
+          }}
+        />
+        <StatisticCard
+          stat={{
+            icon: Star,
+            name: "الألبومات المميزة",
+            value: stats.featured,
+          }}
+        />
+        <StatisticCard
+          stat={{
+            icon: Music,
+            name: "إجمالي الأغاني",
+            value: stats.totalSongs,
+          }}
+        />
       </div>
 
       {/* Filters */}
       {/* <AlbumFiltersComponent filters={filters} onFiltersChange={setFilters} onClearFilters={handleClearFilters} /> */}
 
-      {/* Content */}
-      {viewMode === "grid" ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {albums.map((album) => (
-            <AlbumCard
-              key={album.id}
-              album={album}
-              onEdit={handleEditAlbum}
-              onDelete={handleDeleteAlbum}
-              onToggleStatus={handleToggleStatus}
-              onToggleFeatured={handleToggleFeatured}
-            />
-          ))}
-          {albums.length === 0 && !isLoading && (
-            <Card className="col-span-full text-center py-12">
-              <Music className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">لا توجد ألبومات</p>
-              <div className="flex items-center justify-center">
-                <Button variant="primary" size="sm" className="mt-4" onClick={() => setIsCreateDialogOpen(true)}>
-                    إنشاء ألبوم جديد
-                </Button>
-              </div>
-            </Card>
-          )}
-        </div>
-      ) : (
-        <DataTable
+      <DataTable
           data={albums}
           columns={columns}
           loading={isLoading}
@@ -300,7 +226,6 @@ export default function AlbumsPage() {
             </div>
           }
         />
-      )}
 
       {/* Dialogs */}
       <CreateAlbumDialog

@@ -5,7 +5,7 @@ import { useGenres } from "../../hooks/use-genres"
 import type { Album } from "../../types/album"
 import Card from "../../components/ui/card"
 import Button from "../../components/ui/button"
-import Select from "../../components/ui/select"
+import { Select } from "../../components/ui/select"
 
 interface AlbumGenresProps {
   album: Album
@@ -86,7 +86,7 @@ export default function AlbumGenres({ album, onGenresUpdate }: AlbumGenresProps)
               <div className="flex-1">
                 <Select
                   value={selectedGenreId.toString()}
-                  onChange={(value) => setSelectedGenreId(Number.parseInt(value))}
+                  onChange={(value) => setSelectedGenreId(Number.parseInt(value as string))}
                   options={[
                     { label: "اختر نوع موسيقي", value: "0" },
                     ...availableGenres.map((genre) => ({

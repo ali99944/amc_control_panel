@@ -48,7 +48,7 @@ export default function Dialog({
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-50 overflow-y-auto" dir="rtl">
+        <div className="fixed inset-0 z-[999] overflow-y-auto" dir="rtl">
           {/* Backdrop */}
           <motion.div
             initial={{ opacity: 0 }}

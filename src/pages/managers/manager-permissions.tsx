@@ -7,21 +7,23 @@ import Button from "../../components/ui/button"
 import Card from "../../components/ui/card"
 import { Label } from "../../components/ui/label"
 import Switch from "../../components/ui/switch"
-import { useManagers, useAllPermissions } from "../../hooks/use-managers"
+import { useManagers, useAllPermissions, useUpdateManagerPermissions } from "../../hooks/use-managers"
 import { type ManagerPermissionsFormData, managerPermissionsSchema } from "./manager-form-schema"
 import { useParams } from "react-router-dom"
 import Toolbar from "../../components/ui/toolbar"
 import { formatDate } from "../../lib/date"
 import { groupPermissionsByCategory, getRoleLabel, getCategoryLabel, getPermissionLabel } from "../../lib/permission"
 import { PermissionCategory } from "../../types/permission"
+import { Badge } from "../../components/ui/badge"
 
 
 export default function ManagerPermissionsPage() {
-  const { managers, updateManagerPermissions, isUpdatingPermissions } = useManagers()
   const { permissions, isLoading: permissionsLoading } = useAllPermissions()
   const [selectedPermissions, setSelectedPermissions] = useState<string[]>([])
   const { id: managerId } = useParams()
+  const { managers } = useManagers()
   const manager = managers.find((m) => m.id == +(managerId ?? "1"))
+  const { updateManagerPermissions, isUpdatingPermissions } = useUpdateManagerPermissions(manager?.id)
 
   const {
     handleSubmit,
@@ -50,7 +52,7 @@ export default function ManagerPermissionsPage() {
   }
 
   const handleFormSubmit = (data: ManagerPermissionsFormData) => {
-    updateManagerPermissions(+(managerId ?? "1"), {
+    updateManagerPermissions({
       permissions: data.permissions,
     })
   }
@@ -118,26 +120,18 @@ export default function ManagerPermissionsPage() {
             <h2 className="text-xl font-semibold text-gray-900">{manager.name}</h2>
             <div className="flex items-center gap-x-4 text-sm text-gray-600 mt-1">
               <div className="flex items-center">
-                <User className="w-4 h-4 ml-1" />@{manager.username}
+                <User className="w-4 h-4 ml-1" />{manager.username}
               </div>
               <div className="flex items-center">
                 <Calendar className="w-4 h-4 ml-1" />
-                انضم في {formatDate(manager.created_at)}
+                {formatDate(manager.created_at)}
               </div>
             </div>
             <div className="mt-2">
-              <span
-                className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  manager.role === "super_admin"
-                    ? "bg-primary/10 text-primary"
-                    : manager.role === "admin"
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-green-100 text-green-800"
-                }`}
-              >
+              <Badge>
                 {manager.role === "super_admin" && <Crown className="w-3 h-3 ml-1" />}
                 {getRoleLabel(manager.role)}
-              </span>
+              </Badge>
             </div>
           </div>
         </div>

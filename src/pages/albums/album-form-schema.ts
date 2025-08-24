@@ -23,9 +23,7 @@ export const albumFormSchema = z.object({
       today.setHours(0, 0, 0, 0)
       return selectedDate <= today
     }, "تاريخ الإصدار لا يمكن أن يكون في المستقبل"),
-  album_type: z.enum(["Single", "EP", "Album", "Compilation"], {
-    required_error: "نوع الألبوم مطلوب",
-  }),
+  album_type: z.string(),
 //   record_label: z
 //     .string()
 //     .max(100, "اسم شركة الإنتاج يجب أن يكون أقل من 100 حرف")
@@ -36,8 +34,8 @@ export const albumFormSchema = z.object({
 //     .max(100, "اسم المنتج يجب أن يكون أقل من 100 حرف")
 //     .optional()
 //     .or(z.literal("")),
-  is_active: z.boolean().default(true),
-  is_featured: z.boolean().default(false),
+  is_active: z.boolean(),
+  is_featured: z.boolean(),
 })
 
 export type AlbumFormData = z.infer<typeof albumFormSchema>

@@ -217,7 +217,7 @@ export default function DataTable<T extends Record<string, any>>({
       </div>
 
       {/* Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto custom-scroll">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>

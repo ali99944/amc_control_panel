@@ -18,16 +18,16 @@ import PrivacyPolicyPage from "./pages/privacy-policy/privacy-policy";
 import TermsConditionsPage from "./pages/terms-conditions/terms-conditions-page";
 import TagsPage from "./pages/tags/tags-page";
 import ContactMessagesPage from "./pages/contact-messages/contact-messages-page";
-import { ContentReportExample, EngagementReportExample, UsersReportExample } from "./components/reports/report-usage-examples";
 import AlbumsPage from "./pages/albums/albums";
 import AlbumDetailsPage from "./pages/album-details/album-details-page";
-import LabeledSwitchExamples from "./pages/dev";
-import PodcastsPage from "./pages/podcasts/podcasts_page";
-import PodcastDetailsPage from "./pages/podcasts/details/podcast_details_page";
-import PaymentsPage from "./pages/payments/payments_page";
-import PaymentDetailsPage from "./pages/payments/payment_details_page";
-import PaymentInvoicePage from "./pages/payments/payment_invoice_page";
-import SubscriptionsPage from "./pages/subscriptions/subscriptions_page";
+// import PodcastsPage from "./pages/podcasts/podcasts_page";
+// import PodcastDetailsPage from "./pages/podcasts/details/podcast_details_page";
+// import PaymentsPage from "./pages/payments/payments_page";
+// import PaymentDetailsPage from "./pages/payments/payment_details_page";
+// import PaymentInvoicePage from "./pages/payments/payment_invoice_page";
+// import SubscriptionsPage from "./pages/subscriptions/subscriptions_page";
+// import ArtistProfilePage from "./pages/artist_profile/artist_profile";
+import DeletedUsersPage from "./pages/users/deleted_users/deleted_users_page";
 
 const router = createBrowserRouter([
     {
@@ -49,6 +49,10 @@ const router = createBrowserRouter([
                 element: <UsersPage />
             },
             {
+                path: '/users/trash',
+                element: <DeletedUsersPage />
+            },
+            {
                 path: '/playlists',
                 element: <PlaylistsPage />
             },
@@ -68,6 +72,10 @@ const router = createBrowserRouter([
                 path: '/artists',
                 element: <ArtistsPage />
             },
+            // {
+            //     path: '/artists/:id',
+            //     element: <ArtistProfilePage />
+            // },
             {
                 path: '/analytics',
                 element: <AnalyticsPage />
@@ -116,35 +124,31 @@ const router = createBrowserRouter([
                 path: '/albums/:id',
                 element: <AlbumDetailsPage />
             },
-            {
-                path: '/podcasts',
-                element: <PodcastsPage />
-            },
-            {
-                path: '/podcasts/:id',
-                element: <PodcastDetailsPage />
-            },
-            {
-                path: '/payments',
-                element: <PaymentsPage />
-            },
-            {
-                path: '/payments/:id',
-                element: <PaymentDetailsPage />
-            },
-            {
-                path: '/payments/:id/invoice',
-                element: <PaymentInvoicePage />
-            },
-            {
-                path: '/subscriptions',
-                element: <SubscriptionsPage />
-            },
+            // {
+            //     path: '/podcasts',
+            //     element: <PodcastsPage />
+            // },
+            // {
+            //     path: '/podcasts/:id',
+            //     element: <PodcastDetailsPage />
+            // },
+            // {
+            //     path: '/payments',
+            //     element: <PaymentsPage />
+            // },
+            // {
+            //     path: '/payments/:id',
+            //     element: <PaymentDetailsPage />
+            // },
+            // {
+            //     path: '/payments/:id/invoice',
+            //     element: <PaymentInvoicePage />
+            // },
+            // {
+            //     path: '/subscriptions',
+            //     element: <SubscriptionsPage />
+            // },
         ],
-    },
-    {
-        path: '/dev',
-        element: <LabeledSwitchExamples />
     },
     {
         path: '/login',

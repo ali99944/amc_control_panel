@@ -1,3 +1,5 @@
+import { Song } from "./song"
+
 export interface Playlist {
   id: number
   name: string
@@ -9,4 +11,6 @@ export interface Playlist {
   total_duration: number
   is_public: boolean
   created_by: string
+
+  songs: Song[]
 }
